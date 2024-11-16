@@ -1,9 +1,25 @@
-<div class="flex flex-col items-center">
-	<h1 class="my-5 text-8xl font-bold">Welcome to Martin's SvelteKit 5 Demos</h1>
+<div class="flex max-w-7xl flex-col items-center text-center">
+	<h1 class="my-5 text-8xl font-extrabold">Welcome to Martin's SvelteKit 5 Demos</h1>
 </div>
-<div class="flex justify-center text-6xl">Svelte 5, Drizzle, Lucia, Markdown, SQLite</div>
+<div class="mb-10 flex justify-center text-4xl">
+	Svelte 5, Drizzle, Drizzle Studio, Lucia, Markdown, SQLite
+</div>
 
-<article class="prose max-w-7xl pt-20">
+<main>
+	<div class="grid grid-cols-3 gap-4">
+		<div class="grid-box rounded-xl border border-gray-700 bg-slate-900/50 text-5xl font-bold">
+			01
+		</div>
+		<div class="grid-box">02</div>
+		<div class="grid-box">03</div>
+		<div class="grid-box col-span-2">04</div>
+		<div class="grid-box">05</div>
+		<div class="grid-box">06</div>
+		<div class="grid-box col-span-2">07</div>
+	</div>
+</main>
+
+<article class="prose mt-20 max-w-7xl pt-20">
 	<p>
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam elementum auctor enim quis
 		vulputate. Donec varius, quam sed placerat varius, eros felis ultricies arcu, sed luctus mi ex
@@ -50,3 +66,12 @@
 		leo luctus quam, vitae ultrices dolor odio a mi.
 	</p>
 </article>
+
+<style>
+	.grid-box {
+		@apply rounded-xl border border-gray-700 bg-slate-900/50 p-5 text-5xl font-bold;
+		width: 100%;
+		min-width: 30rem;
+		height: 8rem;
+	}
+</style>

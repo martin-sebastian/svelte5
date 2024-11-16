@@ -32,7 +32,9 @@
 	{@render children()}
 </main>
 
-<footer class="fixed bottom-0 flex w-full justify-center">
+<footer
+	class="fixed bottom-0 flex w-full justify-center border-b border-gray-800 bg-gray-900/50 py-2 text-white backdrop-blur-lg"
+>
 	<p>Footer</p>
 </footer>
 
