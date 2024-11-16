@@ -1,2 +1,2 @@
 # svelte5
- Svelte 5 Test with Drizzle, sql lite, and lucia auth
+ Svelte 5 Demos with Drizzle, SQLite, Lucia Auth + more.
