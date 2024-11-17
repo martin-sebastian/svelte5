@@ -5,22 +5,31 @@
 	Svelte 5, Drizzle, Drizzle Studio, Lucia, Markdown, SQLite
 </div>
 
-<main>
-	<div class="grid grid-cols-3 gap-4">
-		<div class="grid-box rounded-xl border border-gray-700 bg-slate-900/50 text-5xl font-bold">
-			01
+<main class="w-full max-w-7xl">
+	<div class="grid grid-cols-3 gap-4 px-4 py-4 xl:grid-cols-3">
+		<div class="h-24 w-full rounded-xl bg-blue-600">
+			<div class="p-4">01</div>
 		</div>
-		<div class="grid-box">02</div>
-		<div class="grid-box">03</div>
-		<div class="grid-box col-span-2">04</div>
-		<div class="grid-box">05</div>
-		<div class="grid-box">06</div>
-		<div class="grid-box col-span-2">07</div>
+		<div class="col-span-2 h-24 w-full rounded-xl bg-blue-900">
+			<div class="p-4">02</div>
+		</div>
+		<div class="col-span-2 h-24 w-full rounded-xl bg-blue-900">
+			<div class="p-4">03</div>
+		</div>
+		<div class="h-24 w-full rounded-xl bg-blue-600">
+			<div class="p-4">04</div>
+		</div>
+		<div class="h-24 w-full rounded-xl bg-blue-600">
+			<div class="p-4">05</div>
+		</div>
+		<div class="col-span-2 h-24 w-full rounded-xl bg-blue-900">
+			<div class="p-4">06</div>
+		</div>
 	</div>
 </main>
 
-<article class="prose mt-20 max-w-7xl pt-20">
-	<p>
+<article class="my-20 w-full max-w-7xl px-5 py-20">
+	<p class="text-md py-5">
 		Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam elementum auctor enim quis
 		vulputate. Donec varius, quam sed placerat varius, eros felis ultricies arcu, sed luctus mi ex
 		ac orci. Interdum et malesuada fames ac ante ipsum primis in faucibus. Fusce aliquet metus
@@ -32,7 +41,7 @@
 		ridiculus mus. Vestibulum quis lectus tempor, porttitor felis quis, interdum est. Nulla lacinia
 		ultricies sem vitae blandit.
 	</p>
-	<p>
+	<p class="text-md py-5">
 		Aenean ante purus, rhoncus a sodales sit amet, sagittis vitae justo. Curabitur sit amet sapien
 		lobortis, pharetra dui eget, aliquet odio. Maecenas viverra, leo a consequat porttitor, tellus
 		ligula porta dolor, eu tincidunt sapien massa eget ante. Sed rhoncus purus metus, vel eleifend
@@ -41,7 +50,7 @@
 		ligula nisi aliquet elit, et sodales mauris velit sed purus. Vivamus nibh nibh, scelerisque eget
 		placerat id, vehicula et erat. Praesent sagittis turpis lacus, eu venenatis ex tristique et.
 	</p>
-	<p>
+	<p class="text-md py-5">
 		Etiam vitae ante eu tellus finibus tristique sit amet eget odio. Pellentesque nec arcu risus.
 		Cras augue turpis, interdum ultricies tincidunt ut, aliquam nec enim. Nulla aliquam nunc quis
 		auctor suscipit. Suspendisse et lorem velit. Nullam blandit vitae risus nec facilisis. In eget
@@ -69,9 +78,14 @@
 
 <style>
 	.grid-box {
-		@apply rounded-xl border border-gray-700 bg-slate-900/50 p-5 text-5xl font-bold;
+		border-radius: 0.75rem;
+		border: 1px solid rgb(55, 65, 81);
+		background-color: rgb(15, 23, 42, 0.5);
+		padding: 1.25rem;
+		font-size: 3rem;
+		font-weight: 700;
 		width: 100%;
-		min-width: 30rem;
-		height: 8rem;
+		min-width: 24rem;
+		min-height: 8rem;
 	}
 </style>
