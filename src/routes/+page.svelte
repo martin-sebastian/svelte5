@@ -1,4 +1,6 @@
 <script>
+	let message = "Welcome to Martin's SvelteKit 5 Demos";
+	let subMessage = 'Svelte 5, Drizzle, Lucia, SQLite, Tailwind, TypeScript, Shadcn UI.';
 	// @ts-ignore
 	import DiJsBadge from 'svelte-icons/di/DiJsBadge.svelte';
 	// @ts-ignore
@@ -24,11 +26,11 @@
 		<h1
 			class="my-5 bg-gradient-to-r from-white to-blue-500/50 bg-clip-text text-8xl font-extrabold text-transparent"
 		>
-			Welcome to Martin's SvelteKit 5 Demos
+			{message}
 		</h1>
 	</div>
 	<div class="mb-10 flex justify-center text-2xl">
-		Svelte 5, Drizzle, Lucia, SQLite, Tailwind, TypeScript, Shadcn UI.
+		{subMessage}
 	</div>
 
 	<div class="max-w-7xl">
@@ -137,17 +139,3 @@
 		</article>
 	</div>
 </main>
-
-<style>
-	.grid-box {
-		border-radius: 0.75rem;
-		border: 1px solid rgb(55, 65, 81);
-		background-color: rgb(15, 23, 42, 0.5);
-		padding: 1.25rem;
-		font-size: 3rem;
-		font-weight: 700;
-		width: 100%;
-		min-width: 24rem;
-		min-height: 8rem;
-	}
-</style>

@@ -11,7 +11,7 @@
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			id="Layer_1"
-			class="ms-5 h-14 w-14 py-2"
+			class="m-2 size-10"
 			data-name="Layer 1"
 			viewBox="0 0 48 48"
 		>
@@ -35,7 +35,7 @@
 	</div>
 	<div class="flex flex-row justify-between py-2">
 		<a
-			class="mx-1 gap-2 rounded-full border border-gray-800 bg-gray-900/50 px-4 py-2 text-white hover:bg-blue-600/50"
+			class="mx-1 flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900/50 px-4 text-white hover:bg-blue-600/50"
 			href="/"
 			aria-label="Home"
 		>
@@ -45,7 +45,7 @@
 				viewBox="0 0 24 24"
 				stroke-width="1.5"
 				stroke="currentColor"
-				class="size-6"
+				class="size-5"
 			>
 				<path
 					stroke-linecap="round"
@@ -55,32 +55,89 @@
 			</svg>
 		</a>
 		<a
-			class="mx-1 my-2 gap-2 rounded-full border border-gray-800 bg-gray-900/50 px-8 text-white hover:bg-blue-600/50"
-			href="/demo/lucia">Lucia Demo</a
+			class="mx-1 flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900/50 px-4 text-white hover:bg-blue-600/50"
+			href="/demo/inventory"
+			aria-label="Inventory"
 		>
-		<a
-			class="mx-1 my-2 gap-2 rounded-full border border-gray-800 bg-gray-900/50 px-8 text-white hover:bg-blue-600/50"
-			href="/markdown">Markdown Demo</a
-		>
-		<a
-			class="mx-1 my-2 flex items-center gap-2 rounded-full border border-orange-500/50 bg-gray-900/50 px-8 text-white hover:bg-orange-500/50"
-			href="https://local.drizzle.studio/"
-			target="_blank"
-			>Drizzle Studio
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
+				width="24"
+				height="24"
 				viewBox="0 0 24 24"
-				stroke-width="1.5"
+				fill="none"
 				stroke="currentColor"
-				class="size-5 antialiased opacity-50"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="size-5"
+				><path d="M12 3v18" /><rect width="18" height="18" x="3" y="3" rx="2" /><path
+					d="M3 9h18"
+				/><path d="M3 15h18" /></svg
 			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-				/>
-			</svg>
+		</a>
+		<a
+			class="mx-1 flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900/50 px-4 text-white hover:bg-blue-600/50"
+			href="/demo/lucia"
+			aria-label="Authentication Demo"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="size-5"
+				><path
+					d="M12.4 2.7a2.5 2.5 0 0 1 3.4 0l5.5 5.5a2.5 2.5 0 0 1 0 3.4l-3.7 3.7a2.5 2.5 0 0 1-3.4 0L8.7 9.8a2.5 2.5 0 0 1 0-3.4z"
+				/><path d="m14 7 3 3" /><path
+					d="m9.4 10.6-6.814 6.814A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814"
+				/></svg
+			>
+		</a>
+		<a
+			class="mx-1 flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900/50 px-4 text-white hover:bg-blue-600/50"
+			href="/markdown"
+			aria-label="Markdown Demo"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="size-5"
+				><path d="M4 12h8" /><path d="M4 18V6" /><path d="M12 18V6" /><path d="m17 12 3-2v8" /></svg
+			>
+		</a>
+		<a
+			class="mx-1 flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900/50 px-4 text-white hover:bg-blue-600/50"
+			href="https://local.drizzle.studio/"
+			target="_blank"
+			aria-label="Drizzle Studio"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="size-5"
+				><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 15 21.84" /><path
+					d="M21 5V8"
+				/><path d="M21 12L18 17H22L19 22" /><path d="M3 12A9 3 0 0 0 14.59 14.87" /></svg
+			>
 		</a>
 	</div>
 </header>
