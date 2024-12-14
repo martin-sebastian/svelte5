@@ -6,7 +6,12 @@ export const load: PageServerLoad = async (event) => {
 	if (!event.locals.user) {
 		return redirect(302, '/demo/lucia/login');
 	}
-	return { user: event.locals.user, age: event.locals.user.age };
+	return {
+		user: event.locals.user,
+		age: event.locals.user.age,
+		firstName: event.locals.user.firstName,
+		lastName: event.locals.user.lastName
+	};
 };
 
 export const actions: Actions = {
