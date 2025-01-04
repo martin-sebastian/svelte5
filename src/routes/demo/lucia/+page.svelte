@@ -2,9 +2,8 @@
 	import { enhance } from '$app/forms';
 	import type { PageServerData } from './$types';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Badge } from '$lib/components/ui/badge';
-	import { badgeVariants } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
+	import Button from '$lib/components/Button.svelte';
+	import { Badge, badgeVariants } from '$lib/components/ui/badge';
 
 	let { data }: { data: PageServerData } = $props();
 	let age = data.age;
@@ -36,11 +35,12 @@
 		>
 	</div>
 	<div class="nav my-5">
-		<Button variant="outline">Button</Button>
-		<Button class="bg-red-500 hover:bg-red-700">Button</Button>
+		<Button className="bg-red-500 hover:bg-red-700" variant="outline" aria-label="Demo Button 1"
+			>Button</Button
+		>
+		<Button className="bg-red-500 hover:bg-red-700" aria-label="Demo Button 2">Button</Button>
 	</div>
 	<form method="post" action="?/logout" use:enhance>
-		<button class="rounded-md bg-blue-500 px-2 py-2 text-white hover:bg-blue-700">Sign out</button>
-		<Button class="bg-red-500 hover:bg-red-700">Sign Out Two</Button>
+		<Button variant="outline" aria-label="Sign out">Sign out</Button>
 	</form>
 </div>

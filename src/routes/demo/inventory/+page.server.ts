@@ -1,27 +1,17 @@
-import * as auth from '$lib/server/auth';
-import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
+import { validateSessionToken } from '$lib/server/auth';
 
-export const load: PageServerLoad = async (event) => {
-	if (!event.locals.user) {
-		return redirect(302, '/demo/inventory/login');
+export const load: PageServerLoad = async ({ cookies }) => {
+	const sessionToken = cookies.get('auth-session');
+
+	if (!sessionToken) {
+		return {
+			user: null
+		};
 	}
+
+	const { user } = await validateSessionToken(sessionToken);
 	return {
-		user: event.locals.user,
-		age: event.locals.user.age,
-		firstName: event.locals.user.firstName,
-		lastName: event.locals.user.lastName
+		user
 	};
-};
-
-export const actions: Actions = {
-	logout: async (event) => {
-		if (!event.locals.session) {
-			return fail(401);
-		}
-		await auth.invalidateSession(event.locals.session.id);
-		auth.deleteSessionTokenCookie(event);
-
-		return redirect(302, '/demo/inventory/login');
-	}
 };

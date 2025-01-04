@@ -1,4 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 
 export const user = sqliteTable('user', {
 	id: text('id').primaryKey(),
@@ -25,7 +26,7 @@ export const motorcycle = sqliteTable('motorcycle', {
 	price: integer('price'),
 	priceType: text('price_type'),
 	stockNumber: text('stock_number'),
-	vin: text('vin'),
+	vin: text('vin').unique(),
 	manufacturer: text('manufacturer'),
 	year: integer('year'),
 	color: text('color'),
@@ -37,9 +38,10 @@ export const motorcycle = sqliteTable('motorcycle', {
 	condition: text('condition'),
 	usage: text('usage'),
 	location: text('location'),
-	updated: integer('updated', { mode: 'timestamp' }),
+	updated: text('updated'),
 	metricType: text('metric_type'),
-	metricValue: integer('metric_value')
+	metricValue: integer('metric_value'),
+	lastModified: integer('last_modified', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
 
 export const motorcycleImage = sqliteTable('motorcycle_image', {
@@ -58,6 +60,25 @@ export const motorcycleAttribute = sqliteTable('motorcycle_attribute', {
 	name: text('name').notNull(),
 	value: text('value')
 });
+
+export const motorcycleRelations = relations(motorcycle, ({ many }) => ({
+	images: many(motorcycleImage),
+	attributes: many(motorcycleAttribute)
+}));
+
+export const motorcycleImageRelations = relations(motorcycleImage, ({ one }) => ({
+	motorcycle: one(motorcycle, {
+		fields: [motorcycleImage.motorcycleId],
+		references: [motorcycle.id]
+	})
+}));
+
+export const motorcycleAttributeRelations = relations(motorcycleAttribute, ({ one }) => ({
+	motorcycle: one(motorcycle, {
+		fields: [motorcycleAttribute.motorcycleId],
+		references: [motorcycle.id]
+	})
+}));
 
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;

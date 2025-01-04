@@ -39,6 +39,7 @@
 				<input
 					class="bg-gring-gray-950 my-1 w-full rounded-md border border-gray-700 p-2 text-black"
 					name="username"
+					autocomplete="username"
 				/>
 			</label>
 			<label>
@@ -46,6 +47,7 @@
 					class="bg-gring-gray-950 my-1 w-full rounded-md border border-gray-700 p-2 text-black"
 					type="password"
 					name="password"
+					autocomplete="current-password"
 				/>
 			</label>
 			<button class="my-1 w-full rounded-md bg-blue-500 p-2 hover:bg-blue-700">LOGIN</button>

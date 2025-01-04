@@ -1,18 +1,53 @@
 import { db } from '$lib/server/db';
 import { motorcycle, motorcycleImage, motorcycleAttribute } from '$lib/server/db/schema';
 import { createId } from '@paralleldrive/cuid2';
-import { xml2js } from 'xml2js';
+import { Parser } from 'xml2js';
 import fetch from 'node-fetch';
 import { eq } from 'drizzle-orm';
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { validateSessionToken } from '$lib/server/auth';
 
-export async function GET() {
+export const GET: RequestHandler = async ({ cookies }) => {
+	// Get the session token from cookies
+	const sessionToken = cookies.get('auth-session');
+
+	// If no session token exists, return unauthorized
+	if (!sessionToken) {
+		return json(
+			{
+				success: false,
+				error: 'Unauthorized'
+			},
+			{
+				status: 401
+			}
+		);
+	}
+
+	// Validate the session token
+	const { user } = await validateSessionToken(sessionToken);
+
+	// If no valid user, return unauthorized
+	if (!user) {
+		return json(
+			{
+				success: false,
+				error: 'Unauthorized'
+			},
+			{
+				status: 401
+			}
+		);
+	}
+
 	try {
 		// 1. Fetch the XML feed
 		const response = await fetch('https://www.flatoutmotorcycles.com/unitinventory_univ.xml');
 		const xmlData = await response.text();
 
 		// 2. Parse XML to JavaScript object
-		const parser = new xml2js.Parser();
+		const parser = new Parser();
 		const result = await parser.parseStringPromise(xmlData);
 
 		// 3. Extract items from parsed data (using feed.item path)
@@ -20,7 +55,14 @@ export async function GET() {
 
 		// 4. Process each item
 		for (const item of items) {
-			const id = createId();
+			const vin = item.vin?.[0] || '';
+
+			// Find existing motorcycle by VIN
+			const existingMotorcycle = await db.query.motorcycle.findFirst({
+				where: eq(motorcycle.vin, vin)
+			});
+
+			const id = existingMotorcycle?.id || createId();
 
 			// Extract motorcycle data
 			const motorcycleData = {
@@ -28,7 +70,7 @@ export async function GET() {
 				title: item.title?.[0] || '',
 				link: item.link?.[0] || '',
 				description: item.description?.[0] || '',
-				price: parseInt((parseFloat(item.price?.[0] || '0') * 100).toString()), // Convert to cents
+				price: parseInt((parseFloat(item.price?.[0] || '0') * 100).toString()),
 				priceType: item.price_type?.[0] || '',
 				stockNumber: item.stocknumber?.[0] || '',
 				vin: item.vin?.[0] || '',
@@ -43,15 +85,19 @@ export async function GET() {
 				condition: item.condition?.[0] || '',
 				usage: item.usage?.[0] || '',
 				location: item.location?.[0] || '',
-				updated: item.updated?.[0] ? new Date(item.updated[0]).getTime() : null,
+				updated: item.updated?.[0] || '',
 				metricType: item.metric_type?.[0] || '',
-				metricValue: parseInt(item.metric_value?.[0]) || null
+				metricValue: parseInt(item.metric_value?.[0]) || null,
+				lastModified: new Date()
 			};
+
+			// Remove id from update data
+			const { id: _id, ...updateData } = motorcycleData;
 
 			// Insert or update motorcycle
 			await db.insert(motorcycle).values(motorcycleData).onConflictDoUpdate({
 				target: motorcycle.vin,
-				set: motorcycleData
+				set: updateData // Using updateData without the id field
 			});
 
 			// Handle images
@@ -86,26 +132,23 @@ export async function GET() {
 			}
 		}
 
-		return new Response(
-			JSON.stringify({
-				success: true,
-				message: `Imported ${items.length} motorcycles`
-			}),
+		return json({
+			success: true,
+			message: `Imported ${items.length} motorcycles`
+		});
+	} catch (err) {
+		const error = err as Error;
+		console.error('Import error:', {
+			message: error.message,
+			stack: error.stack,
+			timestamp: new Date().toISOString()
+		});
+		return json(
 			{
-				headers: { 'Content-Type': 'application/json' }
-			}
-		);
-	} catch (error) {
-		console.error('Import error:', error);
-		return new Response(
-			JSON.stringify({
 				success: false,
 				error: error.message
-			}),
-			{
-				status: 500,
-				headers: { 'Content-Type': 'application/json' }
-			}
+			},
+			{ status: 500 }
 		);
 	}
-}
+};

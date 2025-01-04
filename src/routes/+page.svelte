@@ -99,9 +99,5 @@
 				<div class="p-4">06</div>
 			</div>
 		</div>
-
-		<div class="table">
-			<div class="table-cell">Data Table 01</div>
-		</div>
 	</div>
 </main>
