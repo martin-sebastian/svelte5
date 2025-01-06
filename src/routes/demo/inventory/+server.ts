@@ -58,9 +58,12 @@ export const GET: RequestHandler = async ({ cookies }) => {
 			const vin = item.vin?.[0] || '';
 
 			// Find existing motorcycle by VIN
-			const existingMotorcycle = await db.query.motorcycle.findFirst({
-				where: eq(motorcycle.vin, vin)
-			});
+			const existingMotorcycle = await db
+				.select()
+				.from(motorcycle)
+				.where(eq(motorcycle.vin, vin))
+				.limit(1)
+				.then((rows) => rows[0]);
 
 			const id = existingMotorcycle?.id || createId();
 

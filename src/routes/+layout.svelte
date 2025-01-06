@@ -93,7 +93,7 @@
 		</a>
 		<Button className="border-none" variant="outline" aria-label="Settings">
 			<div class="relative flex h-6 w-6 items-center justify-center">
-				<a href="../demo/inventory" aria-label="Settings">
+				<a href="/demo/inventory" aria-label="Settings">
 					<svg
 						width="24"
 						height="24"

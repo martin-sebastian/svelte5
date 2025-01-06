@@ -81,8 +81,10 @@
 <div class="container mx-auto mt-24">
 	<h1 class="text-4xl font-bold">Vehicles</h1>
 </div>
-<div class="container sticky top-0 mx-auto my-1 bg-background py-1 backdrop:blur-sm">
-	<div class="mb-6 flex items-center justify-between rounded-lg border border-gray-400/25 p-2">
+<div class="container sticky top-0 mx-auto my-1">
+	<div
+		class="mb-6 flex items-center justify-between rounded-lg border border-gray-400/25 bg-background p-2 py-1 backdrop:blur-sm"
+	>
 		<div class="flex items-center">
 			<!-- Search input -->
 			<input
@@ -184,7 +186,7 @@
 								</button>
 								<button
 									type="button"
-									on:click={() => goto(`/demo/vehicles/vehicle/${vehicle.stockNumber}`)}
+									on:click={() => goto(`/demo/vehicles/share/${vehicle.stockNumber}`)}
 									class="flex flex-row items-center rounded-md bg-gray-500 py-1.5 pe-3 ps-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 									aria-label="View Vehicle Details"
 								>

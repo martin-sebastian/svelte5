@@ -8,7 +8,7 @@
 
 	$effect(() => {
 		if (!data.user) {
-			goto('/demo/lucia/login');
+			goto('/demo/account/login');
 		}
 	});
 
@@ -21,7 +21,7 @@
 			// Handle unauthorized responses
 			if (response.status === 401) {
 				// Redirect to login page if unauthorized
-				goto('/demo/lucia/login');
+				goto('/demo/account/login');
 				return;
 			}
 
@@ -44,8 +44,8 @@
 
 <div class="flex h-screen w-full flex-col items-center justify-center">
 	{#if data.user}
-		<h1>Inventory Demo</h1>
-		<p>User ID: {data.user.id}</p>
+		<h1 class="text-2xl font-bold">Dealer Spike Inventory Sync</h1>
+		<p>Integration ID: {data.user.id}</p>
 		<button
 			class="my-5 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
 			onclick={handleImport}
@@ -55,7 +55,6 @@
 				Importing...
 			{:else}
 				<svg
-					xmlns="http://www.w3.org/2000/svg"
 					width="24"
 					height="24"
 					viewBox="0 0 24 24"
