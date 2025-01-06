@@ -11,13 +11,10 @@
 
 <div class="flex h-screen w-full flex-col items-center justify-center">
 	<Avatar.Root>
-		<Avatar.Image src="https://martinsebastian.co/avatar/martin.png" alt="Martin" />
+		<Avatar.Image src="https://martinsebastian.co/avatar/martin.png" alt="Martin Sebastian" />
 		<Avatar.Fallback>MS</Avatar.Fallback>
 	</Avatar.Root>
-	<h1 class="text-3xl font-bold">Hi, {data.user.firstName}!</h1>
-	<p class="my-1 text-xl">Your user ID: {data.user.id}</p>
-	<p class="my-1 text-xl">{data.firstName} {data.lastName} age: {data.age}</p>
-	<Badge class="my-5 bg-red-500 text-current hover:bg-red-700">Age {age}</Badge>
+	<h1 class="my-5 text-3xl font-bold">Hi, {data.user.firstName}!</h1>
 	<div class="nav my-5">
 		<a
 			href="/"
@@ -27,19 +24,19 @@
 			})}>Dashboard</a
 		>
 		<a
-			href="/demo/lucia"
+			href="/demo/account"
 			class={badgeVariants({
 				variant: 'outline',
 				className: 'text-current hover:bg-white hover:text-black'
 			})}>My Profile</a
 		>
 	</div>
-	<div class="nav my-5">
-		<Button className="bg-red-500 hover:bg-red-700" variant="outline" aria-label="Demo Button 1"
-			>Button</Button
-		>
-		<Button className="bg-red-500 hover:bg-red-700" aria-label="Demo Button 2">Button</Button>
-	</div>
+	<p class="my-2 text-xl">Your ID: {data.user.id}</p>
+	<p class="my-2 text-xl">
+		{data.firstName}
+		{data.lastName}
+		<Badge class="bg-red-500 py-3 text-current hover:bg-red-700">Age {age}</Badge>
+	</p>
 	<form method="post" action="?/logout" use:enhance>
 		<Button variant="outline" aria-label="Sign out">Sign out</Button>
 	</form>

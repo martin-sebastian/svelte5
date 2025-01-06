@@ -4,27 +4,27 @@ import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-	// First, get all motorcycles
-	const motorcycles = await db.select().from(motorcycle).all();
+	// First, get all vehicles
+	const vehicles = await db.select().from(motorcycle).all();
 
-	// Then, for each motorcycle, get its first image and attributes
-	const motorcyclesWithRelations = await Promise.all(
-		motorcycles.map(async (moto) => {
+	// Then, for each vehicle, get its first image and attributes
+	const vehiclesWithRelations = await Promise.all(
+		vehicles.map(async (vehicle) => {
 			const images = await db
 				.select()
 				.from(motorcycleImage)
-				.where(eq(motorcycleImage.motorcycleId, moto.id))
+				.where(eq(motorcycleImage.motorcycleId, vehicle.id))
 				.limit(1)
 				.all();
 
 			const attributes = await db
 				.select()
 				.from(motorcycleAttribute)
-				.where(eq(motorcycleAttribute.motorcycleId, moto.id))
+				.where(eq(motorcycleAttribute.motorcycleId, vehicle.id))
 				.all();
 
 			return {
-				...moto,
+				...vehicle,
 				primaryImage: images[0]?.imageUrl || null,
 				attributes
 			};
@@ -32,6 +32,6 @@ export const load: PageServerLoad = async () => {
 	);
 
 	return {
-		motorcycles: motorcyclesWithRelations
+		vehicles: vehiclesWithRelations
 	};
 };

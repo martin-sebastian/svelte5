@@ -52,52 +52,65 @@
 	import DiSqllite from 'svelte-icons/di/DiSqllite.svelte';
 </script>
 
-<main class="align-start flex h-full min-h-screen w-full flex-col items-center bg-gray-900/25">
+<main class="align-start flex h-full min-h-screen w-full flex-col items-center">
 	<div class="flex max-w-7xl flex-col items-center pt-20 text-center">
 		<h1
-			class="my-5 bg-gradient-to-r from-white to-blue-500/50 bg-clip-text text-8xl font-extrabold text-transparent"
+			class="my-5 bg-gradient-to-r from-gray-400/50 to-blue-500/50 bg-clip-text text-8xl font-extrabold text-transparent"
 		>
 			{message}
 		</h1>
 	</div>
-	<div class="mb-10 flex justify-center text-2xl">
+	<div class="mb-10 flex justify-center text-2xl text-gray-500/75">
 		{subMessage}
 	</div>
 
-	<div class="max-w-7xl">
-		<div class="grid grid-cols-3 gap-4 xl:grid-cols-3">
-			<div class="h-24 w-full rounded-xl border border-gray-700 bg-gray-900/25">
+	<div class="max-w-8xl">
+		<div class="grid grid-cols-3 gap-4 xl:grid-cols-4">
+			<div class="col-span-2 h-36 w-full rounded-xl border border-gray-400/25 bg-background">
+				<div class="p-4">01 Programming Languages</div>
 				<div class="flex flex-row items-center justify-start">
 					{#each languageIcons as language}
-						<div class="flex-start mx-1 h-6 items-start justify-center">
-							<svelte:component this={language.icon} alt={language.name} title={language.name} />
-							<span class="m-2">{language.name}</span>
+						<div class="flex-start h-8 items-center justify-start">
+							<svelte:component
+								this={language.icon}
+								alt={language.name}
+								title={language.name}
+								class="h-6 w-6 text-muted-foreground"
+							/>
+							<span class="m-2 text-sm text-muted-foreground">{language.name}</span>
 						</div>
 					{/each}
 				</div>
 			</div>
-			<div class="col-span-2 h-24 w-full rounded-xl border border-gray-700 bg-gray-900/25">
+			<div class="h-36 w-full rounded-xl border border-gray-400/25 bg-background">
+				<div class="p-4">02</div>
 				<div class="flex flex-row items-center justify-start">
 					{#each frameworkIcons as framework}
-						<div class="flex-start mx-1 h-6 items-center justify-center">
-							<svelte:component this={framework.icon} alt={framework.name} title={framework.name} />
-							<span class="m-2">{framework.name}</span>
+						<div class="flex-start h-8 items-center justify-start">
+							<svelte:component
+								this={framework.icon}
+								alt={framework.name}
+								title={framework.name}
+								class="h-6 w-6 text-muted-foreground"
+							/>
+							<span class="m-2 text-sm text-muted-foreground">{framework.name}</span>
 						</div>
 					{/each}
 				</div>
 			</div>
-			<div class="col-span-2 h-24 w-full rounded-xl border border-gray-700 bg-gray-900/25">
+			<div class="h-36 w-full rounded-xl border border-gray-400/25 bg-background">
 				<div class="p-4">03</div>
 			</div>
-			<div class="h-24 w-full rounded-xl border border-gray-700 bg-gray-900/25">
+			<div class="h-36 w-full rounded-xl border border-gray-400/25 bg-background">
 				<div class="p-4">04</div>
 			</div>
-			<div class="h-24 w-full rounded-xl border border-gray-700 bg-gray-900/25">
+			<div class="h-36 w-full rounded-xl border border-gray-400/25 bg-background">
 				<div class="p-4">05</div>
 			</div>
-			<div class="col-span-2 h-24 w-full rounded-xl border border-gray-700 bg-gray-900/25">
+			<div class="col-span-2 h-36 w-full rounded-xl border border-gray-400/25 bg-background">
 				<div class="p-4">06</div>
 			</div>
 		</div>
 	</div>
+	<div class="my-10 flex flex-col items-center justify-start">hello</div>
 </main>

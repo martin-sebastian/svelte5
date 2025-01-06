@@ -25,13 +25,11 @@
 	});
 </script>
 
-<div class="fixed flex w-full justify-center border-b bg-background/50 py-1 backdrop-blur-sm">
+<div
+	class="fixed flex w-full justify-center border-b bg-background/50 py-1 backdrop-blur-sm print:hidden"
+>
 	<div class="flex-none">
-		<Button
-			className="mx-1 py-2 border-none hover:bg-transparent"
-			variant="outline"
-			aria-label="Home"
-		>
+		<Button className="mx-1 border-none" variant="outline" aria-label="Home">
 			<a href="/" aria-label="Home">
 				<svg
 					id="Layer_1"
@@ -62,28 +60,27 @@
 			</a>
 		</Button>
 	</div>
-	<div class="flex flex-grow justify-center align-middle">
+	<div class="flex flex-grow justify-start align-middle">
 		<a href="/demo/vehicles" aria-label="Demo">
-			<Button className="me-2 mt-2 border-none" variant="outline" aria-label="Vehicles Demo">
-				Vehicles Demo
+			<Button className="border-none" variant="outline" aria-label="Vehicle Inventory">
+				Vehicle Inventory
 			</Button>
 		</a>
 		<a href="/demo/inventory" aria-label="Inventory">
-			<Button className="me-2 mt-2 border-none" variant="outline" aria-label="Inventory Demo">
-				Inventory Demo
-			</Button>
-		</a>
-		<a href="https://local.drizzle.studio" target="_blank" aria-label="Drizzle Studio">
-			<Button className="me-2 mt-2 border-none" variant="outline" aria-label="Drizzle Studio">
-				Drizzle Studio
+			<Button className="border-none" variant="outline" aria-label="Inventory Demo">
+				Inventory Sync
 			</Button>
 		</a>
 	</div>
 	<div class="flex-none">
-		<a href="/demo/lucia" aria-label="Demo" class="mx-1">
-			<Button className="me-2 mt-2 border-none" variant="outline" aria-label="Lucia Demo">
+		<a
+			href="https://local.drizzle.studio"
+			target="_blank"
+			aria-label="Drizzle Studio"
+			title="Drizzle Studio"
+		>
+			<Button className="border-none" variant="outline" aria-label="Drizzle Studio">
 				<svg
-					xmlns="http://www.w3.org/2000/svg"
 					width="24"
 					height="24"
 					viewBox="0 0 24 24"
@@ -92,55 +89,96 @@
 					stroke-width="2"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-					class="lucide lucide-user m-2"
-					><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle
-						cx="12"
-						cy="7"
-						r="4"
-					/></svg
+					class="lucide lucide-table-properties"
+					><path d="M15 3v18" /><rect width="18" height="18" x="3" y="3" rx="2" /><path
+						d="M21 9H3"
+					/><path d="M21 15H3" /></svg
 				>
 			</Button>
 		</a>
+		<Button className="border-none" variant="outline" aria-label="Settings">
+			<div class="relative flex h-6 w-6 items-center justify-center">
+				<a href="../inventory" aria-label="Settings">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="lucide lucide-settings"
+						><path
+							d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+						/><circle cx="12" cy="12" r="3" /></svg
+					>
+				</a>
+			</div>
+			<span class="sr-only">Settings</span>
+		</Button>
 		<Button
-			className="border-none me-5 px-5"
+			className="border-none"
 			on:click={toggleTheme}
 			variant="outline"
 			aria-label="Toggle theme"
 		>
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				class="lucide lucide-sun absolute h-[1.2rem] w-[2.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-			>
-				<circle cx="12" cy="12" r="4" />
-				<path d="M12 2v2" /><path d="M12 20v2" />
-				<path d="m4.93 4.93 1.41 1.41" />
-				<path d="m17.66 17.66 1.41 1.41" />
-				<path d="M2 12h2" /><path d="M20 12h2" />
-				<path d="m6.34 17.66-1.41 1.41" />
-				<path d="m19.07 4.93-1.41 1.41" />
-			</svg>
-			<svg
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				class="lucide lucide-moon absolute h-[1.2rem] w-[2.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-			>
-				<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-			</svg>
+			<div class="relative flex h-6 w-6 items-center justify-center">
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-sun absolute rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+				>
+					<circle cx="12" cy="12" r="4" />
+					<path d="M12 2v2" /><path d="M12 20v2" />
+					<path d="m4.93 4.93 1.41 1.41" />
+					<path d="m17.66 17.66 1.41 1.41" />
+					<path d="M2 12h2" /><path d="M20 12h2" />
+					<path d="m6.34 17.66-1.41 1.41" />
+					<path d="m19.07 4.93-1.41 1.41" />
+				</svg>
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-moon absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+				>
+					<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+				</svg>
+			</div>
 			<span class="sr-only">Toggle theme</span>
+		</Button>
+		<Button
+			href="/demo/account"
+			className="border-none"
+			variant="outline"
+			aria-label="Account Demo"
+		>
+			<svg
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="lucide lucide-user"
+			>
+				<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+				<circle cx="12" cy="7" r="4" />
+			</svg>
 		</Button>
 	</div>
 </div>
@@ -161,5 +199,17 @@
 	}
 	.part-4 {
 		fill: blue;
+	}
+	.part-1:hover {
+		fill: orange;
+	}
+	.part-2:hover {
+		fill: orange;
+	}
+	.part-3:hover {
+		fill: orange;
+	}
+	.part-4:hover {
+		fill: orange;
 	}
 </style>
