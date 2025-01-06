@@ -66,11 +66,6 @@
 				Vehicle Inventory
 			</Button>
 		</a>
-		<a href="/demo/inventory" aria-label="Inventory">
-			<Button className="border-none" variant="outline" aria-label="Inventory Demo">
-				Inventory Sync
-			</Button>
-		</a>
 	</div>
 	<div class="flex-none">
 		<a
@@ -98,7 +93,7 @@
 		</a>
 		<Button className="border-none" variant="outline" aria-label="Settings">
 			<div class="relative flex h-6 w-6 items-center justify-center">
-				<a href="../inventory" aria-label="Settings">
+				<a href="../demo/inventory" aria-label="Settings">
 					<svg
 						width="24"
 						height="24"
