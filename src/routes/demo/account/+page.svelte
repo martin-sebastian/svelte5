@@ -15,6 +15,11 @@
 		<Avatar.Fallback>MS</Avatar.Fallback>
 	</Avatar.Root>
 	<h1 class="my-5 text-3xl font-bold">Hi, {data.user.firstName}!</h1>
+	<p class="my-2 text-sm text-gray-500">Your ID: {data.user.id}</p>
+	<p class="my-2 text-lg font-bold">
+		{data.firstName}
+		{data.lastName}
+	</p>
 	<div class="nav my-5">
 		<a
 			href="/"
@@ -31,12 +36,7 @@
 			})}>My Profile</a
 		>
 	</div>
-	<p class="my-2 text-xl">Your ID: {data.user.id}</p>
-	<p class="my-2 text-xl">
-		{data.firstName}
-		{data.lastName}
-		<Badge class="bg-red-500 py-3 text-current hover:bg-red-700">Age {age}</Badge>
-	</p>
+
 	<form method="post" action="?/logout" use:enhance>
 		<Button variant="outline" aria-label="Sign out">Sign out</Button>
 	</form>

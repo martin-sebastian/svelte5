@@ -112,5 +112,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="my-10 flex flex-col items-center justify-start">hello</div>
+	<div class="my-10 flex flex-col items-center justify-start">
+		<a href="/demo/account" class="text-lg font-bold">View Demo</a>
+	</div>
 </main>

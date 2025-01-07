@@ -45,9 +45,9 @@
 <div class="flex h-screen w-full flex-col items-center justify-center">
 	{#if data.user}
 		<h1 class="text-2xl font-bold">Dealer Spike Inventory Sync</h1>
-		<p>Integration ID: {data.user.id}</p>
+		<p class="text-sm text-gray-500">Integration ID: {data.user.id}</p>
 		<button
-			class="my-5 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-700 disabled:opacity-50"
+			class="my-5 flex flex-row items-center gap-2 rounded-lg bg-red-500 px-4 py-5 text-white hover:bg-red-700 disabled:opacity-50"
 			onclick={handleImport}
 			disabled={isLoading}
 		>
