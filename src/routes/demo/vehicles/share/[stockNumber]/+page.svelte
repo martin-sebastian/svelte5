@@ -58,7 +58,10 @@
 		<meta property="og:image:type" content="image/jpeg" />
 	{/if}
 
-	<meta property="og:description" content={vehicle ? formatDescription(vehicle.description) : ''} />
+	<meta
+		property="og:description"
+		content={vehicle ? formatDescription(vehicle.description || '') : ''}
+	/>
 
 	<!-- Enhanced Twitter Card Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
@@ -66,7 +69,7 @@
 	<meta name="twitter:title" content={vehicle?.title || 'Vehicle Details'} />
 	<meta
 		name="twitter:description"
-		content={vehicle ? formatDescription(vehicle.description) : ''}
+		content={vehicle ? formatDescription(vehicle.description || '') : ''}
 	/>
 	{#if vehicle?.primaryImage}
 		<meta name="twitter:image" content={vehicle.primaryImage} />
@@ -76,7 +79,7 @@
 
 <!-- Social Media Preview Card -->
 {#if vehicle}
-	<div class="flex h-screen w-full flex-row items-center justify-center bg-background p-4">
+	<div class="flex h-screen w-full flex-col items-center justify-center bg-background p-4">
 		<div class="w-[500px] overflow-hidden rounded-xl bg-white shadow-lg">
 			<!-- Image Section -->
 			{#if vehicle.primaryImage}
@@ -122,26 +125,33 @@
 						<div>Stock #{vehicle.stockNumber}</div>
 						<div>{new Date().toLocaleDateString()}</div>
 					</div>
-
-					<!-- Share buttons -->
-					{#if browser}
-						<div class="flex gap-2">
-							<button
-								on:click={() => shareToSocial(getSharingUrls()?.facebook || '')}
-								class="flex-1 rounded bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1877F2]/90"
-							>
-								Share on Facebook
-							</button>
-							<button
-								on:click={() => shareToSocial(getSharingUrls()?.twitter || '')}
-								class="flex-1 rounded bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
-							>
-								Share on X
-							</button>
-						</div>
-					{/if}
 				</div>
 			</div>
+		</div>
+		<div class="flex flex-row items-center justify-center">
+			<!-- Share buttons -->
+			{#if browser}
+				<div class="my-5 flex gap-2">
+					<button
+						on:click={() => shareToSocial(getSharingUrls()?.facebook || '')}
+						class="flex-0 rounded bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1877F2]/90"
+					>
+						Post to Meta
+					</button>
+					<button
+						on:click={() => shareToSocial(getSharingUrls()?.twitter || '')}
+						class="flex-0 rounded bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
+					>
+						Post to X
+					</button>
+					<button
+						on:click={() => shareToSocial(getSharingUrls()?.twitter || '')}
+						class="flex-0 rounded bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
+					>
+						Paste as SMS
+					</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 {:else}

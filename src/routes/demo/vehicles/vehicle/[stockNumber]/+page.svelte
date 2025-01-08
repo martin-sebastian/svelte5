@@ -2,11 +2,31 @@
 	import type { PageData } from './$types';
 	export let data: PageData;
 
+	// Function to format description: strip HTML and format as single paragraph
+	function formatDescription(html: string) {
+		// First strip HTML
+		const tmp = document.createElement('DIV');
+		tmp.innerHTML = html;
+		const text = tmp.textContent || tmp.innerText || '';
+
+		// Replace line breaks and multiple spaces with comma + space
+		return text
+			.replace(/(\r\n|\n|\r)/gm, ', ') // Replace line breaks with comma
+			.replace(/\s+/g, ' ') // Replace multiple spaces with single space
+			.replace(/,\s*,/g, ',') // Replace multiple commas with single comma
+			.replace(/\s*,\s*/g, ', ') // Ensure proper spacing around commas
+			.trim();
+	}
+
 	const { vehicle } = data;
 </script>
 
 {#if vehicle}
-	<div class="flex h-screen w-full items-center justify-center">
+	<div class="container flex h-screen w-full flex-col items-center justify-center">
+		<h1 class="mb-1 w-full text-start text-4xl font-bold">{vehicle.title}</h1>
+		<div class="mb-1 w-full text-start text-[12px]">
+			{formatDescription(vehicle.description || '')}
+		</div>
 		<div class="my-5 overflow-hidden rounded-lg border border-gray-500/25">
 			<div class="overflow-hidden text-center text-xs">
 				{#if vehicle.primaryImage}
@@ -31,12 +51,10 @@
 				</div>
 				<div class="mb-1 text-[14px] font-bold">{vehicle.title}</div>
 
-				<div class="mb-1 text-[12px]">
-					{vehicle.description}
-				</div>
 				<div class="mb-1 text-[10px]">
-					{vehicle.metricValue}
-					{vehicle.metricType}
+					{vehicle.year}
+					{vehicle.manufacturer}
+					{vehicle.model}
 				</div>
 				<div class="mb-1 text-[10px]">
 					{vehicle.modelType}

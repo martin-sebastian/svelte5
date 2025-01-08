@@ -184,32 +184,7 @@
 										/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg
 									>
 								</button>
-								<button
-									type="button"
-									on:click={() => goto(`/demo/vehicles/vehicle/${vehicle.stockNumber}`)}
-									class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-									aria-label="View Vehicle Details"
-								>
-									<svg
-										width="24"
-										height="24"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										class="lucide lucide-badge-info"
-										><path
-											d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"
-										/><line x1="12" x2="12" y1="16" y2="12" /><line
-											x1="12"
-											x2="12.01"
-											y1="8"
-											y2="8"
-										/></svg
-									>
-								</button>
+
 								<button
 									type="button"
 									on:click={() => goto(`/demo/vehicles/share/${vehicle.stockNumber}`)}
@@ -230,6 +205,30 @@
 											points="16 6 12 2 8 6"
 										/><line x1="12" x2="12" y1="2" y2="15" /></svg
 									>
+								</button>
+								<button
+									type="button"
+									on:click={() => goto(`/demo/vehicles/vehicle/${vehicle.stockNumber}`)}
+									class="flex flex-row items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+									aria-label="Edit Vehicle Details"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										class="lucide lucide-settings-2"
+										><path d="M20 7h-9" /><path d="M14 17H5" /><circle
+											cx="17"
+											cy="17"
+											r="3"
+										/><circle cx="7" cy="7" r="3" /></svg
+									> <span class="q me-1 ms-1 text-sm">Edit</span>
 								</button>
 							</div>
 						</div>
