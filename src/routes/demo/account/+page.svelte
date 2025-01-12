@@ -25,19 +25,15 @@
 			href="/"
 			class={badgeVariants({
 				variant: 'outline',
-				className: 'text-current hover:bg-white hover:text-black'
+				className: 'px-4 py-2 text-current hover:bg-white hover:text-black'
 			})}>Dashboard</a
 		>
 		<a
 			href="/demo/account"
 			class={badgeVariants({
 				variant: 'outline',
-				className: 'text-current hover:bg-white hover:text-black'
+				className: 'px-4 py-2 text-current hover:bg-white hover:text-black'
 			})}>My Profile</a
 		>
 	</div>
-
-	<form method="post" action="?/logout" use:enhance>
-		<Button variant="outline" aria-label="Sign out">Sign out</Button>
-	</form>
 </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-
+	import { enhance } from '$app/forms';
 	import Button from '$lib/components/Button.svelte';
 
 	let { children } = $props();
@@ -25,8 +25,8 @@
 	});
 </script>
 
-<div
-	class="fixed flex w-full justify-center border-b bg-background/50 py-1 backdrop-blur-sm print:hidden"
+<nav
+	class="fixed z-40 flex w-full justify-center border-b bg-background/50 py-1 backdrop-blur-sm print:hidden"
 >
 	<div class="flex-none">
 		<Button className="mx-1 border-none" variant="outline" aria-label="Home">
@@ -62,8 +62,31 @@
 	</div>
 	<div class="flex flex-grow justify-start align-middle">
 		<a href="/demo/vehicles" aria-label="Demo">
-			<Button className="border-none" variant="outline" aria-label="Vehicle Inventory">
-				Vehicle Inventory
+			<Button className="border-none" variant="outline" aria-label="Drizzle Studio">
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-layout-grid"
+					><rect width="7" height="7" x="3" y="3" rx="1" /><rect
+						width="7"
+						height="7"
+						x="14"
+						y="3"
+						rx="1"
+					/><rect width="7" height="7" x="14" y="14" rx="1" /><rect
+						width="7"
+						height="7"
+						x="3"
+						y="14"
+						rx="1"
+					/></svg
+				>
 			</Button>
 		</a>
 	</div>
@@ -93,7 +116,7 @@
 		</a>
 		<Button className="border-none" variant="outline" aria-label="Settings">
 			<div class="relative flex h-6 w-6 items-center justify-center">
-				<a href="/demo/inventory" aria-label="Settings">
+				<a href="/demo/sync" aria-label="Sync">
 					<svg
 						width="24"
 						height="24"
@@ -104,6 +127,7 @@
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						class="lucide lucide-settings"
+						aria-label="Sync"
 						><path
 							d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
 						/><circle cx="12" cy="12" r="3" /></svg
@@ -154,12 +178,25 @@
 			</div>
 			<span class="sr-only">Toggle theme</span>
 		</Button>
-		<Button
-			href="/demo/account"
-			className="border-none"
-			variant="outline"
-			aria-label="Account Demo"
-		>
+		<form method="post" class="inline" action="/demo/account/?/logout" use:enhance>
+			<Button variant="outline" className="border-none" aria-label="Sign out">
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-log-out"
+					><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline
+						points="16 17 21 12 16 7"
+					/><line x1="21" x2="9" y1="12" y2="12" /></svg
+				>
+			</Button>
+		</form>
+		<Button href="/demo/account" className="border-none" variant="outline" aria-label="Account">
 			<svg
 				width="24"
 				height="24"
@@ -176,7 +213,7 @@
 			</svg>
 		</Button>
 	</div>
-</div>
+</nav>
 
 <main class="flex min-h-screen flex-col bg-background text-foreground">
 	{@render children()}

@@ -4,14 +4,14 @@ import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
-		console.log('Debug: Received stock number:', params.stockNumber);
+		console.log('Debug: Received vehicle id:', params.id);
 
-		if (!params.stockNumber) {
-			throw error(400, 'Stock number is required');
+		if (!params.id) {
+			throw error(400, 'Vehicle ID is required');
 		}
 
-		const vehicle = await getVehicleWithCaching(params.stockNumber);
-		console.log('Debug: Found vehicle:', vehicle); // This will help us see if we get data
+		const vehicle = await getVehicleWithCaching(params.id);
+		console.log('Debug: Found vehicle:', vehicle);
 
 		if (!vehicle) {
 			throw error(404, 'Vehicle not found');
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	} catch (e) {
 		// Log the full error details to your server console
 		console.error('Failed to load vehicle:', {
-			stockNumber: params.stockNumber,
+			id: params.id,
 			error: e.message,
 			stack: e.stack
 		});

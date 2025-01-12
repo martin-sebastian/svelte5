@@ -16,7 +16,7 @@
 		console.log('Starting import...');
 		try {
 			isLoading = true;
-			const response = await fetch('/demo/inventory');
+			const response = await fetch('/demo/sync');
 
 			// Handle unauthorized responses
 			if (response.status === 401) {
@@ -44,10 +44,11 @@
 
 <div class="flex h-screen w-full flex-col items-center justify-center">
 	{#if data.user}
-		<h1 class="text-2xl font-bold">Dealer Spike Inventory Sync</h1>
-		<p class="text-sm text-gray-500">Integration ID: {data.user.id}</p>
+		<h1 class="text-4xl font-bold">Integrations</h1>
+		<h2 class="text-2xl font-bold text-muted-foreground">Dealer Spike Inventory Sync</h2>
+		<p class="text-sm font-bold text-muted-foreground">Integration ID: {data.user.id}</p>
 		<button
-			class="my-5 flex flex-row items-center gap-2 rounded-lg bg-red-500 px-4 py-5 text-white hover:bg-red-700 disabled:opacity-50"
+			class="my-10 flex flex-row items-center gap-2 rounded-lg bg-slate-900 px-4 py-5 text-white hover:bg-slate-800 disabled:opacity-50"
 			onclick={handleImport}
 			disabled={isLoading}
 		>

@@ -1,15 +1,15 @@
 import { db } from '$lib/server/db';
-import { motorcycle, motorcycleImage, motorcycleAttribute } from '$lib/server/db/schema';
+import { vehicle as vehicleTable, vehicleImage, vehicleAttribute } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 
-export async function getVehicleWithCaching(stockNumber: string) {
+export async function getVehicleWithCaching(id: string) {
 	// First, get the vehicle
 	const vehicle = await db
 		.select()
-		.from(motorcycle)
-		.where(eq(motorcycle.stockNumber, stockNumber))
+		.from(vehicleTable)
+		.where(eq(vehicleTable.id, id))
 		.limit(1)
-		.then((rows) => rows[0]);
+		.get();
 
 	if (!vehicle) {
 		throw new Error('Vehicle not found');
@@ -18,15 +18,15 @@ export async function getVehicleWithCaching(stockNumber: string) {
 	// Get images and attributes
 	const images = await db
 		.select()
-		.from(motorcycleImage)
-		.where(eq(motorcycleImage.motorcycleId, vehicle.id))
+		.from(vehicleImage)
+		.where(eq(vehicleImage.vehicleId, vehicle.id))
 		.limit(1)
 		.all();
 
 	const attributes = await db
 		.select()
-		.from(motorcycleAttribute)
-		.where(eq(motorcycleAttribute.motorcycleId, vehicle.id))
+		.from(vehicleAttribute)
+		.where(eq(vehicleAttribute.vehicleId, vehicle.id))
 		.all();
 
 	return {

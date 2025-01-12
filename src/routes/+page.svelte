@@ -1,5 +1,5 @@
 <script>
-	let message = "Welcome to Martin's SvelteKit 5 Demos";
+	let message = 'Dealership Power Tools for Dealer Spike';
 	let subMessage = 'Svelte 5, Drizzle, Lucia, SQLite, Tailwind, TypeScript, Shadcn UI.';
 	let technologyIcons = [
 		{ name: 'HTML', icon: DiHtml5 },
@@ -53,7 +53,7 @@
 </script>
 
 <main class="align-start flex h-full min-h-screen w-full flex-col items-center">
-	<div class="flex max-w-7xl flex-col items-center pt-20 text-center">
+	<div class="flex max-w-6xl flex-col items-center pt-20 text-center">
 		<h1
 			class="my-5 bg-gradient-to-r from-gray-400/50 to-blue-500/50 bg-clip-text text-8xl font-extrabold text-transparent"
 		>
@@ -64,7 +64,7 @@
 		{subMessage}
 	</div>
 
-	<div class="max-w-8xl">
+	<div class="max-w-8xl hidden">
 		<div class="grid grid-cols-3 gap-4 xl:grid-cols-4">
 			<div class="col-span-2 h-36 w-full rounded-xl border border-gray-400/25 bg-background">
 				<div class="p-4">01 Programming Languages</div>
@@ -82,7 +82,7 @@
 					{/each}
 				</div>
 			</div>
-			<div class="h-36 w-full rounded-xl border border-gray-400/25 bg-background">
+			<div class="hidden h-36 w-full rounded-xl border border-gray-400/25 bg-background">
 				<div class="p-4">02</div>
 				<div class="flex flex-row items-center justify-start">
 					{#each frameworkIcons as framework}
@@ -113,6 +113,11 @@
 		</div>
 	</div>
 	<div class="my-10 flex flex-col items-center justify-start">
-		<a href="/demo/account" class="text-lg font-bold">View Demo</a>
+		<img src="/vehicles-screen.png" alt="Vehicles Screen" class="w-2/3" />
+		<a
+			href="/demo/vehicles"
+			class="my-10 rounded-xl border border-gray-400/25 bg-gradient-to-r from-gray-400/50 to-blue-500/50 bg-clip-text px-8 py-4 text-lg font-bold text-transparent"
+			>LOGIN NOW</a
+		>
 	</div>
 </main>

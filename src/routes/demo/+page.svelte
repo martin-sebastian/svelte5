@@ -1,1 +1,2 @@
-<a href="/demo/account" class="text-2xl font-bold">Auth Demo</a>
+<div class="container mx-auto mt-24"></div>
+<div class="container mx-auto mt-24">DEMO</div>

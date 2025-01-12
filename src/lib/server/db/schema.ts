@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 
 export const user = sqliteTable('user', {
@@ -18,70 +18,82 @@ export const session = sqliteTable('session', {
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
 
-export const motorcycle = sqliteTable('motorcycle', {
-	id: text('id').primaryKey(),
-	title: text('title').notNull(),
-	link: text('link'),
-	description: text('description'),
-	price: integer('price'),
-	priceType: text('price_type'),
-	stockNumber: text('stock_number'),
-	vin: text('vin').unique(),
-	manufacturer: text('manufacturer'),
-	year: integer('year'),
-	color: text('color'),
-	modelType: text('model_type'),
-	modelTypeStyle: text('model_type_style'),
-	modelName: text('model_name'),
-	trimName: text('trim_name'),
-	trimColor: text('trim_color'),
-	condition: text('condition'),
-	usage: text('usage'),
-	location: text('location'),
-	updated: text('updated'),
-	metricType: text('metric_type'),
-	metricValue: integer('metric_value'),
-	lastModified: integer('last_modified', { mode: 'timestamp' }).$defaultFn(() => new Date())
-});
+export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
-export const motorcycleImage = sqliteTable('motorcycle_image', {
+export const vehicle = sqliteTable(
+	'vehicle',
+	{
+		id: text('id').primaryKey(),
+		title: text('title').notNull(),
+		link: text('link'),
+		description: text('description'),
+		price: integer('price'),
+		priceType: text('price_type'),
+		stockNumber: text('stock_number'),
+		vin: text('vin').unique(),
+		manufacturer: text('manufacturer'),
+		year: integer('year'),
+		color: text('color'),
+		modelType: text('model_type'),
+		modelTypeStyle: text('model_type_style'),
+		modelName: text('model_name'),
+		trimName: text('trim_name'),
+		trimColor: text('trim_color'),
+		condition: text('condition'),
+		usage: text('usage'),
+		location: text('location'),
+		updated: text('updated'),
+		metricType: text('metric_type'),
+		metricValue: integer('metric_value'),
+		status: text('status', { enum: ['ACTIVE', 'SOLD', 'HIDDEN', 'ARCHIVED'] })
+			.notNull()
+			.default('ACTIVE'),
+		lastModified: integer('last_modified', { mode: 'timestamp' }).$defaultFn(() => new Date())
+	},
+	(table) => ({
+		uniqVin: uniqueIndex('uniq_vin').on(table.vin),
+		uniqStock: uniqueIndex('uniq_stock').on(table.stockNumber)
+	})
+);
+
+export const vehicleImage = sqliteTable('vehicle_image', {
 	id: text('id').primaryKey(),
-	motorcycleId: text('motorcycle_id')
+	vehicleId: text('vehicle_id')
 		.notNull()
-		.references(() => motorcycle.id),
+		.references(() => vehicle.id, { onDelete: 'cascade' }),
 	imageUrl: text('image_url').notNull()
 });
 
-export const motorcycleAttribute = sqliteTable('motorcycle_attribute', {
+export const vehicleAttribute = sqliteTable('vehicle_attribute', {
 	id: text('id').primaryKey(),
-	motorcycleId: text('motorcycle_id')
+	vehicleId: text('vehicle_id')
 		.notNull()
-		.references(() => motorcycle.id),
+		.references(() => vehicle.id, { onDelete: 'cascade' }),
 	name: text('name').notNull(),
-	value: text('value')
+	value: text('value').notNull()
 });
 
-export const motorcycleRelations = relations(motorcycle, ({ many }) => ({
-	images: many(motorcycleImage),
-	attributes: many(motorcycleAttribute)
+export const vehicleRelations = relations(vehicle, ({ many }) => ({
+	images: many(vehicleImage),
+	attributes: many(vehicleAttribute)
 }));
 
-export const motorcycleImageRelations = relations(motorcycleImage, ({ one }) => ({
-	motorcycle: one(motorcycle, {
-		fields: [motorcycleImage.motorcycleId],
-		references: [motorcycle.id]
+export const vehicleImageRelations = relations(vehicleImage, ({ one }) => ({
+	vehicle: one(vehicle, {
+		fields: [vehicleImage.vehicleId],
+		references: [vehicle.id]
 	})
 }));
 
-export const motorcycleAttributeRelations = relations(motorcycleAttribute, ({ one }) => ({
-	motorcycle: one(motorcycle, {
-		fields: [motorcycleAttribute.motorcycleId],
-		references: [motorcycle.id]
+export const vehicleAttributeRelations = relations(vehicleAttribute, ({ one }) => ({
+	vehicle: one(vehicle, {
+		fields: [vehicleAttribute.vehicleId],
+		references: [vehicle.id]
 	})
 }));
 
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
-export type Motorcycle = typeof motorcycle.$inferSelect;
-export type MotorcycleImage = typeof motorcycleImage.$inferSelect;
-export type MotorcycleAttribute = typeof motorcycleAttribute.$inferSelect;
+export type Vehicle = typeof vehicle.$inferSelect;
+export type VehicleImage = typeof vehicleImage.$inferSelect;
+export type VehicleAttribute = typeof vehicleAttribute.$inferSelect;

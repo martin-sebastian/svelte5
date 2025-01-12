@@ -1,34 +1,25 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { browser } from '$app/environment';
+	import { sanitizeHtml, stripHtmlAndFormatText } from '$lib/utils/sanitize';
 	export let data: PageData;
 	const { vehicle } = data;
 
-	// Function to format description: strip HTML and format as single paragraph
-	function formatDescription(html: string) {
-		// First strip HTML
-		const tmp = document.createElement('DIV');
-		tmp.innerHTML = html;
-		const text = tmp.textContent || tmp.innerText || '';
-
-		// Replace line breaks and multiple spaces with comma + space
-		return text
-			.replace(/(\r\n|\n|\r)/gm, ', ') // Replace line breaks with comma
-			.replace(/\s+/g, ' ') // Replace multiple spaces with single space
-			.replace(/,\s*,/g, ',') // Replace multiple commas with single comma
-			.replace(/\s*,\s*/g, ', ') // Ensure proper spacing around commas
-			.trim();
-	}
+	// Check if we have a valid vehicle
+	$: hasValidVehicle = vehicle && Object.keys(vehicle).length > 0;
 
 	// Generate sharing URLs
 	function getSharingUrls() {
 		if (!vehicle || !browser) return null;
 
 		const currentUrl = window.location.href;
+		const sanitizedDescription = browser ? stripHtmlAndFormatText(vehicle.description || '') : '';
+		const smsText = `Check out this ${vehicle.title}: ${currentUrl}`;
 
 		return {
 			facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
-			twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(vehicle.title)}`
+			twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(vehicle.title)}`,
+			sms: `sms:?body=${encodeURIComponent(smsText)}`
 		};
 	}
 
@@ -38,47 +29,49 @@
 			window.open(url, '_blank', 'width=600,height=400,resizable=yes');
 		}
 	}
+
+	$: sanitizedDescription = browser ? sanitizeHtml(vehicle.description || '') : '';
+	$: plainTextDescription = browser ? stripHtmlAndFormatText(vehicle.description || '') : '';
 </script>
 
 <svelte:head>
-	<title>{vehicle?.title || 'Vehicle Details'}</title>
+	{#if hasValidVehicle}
+		<title>{vehicle.title || 'Vehicle Details'}</title>
 
-	<!-- Enhanced Open Graph Tags -->
-	<meta property="og:title" content={vehicle?.title || 'Vehicle Details'} />
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={vehicle?.link || ''} />
-	<meta property="og:site_name" content="Your Dealership Name" />
-	<meta property="og:locale" content="en_US" />
+		<!-- Enhanced Open Graph Tags -->
+		<meta property="og:title" content={vehicle.title || 'Vehicle Details'} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={vehicle.link || ''} />
+		<meta property="og:site_name" content="Your Dealership Name" />
+		<meta property="og:locale" content="en_US" />
 
-	{#if vehicle?.primaryImage}
-		<meta property="og:image" content={vehicle.primaryImage} />
-		<meta property="og:image:width" content="1200" />
-		<meta property="og:image:height" content="630" />
-		<meta property="og:image:alt" content={vehicle.title} />
-		<meta property="og:image:type" content="image/jpeg" />
-	{/if}
+		{#if vehicle.primaryImage}
+			<meta property="og:image" content={vehicle.primaryImage} />
+			<meta property="og:image:width" content="1200" />
+			<meta property="og:image:height" content="630" />
+			<meta property="og:image:alt" content={vehicle.title} />
+			<meta property="og:image:type" content="image/jpeg" />
+		{/if}
 
-	<meta
-		property="og:description"
-		content={vehicle ? formatDescription(vehicle.description || '') : ''}
-	/>
+		<meta property="og:description" content={plainTextDescription} />
 
-	<!-- Enhanced Twitter Card Tags -->
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@YourTwitterHandle" />
-	<meta name="twitter:title" content={vehicle?.title || 'Vehicle Details'} />
-	<meta
-		name="twitter:description"
-		content={vehicle ? formatDescription(vehicle.description || '') : ''}
-	/>
-	{#if vehicle?.primaryImage}
-		<meta name="twitter:image" content={vehicle.primaryImage} />
-		<meta name="twitter:image:alt" content={vehicle.title} />
+		<!-- Enhanced Twitter Card Tags -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:site" content="@YourTwitterHandle" />
+		<meta name="twitter:title" content={vehicle.title || 'Vehicle Details'} />
+		<meta name="twitter:description" content={plainTextDescription} />
+		{#if vehicle.primaryImage}
+			<meta name="twitter:image" content={vehicle.primaryImage} />
+			<meta name="twitter:image:alt" content={vehicle.title} />
+		{/if}
+	{:else}
+		<title>Vehicle Not Found</title>
+		<meta property="og:title" content="Vehicle Not Found" />
+		<meta property="og:description" content="The requested vehicle could not be found." />
 	{/if}
 </svelte:head>
 
-<!-- Social Media Preview Card -->
-{#if vehicle}
+{#if hasValidVehicle}
 	<div class="flex h-screen w-full flex-col items-center justify-center bg-background p-4">
 		<div class="w-[500px] overflow-hidden rounded-xl bg-white shadow-lg">
 			<!-- Image Section -->
@@ -115,7 +108,11 @@
 
 				<!-- Description -->
 				<p class="text-sm text-gray-700">
-					{formatDescription(vehicle.description)}
+					{#if browser}
+						{@html sanitizedDescription}
+					{:else}
+						{@html vehicle.description || ''}
+					{/if}
 				</p>
 
 				<!-- Footer -->
@@ -145,7 +142,7 @@
 						Post to X
 					</button>
 					<button
-						on:click={() => shareToSocial(getSharingUrls()?.twitter || '')}
+						on:click={() => shareToSocial(getSharingUrls()?.sms || '')}
 						class="flex-0 rounded bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
 					>
 						Paste as SMS
@@ -155,7 +152,9 @@
 		</div>
 	</div>
 {:else}
-	<div class="flex h-screen items-center justify-center">
-		<div class="text-xl">Loading...</div>
+	<div class="flex h-screen flex-col items-center justify-center gap-4">
+		<div class="text-xl">Vehicle Not Found</div>
+		<p class="text-gray-600">The requested vehicle could not be found.</p>
+		<a href="/demo/vehicles" class="text-blue-600 hover:underline"> Return to Vehicle Listing </a>
 	</div>
 {/if}
