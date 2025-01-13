@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
 	export let data: PageData;
 
 	const { vehicle } = data;
@@ -18,10 +19,28 @@
 	const handlePrint = () => {
 		window.print();
 	};
+
+	const handleClose = () => {
+		goto('/demo/vehicles');
+	};
 </script>
 
 {#if vehicle}
 	<div class="fixed bottom-4 right-4 flex gap-2 print:hidden">
+		<button
+			on:click={handleClose}
+			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+			aria-label="Close and return to vehicles"
+		>
+			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M6 18L18 6M6 6l12 12"
+				/>
+			</svg>
+		</button>
 		<button
 			on:click={handlePrint}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"

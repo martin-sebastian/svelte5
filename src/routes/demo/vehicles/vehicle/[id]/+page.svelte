@@ -1,5 +1,11 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { goto } from '$app/navigation';
+	// ... existing imports and code ...
+
+	const handleClose = () => {
+		goto('/demo/vehicles');
+	};
 
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
@@ -138,4 +144,20 @@
 			</div>
 		{/if}
 	</div>
+</div>
+<div class="fixed bottom-4 right-4 flex gap-2">
+	<button
+		on:click={handleClose}
+		class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+		aria-label="Close and return to vehicles"
+	>
+		<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M6 18L18 6M6 6l12 12"
+			/>
+		</svg>
+	</button>
 </div>
