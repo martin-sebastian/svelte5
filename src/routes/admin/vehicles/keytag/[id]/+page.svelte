@@ -14,7 +14,7 @@
 	};
 
 	const handleClose = () => {
-		goto('/demo/vehicles');
+		goto('/admin/vehicles');
 	};
 </script>
 

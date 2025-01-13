@@ -9,13 +9,7 @@
 	<div
 		class="flex w-96 flex-col items-center rounded-xl border border-gray-500/50 bg-slate-900/50 p-5 align-middle shadow-lg"
 	>
-		<svg
-			id="Layer_1"
-			class="h-20 w-20"
-			data-name="Layer 1"
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 48 48"
-		>
+		<svg id="Layer_1" class="h-20 w-20" data-name="Layer 1" viewBox="0 0 48 48">
 			<path
 				class="cls-1"
 				d="M40.38,37.14c-3.38,1.95-12.53,7.2-15.64,9.01-.44.25-.97.25-1.42,0-6.52-3.71-13.05-7.42-19.59-11.11-.55-.31-.88-.9-.87-1.53.02-1.52.01-3.04,0-4.62,0-.39.41-.64.75-.45,2.94,1.64,13.76,7.72,19.61,11.03.5.28,1.1.27,1.59-.02,1.47-.86,2.96-1.69,4.44-2.53.18-.1.35-.21.58-.35-.2-.13-.35-.24-.5-.33-5.6-3.16-11.21-6.32-16.82-9.45-.61-.34-.98-.98-.97-1.67.03-2.3.02-6.32.02-8.1,0-.39.42-.63.76-.44,1.18.69,3.14,1.84,3.81,2.21.37.2.49.45.48.85-.02.71,0,1.43,0,2.14,0,.51.27.99.71,1.24,6.88,3.94,19.79,11.37,23.06,13.25.34.2.34.68,0,.88Z"
@@ -40,6 +34,7 @@
 					class="bg-gring-gray-950 my-1 w-full rounded-md border border-gray-700 p-2 text-black"
 					name="username"
 					autocomplete="username"
+					placeholder="Username"
 				/>
 			</label>
 			<label>
@@ -48,6 +43,7 @@
 					type="password"
 					name="password"
 					autocomplete="current-password"
+					placeholder="Password"
 				/>
 			</label>
 			<button class="my-1 w-full rounded-md bg-blue-500 p-2 hover:bg-blue-700">LOGIN</button>

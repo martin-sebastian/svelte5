@@ -221,7 +221,7 @@
 								<div class="mt-4 flex gap-1">
 									<button
 										type="button"
-										on:click={() => goto(`/demo/vehicles/keytag/${vehicle.id}`)}
+										on:click={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
 										class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 										aria-label="View Key Tag"
 									>
@@ -243,7 +243,7 @@
 									</button>
 									<button
 										type="button"
-										on:click={() => goto(`/demo/vehicles/hangtag/${vehicle.id}`)}
+										on:click={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
 										class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 										aria-label="View Hang Tag"
 									>
@@ -264,7 +264,7 @@
 									</button>
 									<button
 										type="button"
-										on:click={() => goto(`/demo/vehicles/share/${vehicle.id}`)}
+										on:click={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
 										class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 										aria-label="Share Vehicle"
 									>
@@ -285,7 +285,7 @@
 									</button>
 									<button
 										type="button"
-										on:click={() => goto(`/demo/vehicles/vehicle/${vehicle.id}`)}
+										on:click={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
 										class="flex flex-row items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 										aria-label="Edit Vehicle Details"
 									>
@@ -351,7 +351,7 @@
 									<!-- Existing buttons -->
 									<button
 										type="button"
-										on:click={() => goto(`/demo/vehicles/keytag/${vehicle.id}`)}
+										on:click={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
 										class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 									>
 										<!-- ... existing button content ... -->

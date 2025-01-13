@@ -8,7 +8,7 @@
 
 	$effect(() => {
 		if (!data.user) {
-			goto('/demo/account/login');
+			goto('/admin/account/login');
 		}
 	});
 
@@ -16,12 +16,12 @@
 		console.log('Starting import...');
 		try {
 			isLoading = true;
-			const response = await fetch('/demo/sync');
+			const response = await fetch('/admin/sync');
 
 			// Handle unauthorized responses
 			if (response.status === 401) {
 				// Redirect to login page if unauthorized
-				goto('/demo/account/login');
+				goto('/admin/account/login');
 				return;
 			}
 

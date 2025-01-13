@@ -24,7 +24,7 @@
 		};
 	}
 	const handleClose = () => {
-		goto('/demo/vehicles');
+		goto('/admin/vehicles');
 	};
 
 	// Handle share button clicks

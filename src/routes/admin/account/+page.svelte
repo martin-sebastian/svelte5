@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { Button } from '$lib/components/ui/button';
 	import type { PageServerData } from './$types';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import Button from '$lib/components/Button.svelte';
-	import { Badge, badgeVariants } from '$lib/components/ui/badge';
 
 	let { data }: { data: PageServerData } = $props();
 	let age = data.age;
@@ -21,19 +19,10 @@
 		{data.lastName}
 	</p>
 	<div class="nav my-5">
-		<a
-			href="/"
-			class={badgeVariants({
-				variant: 'outline',
-				className: 'px-4 py-2 text-current hover:bg-white hover:text-black'
-			})}>Dashboard</a
-		>
-		<a
-			href="/demo/account"
-			class={badgeVariants({
-				variant: 'outline',
-				className: 'px-4 py-2 text-current hover:bg-white hover:text-black'
-			})}>My Profile</a
-		>
+		<Button href="/admin/vehicles">Dashboard</Button>
+
+		<form method="POST" action="?/logout">
+			<Button type="submit">Logout</Button>
+		</form>
 	</div>
 </div>

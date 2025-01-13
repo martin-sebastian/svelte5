@@ -115,7 +115,7 @@
 	<div class="my-10 flex flex-col items-center justify-start">
 		<img src="/vehicles-screen.png" alt="Vehicles Screen" class="w-2/3" />
 		<a
-			href="/demo/vehicles"
+			href="/admin/vehicles"
 			class="my-10 rounded-xl border border-gray-400/25 bg-gradient-to-r from-gray-400/50 to-blue-500/50 bg-clip-text px-8 py-4 text-lg font-bold text-transparent"
 			>LOGIN NOW</a
 		>
