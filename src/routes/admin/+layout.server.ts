@@ -6,13 +6,13 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 	const sessionToken = cookies.get('auth-session');
 
 	if (!sessionToken) {
-		throw redirect(303, '/admin/account/login');
+		throw redirect(303, '/admin/account');
 	}
 
 	const { user } = await validateSessionToken(sessionToken);
 
 	if (!user) {
-		throw redirect(303, '/admin/account/login');
+		throw redirect(303, '/admin/account');
 	}
 
 	return {
