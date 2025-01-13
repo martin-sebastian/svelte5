@@ -243,7 +243,7 @@
 									</button>
 									<button
 										type="button"
-										on:click={() => goto(`/demo/vehicles/hangtags/${vehicle.id}`)}
+										on:click={() => goto(`/demo/vehicles/hangtag/${vehicle.id}`)}
 										class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 										aria-label="View Hang Tag"
 									>
