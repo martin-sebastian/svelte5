@@ -165,10 +165,10 @@
 </div>
 <div class="container mx-auto my-2">
 	{#each sortedGroups as [groupName, vehicles]}
-		<div class="mb-8">
+		<div class="mb-0">
 			<h2
 				id={`${groupName}`}
-				class="mb-2 mt-5 line-clamp-1 border-b border-gray-400/25 pb-1 text-xl font-semibold"
+				class="mb-2 mt-0 line-clamp-1 border-b border-gray-400/25 pb-1 text-xl font-semibold"
 			>
 				{groupName}
 			</h2>
