@@ -9,7 +9,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
-		return redirect(302, '/admin/account');
+		return redirect(302, '/admin/auth');
 	}
 	return {};
 };
@@ -20,18 +20,15 @@ export const actions: Actions = {
 		const username = formData.get('username');
 		const password = formData.get('password');
 
-		if (!validateUsername(username)) {
-			return fail(400, { message: 'Invalid username' });
-		}
-		if (!validatePassword(password)) {
-			return fail(400, { message: 'Invalid password' });
+		if (!validateUsername(username) || !validatePassword(password)) {
+			return fail(400, { message: 'Invalid credentials' });
 		}
 
 		const results = await db.select().from(table.user).where(eq(table.user.username, username));
 
 		const existingUser = results.at(0);
 		if (!existingUser) {
-			return fail(400, { message: 'Incorrect username or password' });
+			return fail(400, { message: 'Invalid credentials' });
 		}
 
 		const validPassword = await verify(existingUser.passwordHash, password, {
@@ -41,14 +38,14 @@ export const actions: Actions = {
 			parallelism: 1
 		});
 		if (!validPassword) {
-			return fail(400, { message: 'Incorrect username or password' });
+			return fail(400, { message: 'Invalid credentials' });
 		}
 
 		const sessionToken = auth.generateSessionToken();
 		const session = await auth.createSession(sessionToken, existingUser.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		return redirect(302, '/admin/account');
+		return redirect(302, '/admin/auth');
 	},
 	register: async (event) => {
 		const formData = await event.request.formData();
@@ -80,7 +77,7 @@ export const actions: Actions = {
 		} catch (e) {
 			return fail(500, { message: 'An error has occurred' });
 		}
-		return redirect(302, '/admin/account');
+		return redirect(302, '/admin/auth');
 	}
 };
 

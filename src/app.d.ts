@@ -1,10 +1,22 @@
 /// <reference types="@sveltejs/kit" />
 /// <reference types="svelte" />
 
-declare namespace App {
-	interface Locals {
-		user: import('$lib/server/auth').SessionValidationResult['user'];
-		session: import('$lib/server/auth').SessionValidationResult['session'];
+import type { SessionValidationResult } from '$lib/server/auth';
+
+declare global {
+	namespace App {
+		interface Locals {
+			user: {
+				id: string;
+				username: string;
+				age?: number;
+				firstName?: string;
+				lastName?: string;
+			} | null;
+			auth: {
+				validate: () => Promise<SessionValidationResult>;
+			};
+		}
 	}
 }
 

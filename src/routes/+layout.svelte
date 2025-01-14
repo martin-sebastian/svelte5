@@ -133,7 +133,7 @@
 			>
 		</Button>
 
-		<Button href="/admin/account" variant="outline">
+		<Button href="/admin/auth" variant="outline">
 			<svg
 				width="24"
 				height="24"

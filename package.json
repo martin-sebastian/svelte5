@@ -61,6 +61,7 @@
 		"dompurify": "^3.2.3",
 		"drizzle-orm": "^0.33.0",
 		"esm-env": "^1.2.1",
+		"lucia": "^3.2.2",
 		"node-fetch": "^3.3.2",
 		"svelte-icons": "^2.1.0",
 		"xml2js": "^0.6.2"

@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 
-	let { form }: { form: ActionData } = $props();
+	export let form: ActionData;
 </script>
 
 <div class="flex h-screen w-full flex-col items-center justify-center">
