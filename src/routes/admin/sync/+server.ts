@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { vehicle, type Vehicle } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { XMLParser } from 'fast-xml-parser';
+import * as cheerio from 'cheerio';
 
 async function fetchXMLData() {
 	const response = await fetch('https://www.flatoutmotorcycles.com/unitinventory_univ.xml');
@@ -23,29 +24,37 @@ async function parseXML(xmlText: string) {
 	const inventory = Array.isArray(result.item) ? result.item : [result.item];
 	
 	// Map the XML data to our vehicle schema with the correct property names
-	return inventory.map((item: any) => ({
-		title: item.title || '',
-		link: item.link || '',
-		description: item.description || '',
-		price: parseFloat(item.price) || 0,
-		priceType: item.price_type || '',
-		stockNumber: item.stocknumber || '',
-		vin: item.vin || '',
-		manufacturer: item.manufacturer || '',
-		year: parseInt(item.year) || null,
-		color: item.color || '',
-		modelType: item.model_type || '',
-		modelTypestyle: item.model_typestyle || '',
-		modelName: item.model_name || '',
-		trimName: item.trim_name || '',
-		trimColor: item.trim_color || '',
-		condition: item.condition || 'unknown',
-		usage: item.usage || '',
-		location: item.location || '',
-		updated: item.updated || '',
-		metricType: item.metric_type || '',
-		metricValue: parseInt(item.metric_value) || 1
-	}));
+	return inventory.map((item: any) => {
+		const title = item.find('title')?.text();
+		if (!title) {
+			console.error('Missing required title field in XML');
+			throw new Error('Missing required title field in XML');
+		}
+
+		return {
+			title,
+			link: item.link || '',
+			description: item.description || '',
+			price: parseFloat(item.price) || 0,
+			priceType: item.price_type || '',
+			stockNumber: item.stocknumber || '',
+			vin: item.vin || '',
+			manufacturer: item.manufacturer || '',
+			year: parseInt(item.year) || null,
+			color: item.color || '',
+			modelType: item.model_type || '',
+			modelTypestyle: item.model_typestyle || '',
+			modelName: item.model_name || '',
+			trimName: item.trim_name || '',
+			trimColor: item.trim_color || '',
+			condition: item.condition || 'unknown',
+			usage: item.usage || '',
+			location: item.location || '',
+			updated: item.updated || '',
+			metricType: item.metric_type || '',
+			metricValue: parseInt(item.metric_value) || 1
+		};
+	});
 }
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -112,5 +121,56 @@ export const GET: RequestHandler = async ({ locals }) => {
 			},
 			{ status: 500 }
 		);
+	}
+};
+
+export const POST = async ({ request }) => {
+	const xmlData = await request.text();
+	const parser = new XMLParser({
+		ignoreAttributes: false,
+		parseTagValue: true,
+		trimValues: true
+	});
+	
+	const parsedData = parser.parse(xmlData);
+	console.log('Parsed feed:', parsedData); // Debug
+
+	// Access items array
+	const items = parsedData.feed.item;
+	if (!Array.isArray(items)) {
+		// Handle single item case
+		const itemsArray = items ? [items] : [];
+		// Process single item
+	}
+
+	// Process each item
+	for (const item of Array.isArray(items) ? items : [items]) {
+		const vehicleData = {
+			title: item.title,
+			link: item.link,
+			description: item.description,
+			price: parseFloat(item.price),
+			priceType: item.price_type,
+			stockNumber: item.stocknumber,
+			vin: item.vin,
+			manufacturer: item.manufacturer,
+			year: parseInt(item.year),
+			color: item.color,
+			modelType: item.model_type,
+			modelTypestyle: item.model_typestyle,
+			modelName: item.model_name,
+			trimName: item.trim_name || null,
+			trimColor: item.trim_color || null,
+			condition: item.condition,
+			usage: item.usage,
+			location: item.location,
+			updated: item.updated,
+			metricType: item.metric_type,
+			metricValue: parseInt(item.metric_value)
+		};
+
+		console.log('Processing vehicle:', vehicleData.title); // Debug
+
+		// ... rest of your existing processing code ...
 	}
 };

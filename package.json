@@ -58,6 +58,7 @@
 		"@oslojs/encoding": "^1.1.0",
 		"@paralleldrive/cuid2": "^2.2.2",
 		"@tanstack/table-core": "^8.20.5",
+		"cheerio": "^1.0.0",
 		"dompurify": "^3.2.3",
 		"drizzle-orm": "^0.33.0",
 		"esm-env": "^1.2.1",
