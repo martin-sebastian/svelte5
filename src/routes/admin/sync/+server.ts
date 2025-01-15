@@ -25,14 +25,8 @@ async function parseXML(xmlText: string) {
 	
 	// Map the XML data to our vehicle schema with the correct property names
 	return inventory.map((item: any) => {
-		const title = item.find('title')?.text();
-		if (!title) {
-			console.error('Missing required title field in XML');
-			throw new Error('Missing required title field in XML');
-		}
-
 		return {
-			title,
+			title: item.title,
 			link: item.link || '',
 			description: item.description || '',
 			price: parseFloat(item.price) || 0,
