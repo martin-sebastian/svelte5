@@ -8,12 +8,12 @@
 </script>
 
 <div class="flex h-screen w-full flex-col items-center justify-center">
-	<Avatar.Root>
+	<Avatar.Root class="h-[128px] w-[128px]">
 		<Avatar.Image src="https://martinsebastian.co/avatar/martin.png" alt="Martin Sebastian" />
 		<Avatar.Fallback>MS</Avatar.Fallback>
 	</Avatar.Root>
 	{#if data.user}
-		<h1 class="my-5 text-3xl font-bold">Hi, {data.user.username}!</h1>
+		<h1 class="my-5 text-7xl font-bold">Hi {data.user.username}!</h1>
 		<p class="my-2 text-lg font-bold">
 			{data.user.firstName}
 			{data.user.lastName}

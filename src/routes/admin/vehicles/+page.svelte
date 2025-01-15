@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	export let data: PageData;
 
@@ -16,7 +17,37 @@
 		{ value: 'usage', label: 'Usage ' }
 	];
 
-	let selectedSort = 'modelType';
+	// Initialize without default values
+	let viewMode: 'grid' | 'list';
+	let selectedSort: string;
+
+	// Load saved preferences on mount
+	onMount(() => {
+		// Load view mode preference
+		const savedView = localStorage.getItem('vehiclesViewMode');
+		viewMode = savedView === 'grid' || savedView === 'list' ? savedView : 'grid';
+
+		// Load sort preference
+		const savedSort = localStorage.getItem('vehiclesSortMode');
+		selectedSort = savedSort || 'modelType'; // Default to 'modelType' if no preference
+
+		console.log('Loaded saved view:', savedView);
+		console.log('Loaded saved sort:', savedSort);
+	});
+
+	// Save preferences whenever they change
+	$: {
+		if (typeof window !== 'undefined') {
+			if (viewMode) {
+				console.log('Saving view mode:', viewMode);
+				localStorage.setItem('vehiclesViewMode', viewMode);
+			}
+			if (selectedSort) {
+				console.log('Saving sort mode:', selectedSort);
+				localStorage.setItem('vehiclesSortMode', selectedSort);
+			}
+		}
+	}
 
 	// First, let's handle all vehicles filtering
 	let searchTerm = '';
@@ -75,9 +106,6 @@
 	});
 
 	$: totalShowing = filteredVehicles?.length || 0;
-
-	// Add view state
-	let viewMode: 'grid' | 'list' = 'grid';
 </script>
 
 <div class="container mx-auto mt-24">
