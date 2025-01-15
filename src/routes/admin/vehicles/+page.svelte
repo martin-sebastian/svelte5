@@ -35,7 +35,7 @@
 		console.log('Loaded saved sort:', savedSort);
 	});
 
-	// Save preferences whenever they change
+	// Save user preferences
 	$: {
 		if (typeof window !== 'undefined') {
 			if (viewMode) {
@@ -49,7 +49,7 @@
 		}
 	}
 
-	// First, let's handle all vehicles filtering
+	// Filter vehicles
 	let searchTerm = '';
 
 	$: filteredVehicles = data?.vehicles
@@ -58,9 +58,9 @@
 				const searchLower = searchTerm.toLowerCase();
 				return (
 					vehicle.stockNumber?.toLowerCase().includes(searchLower) ||
-					vehicle.make?.toLowerCase().includes(searchLower) ||
 					vehicle.title?.toLowerCase().includes(searchLower) ||
 					vehicle.year?.toString().includes(searchLower) ||
+					vehicle.make?.toLowerCase().includes(searchLower) ||
 					vehicle.color?.toLowerCase().includes(searchLower) ||
 					vehicle.vin?.toLowerCase().includes(searchLower)
 				);
