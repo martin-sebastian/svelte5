@@ -207,7 +207,7 @@
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
 						>
-							<!-- Image -->
+							<!-- Image grid view -->
 							<div class="relative w-full pb-[66.25%]">
 								{#if vehicle.images[0]}
 									<img
@@ -222,7 +222,7 @@
 								{/if}
 							</div>
 
-							<!-- Content -->
+							<!-- Content grid view -->
 							<div class="p-4">
 								<div class="h-12">
 									<h3 class="mb-2 line-clamp-2 font-semibold leading-tight">
@@ -239,13 +239,18 @@
 									<div class="text-sm text-gray-500">
 										<p>{vehicle.make}</p>
 										<div class="h-12">
-											<h5 class="my-1 line-clamp-2 font-semibold leading-tight">{vehicle.color}</h5>
+											<h5 class="my-1 line-clamp-2 font-semibold leading-tight">
+												{vehicle.color || 'N/A'}
+											</h5>
 										</div>
-										<p class="">VIN:{vehicle.vin}</p>
+										<p class="text-sm font-bold text-black dark:text-white">
+											Stock #: {vehicle.stockNumber}
+										</p>
+										<p class="text-sm text-gray-500">VIN: {vehicle.vin}</p>
 									</div>
 								</div>
 
-								<!-- New Footer with Buttons -->
+								<!-- New Footer with Buttons grid view -->
 								<div class="mt-4 flex gap-1">
 									<button
 										type="button"
@@ -345,7 +350,7 @@
 						<div
 							class="flex overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 p-4 shadow-md dark:bg-gray-800/50"
 						>
-							<!-- Image thumbnail -->
+							<!-- Image thumbnail list view -->
 							<div class="relative h-32 w-48 flex-shrink-0">
 								{#if vehicle.images[0]}
 									<img
@@ -362,7 +367,7 @@
 								{/if}
 							</div>
 
-							<!-- Content -->
+							<!-- Content list view -->
 							<div class="flex flex-1 flex-col px-4">
 								<h3 class="text-lg font-semibold">{vehicle.title}</h3>
 								<p class="text-lg font-bold text-green-600">
@@ -374,17 +379,99 @@
 									<p>VIN: {vehicle.vin}</p>
 								</div>
 
-								<!-- Action buttons -->
-								<div class="mt-auto flex gap-1 pt-2">
-									<!-- Existing buttons -->
-									<button
-										type="button"
-										on:click={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
-										class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-									>
-										<!-- ... existing button content ... -->
-									</button>
-									<!-- ... other buttons ... -->
+								<!-- Action buttons list view -->
+								<div class="flex w-full flex-row items-center justify-between gap-1">
+									<div class="text-lg font-bold text-gray-500">Stock # {vehicle.stockNumber}</div>
+									<!-- Existing buttons list view -->
+									<div class="flex flex-row items-center justify-end gap-1">
+										<button
+											type="button"
+											on:click={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
+											class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+											aria-label="View Key Tag"
+										>
+											<svg
+												width="24"
+												height="24"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												class="lucide lucide-tag"
+												aria-hidden="true"
+												><path
+													d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+												/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg
+											>
+										</button>
+										<button
+											type="button"
+											on:click={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
+											class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+											aria-label="View Hang Tag"
+										>
+											<svg
+												width="24"
+												height="24"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												class="lucide lucide-tags"
+												><path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" /><path
+													d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"
+												/><circle cx="6.5" cy="9.5" r=".5" fill="currentColor" /></svg
+											>
+										</button>
+										<button
+											type="button"
+											on:click={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
+											class="flex flex-col items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+											aria-label="Share Vehicle"
+										>
+											<svg
+												width="24"
+												height="24"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												class="lucide lucide-share"
+												><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline
+													points="16 6 12 2 8 6"
+												/><line x1="12" x2="12" y1="2" y2="15" /></svg
+											>
+										</button>
+										<button
+											type="button"
+											on:click={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
+											class="flex flex-row items-center rounded-md bg-gray-500 px-2 py-1 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+											aria-label="Edit Vehicle Details"
+										>
+											<svg
+												width="24"
+												height="24"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												class="lucide lucide-settings-2"
+												><path d="M20 7h-9" /><path d="M14 17H5" /><circle
+													cx="17"
+													cy="17"
+													r="3"
+												/><circle cx="7" cy="7" r="3" /></svg
+											> <span class="q me-1 ms-1 text-sm">Edit</span>
+										</button>
+									</div>
 								</div>
 							</div>
 						</div>
