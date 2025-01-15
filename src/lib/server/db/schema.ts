@@ -35,7 +35,7 @@ export const vehicle = sqliteTable(
 		year: integer('year'),
 		color: text('color'),
 		modelType: text('model_type'),
-		modelTypeStyle: text('model_type_style'),
+		modelTypestyle: text('model_typestyle'),
 		modelName: text('model_name'),
 		trimName: text('trim_name'),
 		trimColor: text('trim_color'),

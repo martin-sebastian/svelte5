@@ -10,7 +10,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"db:generate": "drizzle-kit generate:sqlite",
+		"db:generate": "drizzle-kit generate",
 		"db:push": "drizzle-kit push",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio"
@@ -61,6 +61,7 @@
 		"dompurify": "^3.2.3",
 		"drizzle-orm": "^0.33.0",
 		"esm-env": "^1.2.1",
+		"fast-xml-parser": "^4.5.1",
 		"lucia": "^3.2.2",
 		"node-fetch": "^3.3.2",
 		"svelte-icons": "^2.1.0",

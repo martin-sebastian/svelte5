@@ -30,10 +30,9 @@
 <div class="flex h-screen w-full flex-col items-center justify-center">
 	<h1 class="text-4xl font-bold">Integrations</h1>
 	<h2 class="text-2xl font-bold text-muted-foreground">Dealer Spike Inventory Sync</h2>
-	<p class="text-sm font-bold text-muted-foreground">Integration ID: {data.user.id}</p>
 	<button
 		class="my-10 flex flex-row items-center gap-2 rounded-lg bg-slate-900 px-4 py-5 text-white hover:bg-slate-800 disabled:opacity-50"
-		on:click={handleImport}
+		onclick={handleImport}
 		disabled={isLoading}
 	>
 		{#if isLoading}
