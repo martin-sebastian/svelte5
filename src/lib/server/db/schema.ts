@@ -30,7 +30,7 @@ export const vehicle = sqliteTable(
 		price: integer('price'),
 		priceType: text('price_type'),
 		stockNumber: text('stock_number'),
-		vin: text('vin').unique(),
+		vin: text('vin'),
 		manufacturer: text('manufacturer'),
 		year: integer('year'),
 		color: text('color'),
@@ -57,13 +57,15 @@ export const vehicle = sqliteTable(
 
 export const vehicleImage = sqliteTable('vehicle_image', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
-	vehicle_id: text('vehicle_id').references(() => vehicle.id),
+	vehicle_id: text('vehicle_id')
+		.references(() => vehicle.id, { onDelete: 'cascade' }),
 	image_url: text('image_url')
 });
 
 export const vehicleAttribute = sqliteTable('vehicle_attribute', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
-	vehicle_id: text('vehicle_id').references(() => vehicle.id),
+	vehicle_id: text('vehicle_id')
+		.references(() => vehicle.id, { onDelete: 'cascade' }),
 	name: text('name'),
 	value: text('value')
 });

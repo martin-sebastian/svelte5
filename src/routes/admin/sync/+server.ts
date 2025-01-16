@@ -84,11 +84,11 @@ async function parseXML(xmlText: string) {
 				metricValue: parseInt(item.metric_value) || 0
 			},
 			images: imageUrls.filter(Boolean).map((url: string) => ({
-				vehicle_id: item.vin,
+				vehicle_id: item.id,
 				image_url: url
 			})),
 			attributes: attributeList.filter(Boolean).map((attr: any) => ({
-				vehicle_id: item.vin,
+				vehicle_id: item.id,
 				name: attr.name || '',
 				value: attr.value || ''
 			}))
