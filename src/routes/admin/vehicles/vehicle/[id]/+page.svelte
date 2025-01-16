@@ -49,6 +49,7 @@
 </script>
 
 <div class="container my-10 py-10">
+{#if vehicle}
 	<h1 class="mt-10 w-full text-start text-4xl font-bold">{vehicle.title}</h1>
 
 	<div class="grid grid-cols-3 gap-10">
@@ -144,6 +145,9 @@
 			</div>
 		{/if}
 	</div>
+{:else}
+	<p>Loading vehicle...</p>
+{/if}
 </div>
 <div class="fixed bottom-4 right-4 flex gap-2">
 	<button

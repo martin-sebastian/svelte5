@@ -19,14 +19,14 @@ export async function getVehicleWithCaching(id: string) {
 	const images = await db
 		.select()
 		.from(vehicleImage)
-		.where(eq(vehicleImage.vehicleId, vehicle.id))
+		.where(eq(vehicleImage.vehicle_id, vehicle.id))
 		.limit(1)
 		.all();
 
 	const attributes = await db
 		.select()
 		.from(vehicleAttribute)
-		.where(eq(vehicleAttribute.vehicleId, vehicle.id))
+		.where(eq(vehicleAttribute.vehicle_id, vehicle.id))
 		.all();
 
 	return {

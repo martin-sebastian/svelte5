@@ -24,7 +24,7 @@ export const load = async () => {
 				metricType: vehicle.metricType,
 				metricValue: vehicle.metricValue,
 				status: vehicle.status,
-				images: sql`group_concat(${vehicleImage.image_url})`,
+				images: sql`group_concat(DISTINCT ${vehicleImage.image_url})`,
 				attributes: sql`group_concat(${vehicleAttribute.name} || ':' || ${vehicleAttribute.value})`
 			})
 			.from(vehicle)
@@ -33,16 +33,14 @@ export const load = async () => {
 			.where(eq(vehicle.status, 'ACTIVE'))
 			.groupBy(vehicle.id);
 
-		console.log('Raw query result:', vehicles);
-
 		return {
 			vehicles: vehicles.map((v) => ({
 				...v,
-				images: v.images ? v.images.split(',').filter(Boolean) : [],
-				attributes: v.attributes ? v.attributes.split(',').map(attr => {
+				images: v.images?.split(',').filter(Boolean) ?? [],
+				attributes: v.attributes?.split(',').map(attr => {
 					const [name, value] = attr.split(':');
 					return { name, value };
-				}).filter(attr => attr.name && attr.value) : []
+				}).filter(Boolean) ?? []
 			}))
 		};
 	} catch (error) {

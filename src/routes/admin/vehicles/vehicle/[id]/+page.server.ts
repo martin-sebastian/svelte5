@@ -15,8 +15,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(vehicle)
 		.where(eq(vehicle.id, id))
-		.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicleId))
-		.leftJoin(vehicleAttribute, eq(vehicle.id, vehicleAttribute.vehicleId))
+		.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicle_id))
+		.leftJoin(vehicleAttribute, eq(vehicle.id, vehicleAttribute.vehicle_id))
 		.orderBy(asc(vehicleImage.id))
 		.all();
 
@@ -30,8 +30,8 @@ export const load: PageServerLoad = async ({ params }) => {
 	// Process the results to get the vehicle with all its images and attributes
 	const vehicleData = {
 		...results[0].vehicle,
-		primaryImage: results[0].image?.imageUrl || null,
-		images: [...new Set(results.map((r) => r.image).filter(Boolean))],
+		primaryImage: results[0].image?.image_url || null,
+		images: [...new Set(results.map((r) => r.image?.image_url).filter(Boolean))],
 		attributes: results.map((r) => r.attributes).filter(Boolean)
 	};
 
