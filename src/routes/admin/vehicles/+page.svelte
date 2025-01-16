@@ -60,7 +60,7 @@
 					vehicle.stockNumber?.toLowerCase().includes(searchLower) ||
 					vehicle.title?.toLowerCase().includes(searchLower) ||
 					vehicle.year?.toString().includes(searchLower) ||
-					vehicle.make?.toLowerCase().includes(searchLower) ||
+					vehicle.manufacturer?.toLowerCase().includes(searchLower) ||
 					vehicle.color?.toLowerCase().includes(searchLower) ||
 					vehicle.vin?.toLowerCase().includes(searchLower)
 				);
@@ -79,7 +79,7 @@
 					key = vehicle.year?.toString() || 'Unspecified Year';
 					break;
 				case 'manufacturer':
-					key = vehicle.make || 'Unspecified';
+					key = vehicle.manufacturer || 'Unspecified';
 					break;
 				case 'usage':
 					key = vehicle.usage || 'Unspecified';

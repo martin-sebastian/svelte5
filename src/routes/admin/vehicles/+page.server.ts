@@ -24,12 +24,12 @@ export const load = async () => {
 				metricType: vehicle.metricType,
 				metricValue: vehicle.metricValue,
 				status: vehicle.status,
-				images: sql<string[]>`json_group_array(distinct ${vehicleImage.imageUrl})`,
-				attributes: sql<string>`json_group_array(json_object('name', ${vehicleAttribute.name}, 'value', ${vehicleAttribute.value}))`
+				images: sql`group_concat(${vehicleImage.image_url})`,
+				attributes: sql`group_concat(${vehicleAttribute.name} || ':' || ${vehicleAttribute.value})`
 			})
 			.from(vehicle)
-			.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicleId))
-			.leftJoin(vehicleAttribute, eq(vehicle.id, vehicleAttribute.vehicleId))
+			.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicle_id))
+			.leftJoin(vehicleAttribute, eq(vehicle.id, vehicleAttribute.vehicle_id))
 			.where(eq(vehicle.status, 'ACTIVE'))
 			.groupBy(vehicle.id);
 
@@ -38,31 +38,11 @@ export const load = async () => {
 		return {
 			vehicles: vehicles.map((v) => ({
 				...v,
-				images: (() => {
-					try {
-						const imgs = JSON.parse(v.images);
-						return Array.isArray(imgs)
-							? imgs.sort((a: string, b: string) => {
-									const getNumber = (url: string) => {
-										const match = url.match(/(\d+)\.JPG$/i);
-										return match ? parseInt(match[1]) : 999;
-									};
-									return getNumber(a) - getNumber(b);
-								})
-							: [];
-					} catch (e) {
-						console.error('Error parsing images:', e);
-						return [];
-					}
-				})(),
-				attributes: (() => {
-					try {
-						return JSON.parse(v.attributes || '[]');
-					} catch (e) {
-						console.error('Error parsing attributes:', e);
-						return [];
-					}
-				})()
+				images: v.images ? v.images.split(',').filter(Boolean) : [],
+				attributes: v.attributes ? v.attributes.split(',').map(attr => {
+					const [name, value] = attr.split(':');
+					return { name, value };
+				}).filter(attr => attr.name && attr.value) : []
 			}))
 		};
 	} catch (error) {
