@@ -51,26 +51,21 @@ export const vehicle = sqliteTable(
 		lastModified: integer('last_modified', { mode: 'timestamp' }).$defaultFn(() => new Date())
 	},
 	(table) => ({
-		uniqVin: uniqueIndex('uniq_vin').on(table.vin),
-		uniqStock: uniqueIndex('uniq_stock').on(table.stockNumber)
+		uniqVin: uniqueIndex('uniq_vin').on(table.vin)
 	})
 );
 
 export const vehicleImage = sqliteTable('vehicle_image', {
-	id: text('id').primaryKey(),
-	vehicleId: text('vehicle_id')
-		.notNull()
-		.references(() => vehicle.id, { onDelete: 'cascade' }),
-	imageUrl: text('image_url').notNull()
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
+	vehicle_id: text('vehicle_id').references(() => vehicle.id),
+	image_url: text('image_url')
 });
 
 export const vehicleAttribute = sqliteTable('vehicle_attribute', {
-	id: text('id').primaryKey(),
-	vehicleId: text('vehicle_id')
-		.notNull()
-		.references(() => vehicle.id, { onDelete: 'cascade' }),
-	name: text('name').notNull(),
-	value: text('value').notNull()
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
+	vehicle_id: text('vehicle_id').references(() => vehicle.id),
+	name: text('name'),
+	value: text('value')
 });
 
 export const vehicleRelations = relations(vehicle, ({ many }) => ({
@@ -80,14 +75,14 @@ export const vehicleRelations = relations(vehicle, ({ many }) => ({
 
 export const vehicleImageRelations = relations(vehicleImage, ({ one }) => ({
 	vehicle: one(vehicle, {
-		fields: [vehicleImage.vehicleId],
+		fields: [vehicleImage.vehicle_id],
 		references: [vehicle.id]
 	})
 }));
 
 export const vehicleAttributeRelations = relations(vehicleAttribute, ({ one }) => ({
 	vehicle: one(vehicle, {
-		fields: [vehicleAttribute.vehicleId],
+		fields: [vehicleAttribute.vehicle_id],
 		references: [vehicle.id]
 	})
 }));
