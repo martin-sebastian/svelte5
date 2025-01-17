@@ -2,6 +2,8 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { CircleDashed } from 'lucide-svelte';
+	import QRCode from 'qrcode';
+	import { onMount } from 'svelte';
 	export let data;
 	const { vehicle } = data;
 
@@ -25,6 +27,26 @@
 	const handleClose = () => {
 		goto('/admin/vehicles');
 	};
+
+	let qrCodeDataUrl = '';
+
+	onMount(async () => {
+		// Use the vehicle.link from the database
+		const vehicleUrl = vehicle.link;
+
+		try {
+			qrCodeDataUrl = await QRCode.toDataURL(vehicleUrl, {
+				width: 200,
+				margin: 2,
+				color: {
+					dark: '#000000',
+					light: '#ffffff'
+				}
+			});
+		} catch (err) {
+			console.error('Error generating QR code:', err);
+		}
+	});
 </script>
 
 {#if vehicle}
@@ -83,7 +105,7 @@
 			style="transform: scale({zoomLevel}); transform-origin: center;"
 		>
 			<div class="grid grid-cols-2">
-				<div class="left-column flex h-[11in] flex-col justify-between text-center">
+				<div class="left-column h-[11in] text-center">
 					<CircleDashed class="mx-auto my-5 h-[0.5in] w-[0.5in] flex-none" />
 					<div class="logo flex justify-center">
 						<img src="/images/dealer-logo.png" alt="Logo" class="h-auto w-[3.5in]" />
@@ -98,13 +120,12 @@
 					>
 						#{vehicle.stockNumber}
 					</div>
-					<div class="my-1 flex-none">
-						<div class="my-1 text-[24pt] font-bold">
-							{vehicle.year}
-						</div>
-						<div class="my-1 text-[24pt] font-bold">
+					<div class="mt-10">
+						<div class="text-[30pt] font-extrabold leading-[0.9]">
+							{vehicle.year}<br />
 							{vehicle.manufacturer}
 						</div>
+
 						<div
 							class="mb-1 line-clamp-2 flex min-h-[2em] items-center justify-center text-[18pt] font-bold"
 						>
@@ -118,14 +139,34 @@
 							{vehicle.metricValue}
 							{vehicle.metricType}
 						</div>
-						<div class="my-1 text-[20pt]">
+						<div class="my-1 text-[18pt] font-bold">
 							VIN: {vehicle.vin}
+						</div>
+						<div class="my-10">
+							{#if qrCodeDataUrl}
+								<img
+									src={qrCodeDataUrl}
+									alt="Vehicle QR Code"
+									class="mx-auto h-[200px] w-[200px]"
+								/>
+							{:else}
+								<CircleDashed class="mx-auto h-[200px] w-[200px]" />
+							{/if}
 						</div>
 					</div>
 
-					<div class="my-10 flex-none">
+					<div class="my-10">
 						<div
-							class="relative bottom-0 left-0 right-0 z-10 mx-auto my-2 w-1/2 bg-red-800 p-4 text-center text-[44pt] font-bold text-white"
+							class="fixed bottom-0 left-0 z-10 mx-auto my-0 w-1/2 bg-red-800 p-6 text-center text-[44pt] font-bold text-white"
+						>
+							{#if vehicle.price}
+								${(vehicle.price / 100).toLocaleString()}
+							{:else}
+								Not Available
+							{/if}
+						</div>
+						<div
+							class="fixed bottom-0 right-0 z-10 mx-auto my-0 w-1/2 bg-red-800 p-6 text-center text-[44pt] font-bold text-white"
 						>
 							{#if vehicle.price}
 								${(vehicle.price / 100).toLocaleString()}
@@ -135,46 +176,24 @@
 						</div>
 					</div>
 				</div>
-				<div class="right-column flex h-[11in] flex-col justify-between">
+				<div class="right-column h-[11in]">
 					<CircleDashed class="mx-auto my-5 h-[0.5in] w-[0.5in] flex-none" />
 					<div class="logo flex justify-center">
 						<img src="/images/dealer-logo.png" alt="Logo" class="h-auto w-[3.5in]" />
 					</div>
-					<div class="my-10 w-full text-center">
+					<div class="my-5 w-full text-center">
 						{#if vehicle.primaryImage}
-							<img
-								src={vehicle.primaryImage}
-								alt="Vehicle"
-								class="mx-auto h-auto w-[3.5in] rounded-lg object-contain"
-							/>
+							<img src={vehicle.primaryImage} alt="Vehicle" class="mx-auto w-1/2 rounded-lg" />
 						{:else}
 							n/a
 						{/if}
 					</div>
-					<div class="my-1 flex-none">
-						<div class="text-md border-gray-500/25 bg-gray-100 px-4 py-2 text-center">
-							Price: {vehicle.priceType}
-							{#if vehicle.price}
-								${(vehicle.price / 100).toLocaleString()}
-							{:else}
-								Not Available
-							{/if}
-						</div>
-					</div>
-					<div class="line-clamp-8 my-1 px-5 text-[10pt]">
+
+					<div class="line-clamp-8 my-1 px-10 text-[10pt]">
 						{@html vehicle.description}
 					</div>
 					<div class="text-md my-5 w-full px-4 py-2 text-center font-bold">
 						Location: {vehicle.location}
-					</div>
-					<div
-						class="relative bottom-0 left-0 right-0 z-10 mx-auto my-2 w-full bg-red-800 p-4 text-center text-[44pt] font-bold text-white"
-					>
-						{#if vehicle.price}
-							${(vehicle.price / 100).toLocaleString()}
-						{:else}
-							Not Available
-						{/if}
 					</div>
 				</div>
 			</div>

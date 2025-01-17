@@ -63,12 +63,16 @@
 	};
 </script>
 
-<div class="container my-10 py-10">
+<div class="vehicle-detail container my-10 py-5">
 	{#if vehicle}
-		<h1 class="my-5 w-full text-start text-4xl font-bold">{vehicle.title}</h1>
+		<h1 class="mb-2 w-full text-start text-4xl font-bold">{vehicle.title}</h1>
+		<h5 class="mb-2 w-full text-start text-xl font-semibold">
+			{vehicle.vin} - {vehicle.stockNumber} - {vehicle.color} - {vehicle.metricValue}
+			{vehicle.metricType}
+		</h5>
 
 		<div class="grid grid-cols-6 gap-10">
-			<div class="col-span-3 flex flex-col">
+			<div class="left-col col-span-3 flex flex-col">
 				{#if vehicle}
 					<Carousel.Root {api} onSelect={handleSelect} class="rounded-lg border border-gray-500/25">
 						<Carousel.Content>
@@ -85,7 +89,7 @@
 						<Carousel.Previous />
 						<Carousel.Next />
 					</Carousel.Root>
-				{:else}
+
 					<div class="col-span-12">No vehicle images found</div>
 				{/if}
 				<div class="my-1 grid grid-cols-6 gap-1 p-1 md:grid-cols-12 lg:grid-cols-12">
@@ -108,13 +112,28 @@
 						<div class="col-span-6">No images found</div>
 					{/if}
 				</div>
-				<div class="col-span-3 overflow-hidden">
+				<div class="col-span-3 overflow-hidden rounded-lg border border-gray-500/25 p-4">
 					{@html vehicle.description}
 				</div>
 			</div>
 
 			{#if vehicle}
-				<div class="col-span-3 ms-5 flex flex-col">
+				<div class="right-col col-span-3 ms-5 flex flex-col">
+					<label for="vehicle-status" class="text-md font-bold">Vehicle Status:</label>
+
+					<select
+						name="vehicle-status"
+						id="vehicle-status"
+						class="mb-2 w-full rounded-lg border border-gray-500/25 bg-background p-2"
+					>
+						<option value="available">Available</option>
+						<option value="sold">Sold</option>
+						<option value="pending">Pending</option>
+						<option value="archived">Archived</option>
+					</select>
+					<div class="mt-4">
+						<h2 class="text-md font-bold">Vehicle Details</h2>
+					</div>
 					<div class="rounded-lg border border-gray-500/25">
 						<div class="text-md mb-1">
 							<div
@@ -133,6 +152,9 @@
 								<span>Stock Number:</span> <span>{vehicle.stockNumber}</span>
 							</div>
 							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
+								<span>VIN:</span> <span>{vehicle.vin}</span>
+							</div>
+							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
 								<span>Usage:</span> <span>{vehicle.usage}</span>
 							</div>
 							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
@@ -145,35 +167,15 @@
 								<span>Model:</span> <span>{vehicle.modelName}</span>
 							</div>
 							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>Metric:</span> <span>{vehicle.metricValue}</span>
+								<span>Miles/Hours:</span> <span>{vehicle.metricValue} {vehicle.metricType}</span>
 							</div>
 							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
 								<span>Type:</span> <span>{vehicle.modelType}</span>
 							</div>
 							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>VIN:</span> <span>{vehicle.vin}</span>
-							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
 								<span>Condition:</span> <span>{vehicle.condition}</span>
 							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>Type:</span> <span> {vehicle.modelType}</span>
-							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>Trim:</span> <span>{vehicle.trimName}</span>
-							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>VIN:</span> <span>{vehicle.vin}</span>
-							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>Condition:</span> <span>{vehicle.condition}</span>
-							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>Location:</span> <span>{vehicle.location}</span>
-							</div>
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
-								<span>Condition:</span> <span>{vehicle.condition}</span>
-							</div>
+
 							{#if vehicle.trimName}
 								<div
 									class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2"
@@ -188,7 +190,7 @@
 									<span>Trim Color:</span> <span>{vehicle.trimColor}</span>
 								</div>
 							{/if}
-							<div class="text-md mb-1 flex justify-between border-b border-gray-500/25 px-4 py-2">
+							<div class="text-md mb-1 flex justify-between px-4 py-2">
 								<span>Location:</span> <span>{vehicle.location}</span>
 							</div>
 						</div>
@@ -200,7 +202,7 @@
 		<p>Loading vehicle...</p>
 	{/if}
 </div>
-<div class="fixed bottom-4 right-4 flex gap-2">
+<div class="fixed bottom-4 right-4 flex gap-2 print:hidden">
 	<button
 		on:click={handleClose}
 		class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -216,3 +218,13 @@
 		</svg>
 	</button>
 </div>
+
+<style>
+	.left-col {
+		grid-column: 1 / 4;
+	}
+
+	.right-col {
+		grid-column: 4 / 7;
+	}
+</style>
