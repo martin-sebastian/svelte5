@@ -1,7 +1,7 @@
-import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { pgTable, text, integer, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-export const user = sqliteTable('user', {
+export const user = pgTable('user', {
 	id: text('id').primaryKey(),
 	age: integer('age'),
 	username: text('username').notNull().unique(),
@@ -10,7 +10,7 @@ export const user = sqliteTable('user', {
 	lastName: text('last_name')
 });
 
-export const session = sqliteTable('session', {
+export const session = pgTable('session', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
@@ -20,7 +20,7 @@ export const session = sqliteTable('session', {
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
-export const vehicle = sqliteTable(
+export const vehicle = pgTable(
 	'vehicle',
 	{
 		id: text('id').primaryKey(),
@@ -55,17 +55,15 @@ export const vehicle = sqliteTable(
 	})
 );
 
-export const vehicleImage = sqliteTable('vehicle_image', {
+export const vehicleImage = pgTable('vehicle_image', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
-	vehicle_id: text('vehicle_id')
-		.references(() => vehicle.id, { onDelete: 'cascade' }),
+	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
 	image_url: text('image_url')
 });
 
-export const vehicleAttribute = sqliteTable('vehicle_attribute', {
+export const vehicleAttribute = pgTable('vehicle_attribute', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
-	vehicle_id: text('vehicle_id')
-		.references(() => vehicle.id, { onDelete: 'cascade' }),
+	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
 	name: text('name'),
 	value: text('value')
 });
