@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { CircleGauge } from 'lucide-svelte';
 
 	export let data: PageData;
 
@@ -13,7 +14,7 @@
 	const sortOptions = [
 		{ value: 'modelType', label: 'Type ' },
 		{ value: 'year', label: 'Year ' },
-		{ value: 'manufacturer', label: 'Make ' },
+		{ value: 'manufacturer', label: 'Manufacturer ' },
 		{ value: 'usage', label: 'Usage ' }
 	];
 
@@ -230,22 +231,51 @@
 									</h3>
 								</div>
 								<div class="my-0">
-									<p class="mt-2 text-lg font-bold text-green-600">
+									<p class="my-1 text-2xl font-bold text-green-600">
 										{vehicle.price ? `$${(vehicle.price / 100).toLocaleString()}` : 'N/A'}
-										<span class="mx-1 text-sm text-gray-500">
-											{vehicle.usage || 'N/A'}
-										</span>
 									</p>
+									<div class="flex flex-row items-center gap-1">
+										{#if vehicle.usage === 'Used'}
+											<div
+												class="flex flex-row items-center rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
+											>
+												<CircleGauge class="mx-1 h-4 w-4" />
+												{vehicle.metricValue}
+												<span class="mx-1 text-sm font-semibold text-gray-100"
+													>{vehicle.metricType}</span
+												>
+											</div>
+											<div
+												class="rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
+											>
+												{vehicle.usage}
+											</div>
+										{:else}
+											<div
+												class="flex flex-row items-center rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100"
+											>
+												<CircleGauge class="mx-1 h-4 w-4" />
+												{vehicle.metricValue}
+												<span class="mx-1 text-sm font-semibold text-gray-100"
+													>{vehicle.metricType}</span
+												>
+											</div>
+											<div class="rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100">
+												{vehicle.usage}
+											</div>
+										{/if}
+									</div>
 									<div class="text-sm text-gray-500">
-										<p>{vehicle.make}</p>
-										<div class="h-12">
-											<h5 class="my-1 line-clamp-2 font-semibold leading-tight">
+										<p class="mt-2">Color:</p>
+										<div class="h-8">
+											<h5 class="my-1 line-clamp-2 font-bold leading-tight">
 												{vehicle.color || 'N/A'}
 											</h5>
 										</div>
-										<p class="text-sm font-bold text-black dark:text-white">
-											Stock #: {vehicle.stockNumber}
-										</p>
+										<p class="text-sm text-gray-500">Stock #</p>
+										<h3 class="w-full text-lg font-bold text-gray-500">
+											{vehicle.stockNumber}
+										</h3>
 										<p class="text-sm text-gray-500">VIN: {vehicle.vin}</p>
 									</div>
 								</div>
@@ -267,11 +297,10 @@
 											stroke-width="2"
 											stroke-linecap="round"
 											stroke-linejoin="round"
-											class="lucide lucide-tag"
-											aria-hidden="true"
-											><path
-												d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
-											/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg
+											class="lucide lucide-tags"
+											><path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" /><path
+												d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"
+											/><circle cx="6.5" cy="9.5" r=".5" fill="currentColor" /></svg
 										>
 									</button>
 									<button
@@ -289,10 +318,11 @@
 											stroke-width="2"
 											stroke-linecap="round"
 											stroke-linejoin="round"
-											class="lucide lucide-tags"
-											><path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" /><path
-												d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"
-											/><circle cx="6.5" cy="9.5" r=".5" fill="currentColor" /></svg
+											class="lucide lucide-tag"
+											aria-hidden="true"
+											><path
+												d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+											/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg
 										>
 									</button>
 									<button
@@ -369,19 +399,49 @@
 
 							<!-- Content list view -->
 							<div class="flex flex-1 flex-col px-4">
-								<h3 class="text-lg font-semibold">{vehicle.title}</h3>
-								<p class="text-lg font-bold text-green-600">
+								<div class="flex flex-row justify-between">
+									<div class="text-lg font-semibold">{vehicle.title}</div>
+									<div class="flex flex-row items-center gap-1">
+										{#if vehicle.usage === 'Used'}
+											<div
+												class="flex flex-row items-center rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
+											>
+												<CircleGauge class="mx-1 h-4 w-4" />
+												{vehicle.metricValue}
+											</div>
+											<div
+												class="rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
+											>
+												{vehicle.usage}
+											</div>
+										{:else}
+											<div
+												class="flex flex-row items-center rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100"
+											>
+												<CircleGauge class="mx-1 h-4 w-4" />
+												{vehicle.metricValue}
+											</div>
+											<div class="rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100">
+												{vehicle.usage}
+											</div>
+										{/if}
+									</div>
+								</div>
+								<div class="text-lg font-bold text-green-600">
 									{vehicle.price ? `$${(vehicle.price / 100).toLocaleString()}` : 'N/A'}
-									<span class="mx-1 text-sm text-gray-500">{vehicle.usage || 'N/A'}</span>
-								</p>
+								</div>
 								<div class="text-sm text-gray-500">
-									<p>{vehicle.make} • {vehicle.color}</p>
-									<p>VIN: {vehicle.vin}</p>
+									<div>{vehicle.manufacturer} • {vehicle.color}</div>
+									<div class="text-sm text-gray-500">VIN: {vehicle.vin}</div>
 								</div>
 
 								<!-- Action buttons list view -->
 								<div class="flex w-full flex-row items-center justify-between gap-1">
-									<div class="text-lg font-bold text-gray-500">Stock # {vehicle.stockNumber}</div>
+									<div class="text-lg font-bold text-gray-500">
+										<h3 class="w-full text-lg font-bold text-gray-500">
+											Stock # {vehicle.stockNumber}
+										</h3>
+									</div>
 									<!-- Existing buttons list view -->
 									<div class="flex flex-row items-center justify-end gap-1">
 										<button
@@ -399,11 +459,10 @@
 												stroke-width="2"
 												stroke-linecap="round"
 												stroke-linejoin="round"
-												class="lucide lucide-tag"
-												aria-hidden="true"
-												><path
-													d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
-												/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg
+												class="lucide lucide-tags"
+												><path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" /><path
+													d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"
+												/><circle cx="6.5" cy="9.5" r=".5" fill="currentColor" /></svg
 											>
 										</button>
 										<button
@@ -421,10 +480,11 @@
 												stroke-width="2"
 												stroke-linecap="round"
 												stroke-linejoin="round"
-												class="lucide lucide-tags"
-												><path d="m15 5 6.3 6.3a2.4 2.4 0 0 1 0 3.4L17 19" /><path
-													d="M9.586 5.586A2 2 0 0 0 8.172 5H3a1 1 0 0 0-1 1v5.172a2 2 0 0 0 .586 1.414L8.29 18.29a2.426 2.426 0 0 0 3.42 0l3.58-3.58a2.426 2.426 0 0 0 0-3.42z"
-												/><circle cx="6.5" cy="9.5" r=".5" fill="currentColor" /></svg
+												class="lucide lucide-tag"
+												aria-hidden="true"
+												><path
+													d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"
+												/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor" /></svg
 											>
 										</button>
 										<button

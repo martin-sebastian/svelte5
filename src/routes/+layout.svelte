@@ -164,4 +164,10 @@
 	.part-4:hover {
 		fill: orange;
 	}
+	@media print {
+		main {
+			background-color: white !important;
+			background: none !important;
+		}
+	}
 </style>

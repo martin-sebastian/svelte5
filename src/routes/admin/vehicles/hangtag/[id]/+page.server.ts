@@ -17,7 +17,9 @@ export const load: PageServerLoad = async ({ params }) => {
 			throw error(404, 'Vehicle not found');
 		}
 
-		return { vehicle };
+		const primaryImage = vehicle.primaryImage;
+
+		return { vehicle, primaryImage };
 	} catch (e) {
 		// Log the full error details to your server console
 		console.error('Failed to load vehicle:', {

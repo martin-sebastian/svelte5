@@ -31,7 +31,7 @@ export async function getVehicleWithCaching(id: string) {
 
 	return {
 		...vehicle,
-		primaryImage: images[0]?.imageUrl || null,
+		primaryImage: images[0]?.image_url || null,
 		attributes
 	};
 }
