@@ -57,6 +57,8 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"@paralleldrive/cuid2": "^2.2.2",
+		"@supabase/supabase-js": "^2.47.16",
+		"@sveltejs/adapter-vercel": "^5.5.3",
 		"@tanstack/table-core": "^8.20.5",
 		"cheerio": "^1.0.0",
 		"dompurify": "^3.2.3",
