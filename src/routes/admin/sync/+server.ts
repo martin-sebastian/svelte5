@@ -139,7 +139,7 @@ export const GET: RequestHandler = async () => {
 						try {
 							await db
 								.delete(vehicleImage)
-								.where(eq(vehicleImage.vehicle_id, vehicleData.vin));
+								.where(eq(vehicleImage.vehicle_id, vehicleData.id));
 						} catch (imageError) {
 							console.warn('Image deletion skipped:', imageError);
 						}
@@ -147,7 +147,7 @@ export const GET: RequestHandler = async () => {
 						try {
 							await db
 								.delete(vehicleAttribute)
-								.where(eq(vehicleAttribute.vehicle_id, vehicleData.vin));
+								.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
 						} catch (attrError) {
 							console.warn('Attribute deletion skipped:', attrError);
 						}
