@@ -24,23 +24,40 @@ export const load = async () => {
 				metricType: vehicle.metricType,
 				metricValue: vehicle.metricValue,
 				status: vehicle.status,
-				images: sql`group_concat(DISTINCT ${vehicleImage.image_url})`,
-				attributes: sql`group_concat(${vehicleAttribute.name} || ':' || ${vehicleAttribute.value})`
+				images: sql`string_agg(DISTINCT COALESCE(${vehicleImage.image_url}, ''), ', ')`,
+				attributes: sql`string_agg(DISTINCT COALESCE(concat(${vehicleAttribute.name}, ':', ${vehicleAttribute.value}), ''), ', ')`
 			})
 			.from(vehicle)
 			.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicle_id))
 			.leftJoin(vehicleAttribute, eq(vehicle.id, vehicleAttribute.vehicle_id))
-			.where(eq(vehicle.status, 'ACTIVE'))
-			.groupBy(vehicle.id);
+			.groupBy(
+				vehicle.id,
+				vehicle.stockNumber,
+				vehicle.vin,
+				vehicle.year,
+				vehicle.manufacturer,
+				vehicle.modelType,
+				vehicle.modelTypestyle,
+				vehicle.trimName,
+				vehicle.trimColor,
+				vehicle.usage,
+				vehicle.title,
+				vehicle.description,
+				vehicle.price,
+				vehicle.color,
+				vehicle.metricType,
+				vehicle.metricValue,
+				vehicle.status
+			);
 
 		return {
 			vehicles: vehicles.map((v) => ({
 				...v,
-				images: v.images?.split(',').filter(Boolean) ?? [],
-				attributes: v.attributes?.split(',').map(attr => {
+				images: v.images ? v.images.split(', ').filter(Boolean) : [],
+				attributes: v.attributes ? v.attributes.split(', ').map(attr => {
 					const [name, value] = attr.split(':');
 					return { name, value };
-				}).filter(Boolean) ?? []
+				}).filter(attr => attr.name && attr.value) : []
 			}))
 		};
 	} catch (error) {

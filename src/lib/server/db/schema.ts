@@ -1,13 +1,17 @@
-import { pgTable, text, integer, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	text,
+	integer,
+	timestamp,
+	primaryKey,
+	uniqueIndex
+} from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
-	age: integer('age'),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull(),
-	firstName: text('first_name'),
-	lastName: text('last_name')
+	email: text('email').notNull(),
+	name: text('name')
 });
 
 export const session = pgTable('session', {
@@ -15,7 +19,7 @@ export const session = pgTable('session', {
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
+	expiresAt: integer('expires_at').notNull()
 });
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
@@ -48,7 +52,7 @@ export const vehicle = pgTable(
 		status: text('status', { enum: ['ACTIVE', 'SOLD', 'HIDDEN', 'ARCHIVED'] })
 			.notNull()
 			.default('ACTIVE'),
-		lastModified: integer('last_modified', { mode: 'timestamp' }).$defaultFn(() => new Date())
+		lastModified: timestamp('last_modified').notNull().defaultNow()
 	},
 	(table) => ({
 		uniqVin: uniqueIndex('uniq_vin').on(table.vin)
