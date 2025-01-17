@@ -1,7 +1,7 @@
-import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { pgTable, text, integer, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-export const user = sqliteTable('user', {
+export const user = pgTable('user', {
 	id: text('id').primaryKey(),
 	age: integer('age'),
 	username: text('username').notNull().unique(),
@@ -10,7 +10,7 @@ export const user = sqliteTable('user', {
 	lastName: text('last_name')
 });
 
-export const session = sqliteTable('session', {
+export const session = pgTable('session', {
 	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
@@ -20,7 +20,7 @@ export const session = sqliteTable('session', {
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
-export const vehicle = sqliteTable(
+export const vehicle = pgTable(
 	'vehicle',
 	{
 		id: text('id').primaryKey(),
@@ -30,12 +30,12 @@ export const vehicle = sqliteTable(
 		price: integer('price'),
 		priceType: text('price_type'),
 		stockNumber: text('stock_number'),
-		vin: text('vin').unique(),
+		vin: text('vin'),
 		manufacturer: text('manufacturer'),
 		year: integer('year'),
 		color: text('color'),
 		modelType: text('model_type'),
-		modelTypeStyle: text('model_type_style'),
+		modelTypestyle: text('model_typestyle'),
 		modelName: text('model_name'),
 		trimName: text('trim_name'),
 		trimColor: text('trim_color'),
@@ -51,26 +51,21 @@ export const vehicle = sqliteTable(
 		lastModified: integer('last_modified', { mode: 'timestamp' }).$defaultFn(() => new Date())
 	},
 	(table) => ({
-		uniqVin: uniqueIndex('uniq_vin').on(table.vin),
-		uniqStock: uniqueIndex('uniq_stock').on(table.stockNumber)
+		uniqVin: uniqueIndex('uniq_vin').on(table.vin)
 	})
 );
 
-export const vehicleImage = sqliteTable('vehicle_image', {
-	id: text('id').primaryKey(),
-	vehicleId: text('vehicle_id')
-		.notNull()
-		.references(() => vehicle.id, { onDelete: 'cascade' }),
-	imageUrl: text('image_url').notNull()
+export const vehicleImage = pgTable('vehicle_image', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
+	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
+	image_url: text('image_url')
 });
 
-export const vehicleAttribute = sqliteTable('vehicle_attribute', {
-	id: text('id').primaryKey(),
-	vehicleId: text('vehicle_id')
-		.notNull()
-		.references(() => vehicle.id, { onDelete: 'cascade' }),
-	name: text('name').notNull(),
-	value: text('value').notNull()
+export const vehicleAttribute = pgTable('vehicle_attribute', {
+	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
+	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
+	name: text('name'),
+	value: text('value')
 });
 
 export const vehicleRelations = relations(vehicle, ({ many }) => ({
@@ -80,14 +75,14 @@ export const vehicleRelations = relations(vehicle, ({ many }) => ({
 
 export const vehicleImageRelations = relations(vehicleImage, ({ one }) => ({
 	vehicle: one(vehicle, {
-		fields: [vehicleImage.vehicleId],
+		fields: [vehicleImage.vehicle_id],
 		references: [vehicle.id]
 	})
 }));
 
 export const vehicleAttributeRelations = relations(vehicleAttribute, ({ one }) => ({
 	vehicle: one(vehicle, {
-		fields: [vehicleAttribute.vehicleId],
+		fields: [vehicleAttribute.vehicle_id],
 		references: [vehicle.id]
 	})
 }));

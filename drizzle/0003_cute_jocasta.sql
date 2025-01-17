@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS `vehicle_vin_unique`;
