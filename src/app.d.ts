@@ -16,7 +16,14 @@ declare global {
 			auth: {
 				validate: () => Promise<SessionValidationResult>;
 			};
+			supabase: import('@supabase/supabase-js').SupabaseClient;
+			getSession: () => Promise<import('@supabase/supabase-js').Session | null>;
 		}
+		interface PageData {
+			session: import('@supabase/supabase-js').Session | null;
+		}
+		// interface Error {}
+		// interface Platform {}
 	}
 }
 

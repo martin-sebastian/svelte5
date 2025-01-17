@@ -1,9 +1,10 @@
+import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { vehicle, vehicleImage, vehicleAttribute } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 
-export const load = async () => {
+export const load: PageServerLoad = async () => {
 	try {
 		const vehicles = await db
 			.select({
@@ -24,8 +25,8 @@ export const load = async () => {
 				metricType: vehicle.metricType,
 				metricValue: vehicle.metricValue,
 				status: vehicle.status,
-				images: sql`string_agg(DISTINCT COALESCE(${vehicleImage.image_url}, ''), ', ')`,
-				attributes: sql`string_agg(DISTINCT COALESCE(concat(${vehicleAttribute.name}, ':', ${vehicleAttribute.value}), ''), ', ')`
+				images: sql`COALESCE(string_agg(${vehicleImage.image_url}, ','), '')`,
+				attributes: sql`COALESCE(string_agg(concat_ws(':', ${vehicleAttribute.name}, ${vehicleAttribute.value}), ','), '')`
 			})
 			.from(vehicle)
 			.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicle_id))
@@ -53,15 +54,17 @@ export const load = async () => {
 		return {
 			vehicles: vehicles.map((v) => ({
 				...v,
-				images: v.images ? v.images.split(', ').filter(Boolean) : [],
-				attributes: v.attributes ? v.attributes.split(', ').map(attr => {
+				images: v.images ? v.images.split(',').filter(Boolean) : [],
+				attributes: v.attributes ? v.attributes.split(',').map(attr => {
 					const [name, value] = attr.split(':');
 					return { name, value };
 				}).filter(attr => attr.name && attr.value) : []
 			}))
 		};
 	} catch (error) {
-		console.error('Full error details:', error);
-		return { vehicles: [] };
+		console.error('Database error:', error);
+		return {
+			vehicles: []
+		};
 	}
 };

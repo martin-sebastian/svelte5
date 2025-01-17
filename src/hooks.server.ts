@@ -1,19 +1,62 @@
-import { validateSessionToken } from '$lib/server/auth';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	// Get the session token from cookies
-	const sessionToken = event.cookies.get('auth-session');
+	event.locals.supabase = createSupabaseServerClient({
+		supabaseUrl: PUBLIC_SUPABASE_URL,
+		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
+		event
+	});
 
-	// Initialize auth on event.locals
-	event.locals.auth = {
-		validate: async () => {
-			if (!sessionToken) {
-				return { user: null, session: null };
-			}
-			return await validateSessionToken(sessionToken);
-		}
+	event.locals.getSession = async () => {
+		const {
+			data: { session }
+		} = await event.locals.supabase.auth.getSession();
+		
+		return session;
 	};
 
-	return await resolve(event);
+	// Get the session
+	const session = await event.locals.getSession();
+
+	// Log the current state
+	console.log('=== Auth Debug ===');
+	console.log('URL:', event.url.pathname);
+	console.log('Has Session:', !!session);
+	if (session) {
+		console.log('User:', session.user.email);
+		console.log('Token:', session.access_token.slice(0, 10) + '...');
+	}
+	console.log('================');
+
+	// Temporarily disable auth checks
+	// if (event.url.pathname.startsWith('/admin')) {
+	// 	if (event.url.pathname === '/admin/auth/login') {
+	// 		if (session) {
+	// 			return new Response(null, {
+	// 				status: 303,
+	// 				headers: { Location: '/admin/auth' }
+	// 			});
+	// 		}
+	// 		return resolve(event);
+	// 	}
+
+	// 	if (!session) {
+	// 		console.log('No session, redirecting to login');
+	// 		return new Response(null, {
+	// 			status: 303,
+	// 			headers: { Location: '/admin/auth/login' }
+	// 		});
+	// 	}
+	// }
+
+	// Proceed with the request
+	const response = await resolve(event, {
+		filterSerializedResponseHeaders(name) {
+			return name === 'content-range';
+		}
+	});
+
+	return response;
 };

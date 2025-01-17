@@ -24,9 +24,13 @@ export const actions: Actions = {
 			return fail(400, { message: 'Invalid credentials' });
 		}
 
-		const results = await db.select().from(table.user).where(eq(table.user.username, username));
+		const users = await db
+			.select()
+			.from(table.user)
+			.where(eq(table.user.username, username))
+			.limit(1);
 
-		const existingUser = results.at(0);
+		const existingUser = users[0];
 		if (!existingUser) {
 			return fail(400, { message: 'Invalid credentials' });
 		}

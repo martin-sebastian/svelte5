@@ -43,13 +43,14 @@ export async function validateSessionToken(token: string) {
 
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	
-	const [result] = await db
+	const results = await db
 		.select()
 		.from(session)
 		.leftJoin(user, eq(session.userId, user.id))
-		.where(eq(session.id, sessionId))
-		.limit(1);
+		.where(eq(session.id, sessionId));
 
+	const result = results[0];
+	
 	if (!result?.session) {
 		return { session: null, user: null };
 	}
@@ -76,8 +77,6 @@ export async function validateSessionToken(token: string) {
 		user: result.user 
 	};
 }
-
-export type SessionValidationResult = Awaited<ReturnType<typeof validateSessionToken>>;
 
 export async function invalidateSession(sessionId: string) {
 	if (!sessionId) {

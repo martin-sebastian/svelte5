@@ -10,8 +10,11 @@ import { relations } from 'drizzle-orm';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
-	email: text('email').notNull(),
-	name: text('name')
+	username: text('username').notNull().unique(),
+	passwordHash: text('password_hash').notNull(),
+	firstName: text('first_name'),
+	lastName: text('last_name'),
+	age: text('age')
 });
 
 export const session = pgTable('session', {
@@ -19,7 +22,7 @@ export const session = pgTable('session', {
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	expiresAt: integer('expires_at').notNull()
+	expiresAt: text('expires_at').notNull()
 });
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';

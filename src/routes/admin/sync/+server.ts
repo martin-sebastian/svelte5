@@ -6,7 +6,6 @@ import { eq, and, notInArray } from 'drizzle-orm';
 import { XMLParser } from 'fast-xml-parser';
 import { sql } from 'drizzle-orm';
 
-
 async function fetchXMLData() {
 	const response = await fetch('https://www.flatoutmotorcycles.com/unitinventory_univ.xml');
 	const xmlText = await response.text();
@@ -19,13 +18,12 @@ async function parseXML(xmlText: string) {
 		attributeNamePrefix: "@_",
 		ignoreDeclaration: true,
 		parseAttributeValue: true,
-		arrayMode: true // Force arrays for elements that can appear multiple times
+		arrayMode: true
 	});
 	
 	const result = parser.parse(xmlText);
-	console.log('Parsed XML structure:', JSON.stringify(result, null, 2)); // Debug
+	console.log('Parsed XML structure:', JSON.stringify(result, null, 2));
 
-	// More flexible inventory detection
 	let inventory;
 	if (result.feed?.item) {
 		inventory = result.feed.item;
@@ -37,22 +35,17 @@ async function parseXML(xmlText: string) {
 		throw new Error('Could not find valid inventory items in XML');
 	}
 	
-	// Ensure we have an array
 	const items = Array.isArray(inventory) ? inventory : [inventory];
 	
-	// Map the XML data, maintaining exact field names but adding null checks
 	return items.filter(item => item).map((item: any) => {
-		// Require VIN as it's our unique identifier
 		if (!item.vin) {
 			console.warn('Skipping item without VIN:', item);
 			return null;
 		}
 
-		// Extract images and attributes
 		const images = item.images?.imageurl || [];
 		const attributes = item.attributes?.attribute || [];
 
-		// Convert to arrays if single items
 		const imageUrls = Array.isArray(images) ? images : [images];
 		const attributeList = Array.isArray(attributes) ? attributes : [attributes];
 
@@ -93,14 +86,11 @@ async function parseXML(xmlText: string) {
 				value: attr.value || ''
 			}))
 		};
-	}).filter(item => item !== null); // Remove any null items
+	}).filter(item => item !== null);
 }
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async () => {
 	try {
-		const { user } = await locals.auth.validate();
-
-		// Debug logging
 		console.log('Starting sync process');
 
 		const xmlText = await fetchXMLData();
@@ -121,15 +111,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 			attributesAdded: 0
 		};
 
-		// Keep track of all vehicle IDs from XML
 		const processedIds = new Set<string>();
 
-		// Process each vehicle from XML
 		for (const data of parsedData) {
 			if (!data) continue;
 			const { vehicle: vehicleData, images, attributes } = data;
 
-			// Add this ID to our processed set
 			processedIds.add(vehicleData.id);
 
 			try {
@@ -141,7 +128,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 				const existingVehicle = existingVehicles[0];
 
 				if (existingVehicle) {
-					// Update existing vehicle
 					await db.update(vehicle)
 						.set({
 							...vehicleData,
@@ -150,9 +136,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 						.where(eq(vehicle.id, vehicleData.id));
 					
 					try {
-						// Try the delete operations, but don't fail if they don't work
 						try {
-							// Delete images
 							await db
 								.delete(vehicleImage)
 								.where(eq(vehicleImage.vehicle_id, vehicleData.vin));
@@ -161,7 +145,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 						}
 						
 						try {
-							// Delete attributes
 							await db
 								.delete(vehicleAttribute)
 								.where(eq(vehicleAttribute.vehicle_id, vehicleData.vin));
@@ -172,17 +155,14 @@ export const GET: RequestHandler = async ({ locals }) => {
 						results.updated++;
 					} catch (deleteError) {
 						console.error('Delete operation failed:', deleteError);
-						// Continue processing even if deletes fail
 					}
 				} else {
-					// Insert new vehicle
 					await db.insert(vehicle).values({
 						...vehicleData,
 						status: 'ACTIVE',
 						lastModified: new Date()
 					});
 					
-					// Insert images
 					if (images.length > 0) {
 						try {
 							console.log(`Attempting to insert ${images.length} images for vehicle ID: ${vehicleData.id}`);
@@ -193,7 +173,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 						}
 					}
 
-					// Insert attributes
 					if (attributes.length > 0) {
 						try {
 							await db.insert(vehicleAttribute).values(attributes);
@@ -212,7 +191,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		}
 
-		// Mark vehicles as SOLD if they're no longer in the XML feed
 		try {
 			const soldUpdate = await db
 				.update(vehicle)
@@ -227,7 +205,6 @@ export const GET: RequestHandler = async ({ locals }) => {
 					)
 				);
 			
-			// Get count of vehicles marked as sold
 			const soldCount = await db
 				.select({ count: sql`count(*)` })
 				.from(vehicle)
@@ -243,7 +220,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			console.log(`Marked ${results.markedAsSold} vehicles as SOLD`);
 		} catch (soldError) {
 			console.error('Error marking vehicles as SOLD:', soldError);
-			console.error('Processed IDs:', Array.from(processedIds)); // Debug logging
+			console.error('Processed IDs:', Array.from(processedIds));
 		}
 
 		return json({
@@ -263,53 +240,82 @@ export const GET: RequestHandler = async ({ locals }) => {
 	}
 };
 
-export const POST = async ({ request }) => {
-	const xmlData = await request.text();
-	const parser = new XMLParser({
-		ignoreAttributes: false,
-		parseTagValue: true,
-		trimValues: true
-	});
-	
-	const parsedData = parser.parse(xmlData);
-	console.log('Parsed feed:', parsedData); // Debug
+export const POST: RequestHandler = async ({ request }) => {
+	try {
+		const data = await request.json();
+		
+		for (const item of data) {
+			const [existingVehicle] = await db
+				.select()
+				.from(vehicle)
+				.where(eq(vehicle.stockNumber, item.stockNumber))
+				.limit(1);
 
-	// Access items array
-	const items = parsedData.feed.item;
-	if (!Array.isArray(items)) {
-		// Handle single item case
-		const itemsArray = items ? [items] : [];
-		// Process single item
-	}
+			const vehicleData = {
+				stockNumber: item.stockNumber,
+				vin: item.vin,
+				year: item.year,
+				manufacturer: item.manufacturer,
+				modelType: item.type,
+				modelTypestyle: item.style,
+				trimName: item.trimName,
+				trimColor: item.trimColor,
+				usage: item.usage,
+				title: item.title,
+				description: item.description,
+				price: item.price,
+				color: item.color,
+				metricType: item.metricType,
+				metricValue: item.metricValue,
+				status: 'ACTIVE'
+			};
 
-	// Process each item
-	for (const item of Array.isArray(items) ? items : [items]) {
-		const vehicleData = {
-			title: item.title,
-			link: item.link,
-			description: item.description,
-			price: parseFloat(item.price),
-			priceType: item.price_type,
-			stockNumber: item.stocknumber,
-			vin: item.vin,
-			manufacturer: item.manufacturer,
-			year: parseInt(item.year),
-			color: item.color,
-			modelType: item.model_type,
-			modelTypestyle: item.model_typestyle,
-			modelName: item.model_name,
-			trimName: item.trim_name || null,
-			trimColor: item.trim_color || null,
-			condition: item.condition,
-			usage: item.usage,
-			location: item.location,
-			updated: item.updated,
-			metricType: item.metric_type,
-			metricValue: parseInt(item.metric_value)
-		};
+			let vehicleId;
+			if (existingVehicle) {
+				await db
+					.update(vehicle)
+					.set(vehicleData)
+					.where(eq(vehicle.id, existingVehicle.id));
+				vehicleId = existingVehicle.id;
+			} else {
+				const [newVehicle] = await db
+					.insert(vehicle)
+					.values(vehicleData)
+					.returning({ id: vehicle.id });
+				vehicleId = newVehicle.id;
+			}
 
-		console.log('Processing vehicle:', vehicleData.title); // Debug
+			if (item.images?.length) {
+				await db
+					.delete(vehicleImage)
+					.where(eq(vehicleImage.vehicleId, vehicleId));
 
-		// ... rest of your existing processing code ...
+				await db.insert(vehicleImage).values(
+					item.images.map((url: string) => ({
+						vehicleId,
+						imageUrl: url
+					}))
+				);
+			}
+
+			if (item.attributes?.length) {
+				await db
+					.delete(vehicleAttribute)
+					.where(eq(vehicleAttribute.vehicleId, vehicleId));
+
+				await db.insert(vehicleAttribute).values(
+					item.attributes.map(({ name, value }: { name: string; value: string }) => ({
+						vehicleId,
+						name,
+						value
+					}))
+				);
+			}
+		}
+
+		return json({ success: true });
+	} catch (error) {
+		console.error('Sync error:', error);
+		return json({ error: 'Sync failed' }, { status: 500 });
 	}
 };
