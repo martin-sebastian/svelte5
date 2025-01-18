@@ -4,7 +4,13 @@ import { vehicle, vehicleImage, vehicleAttribute } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 
-export const load: PageServerLoad = async () => {
+export const load = (async ({ depends, locals: { getSession, supabase }, setHeaders }) => {
+	setHeaders({
+		'cache-control': 'max-age=60'
+	});
+
+	depends('vehicles:list');
+
 	try {
 		const vehicles = await db
 			.select({
@@ -25,8 +31,12 @@ export const load: PageServerLoad = async () => {
 				metricType: vehicle.metricType,
 				metricValue: vehicle.metricValue,
 				status: vehicle.status,
-				images: sql`COALESCE(string_agg(${vehicleImage.image_url}, ','), '')`,
-				attributes: sql`COALESCE(string_agg(concat_ws(':', ${vehicleAttribute.name}, ${vehicleAttribute.value}), ','), '')`
+				primaryImage: sql`(
+					SELECT image_url 
+					FROM ${vehicleImage} 
+					WHERE vehicle_id = ${vehicle.id} 
+					LIMIT 1
+				)`
 			})
 			.from(vehicle)
 			.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicle_id))
@@ -55,11 +65,9 @@ export const load: PageServerLoad = async () => {
 			vehicles: vehicles.map((v) => ({
 				...v,
 				images: v.images ? v.images.split(',').filter(Boolean) : [],
-				attributes: v.attributes ? v.attributes.split(',').map(attr => {
-					const [name, value] = attr.split(':');
-					return { name, value };
-				}).filter(attr => attr.name && attr.value) : []
-			}))
+				primaryImage: v.primaryImage || null
+			})),
+			revalidate: 60
 		};
 	} catch (error) {
 		console.error('Database error:', error);
@@ -67,4 +75,4 @@ export const load: PageServerLoad = async () => {
 			vehicles: []
 		};
 	}
-};
+}) satisfies PageServerLoad;

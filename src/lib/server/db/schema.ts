@@ -1,11 +1,4 @@
-import {
-	pgTable,
-	text,
-	integer,
-	timestamp,
-	primaryKey,
-	uniqueIndex
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, primaryKey, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const user = pgTable('user', {
@@ -55,7 +48,7 @@ export const vehicle = pgTable(
 		status: text('status', { enum: ['ACTIVE', 'SOLD', 'HIDDEN', 'ARCHIVED'] })
 			.notNull()
 			.default('ACTIVE'),
-		lastModified: timestamp('last_modified').notNull().defaultNow()
+		lastModified: text('last_modified')
 	},
 	(table) => ({
 		uniqVin: uniqueIndex('uniq_vin').on(table.vin)
@@ -63,13 +56,13 @@ export const vehicle = pgTable(
 );
 
 export const vehicleImage = pgTable('vehicle_image', {
-	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
+	id: text('id').primaryKey(),
 	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
 	image_url: text('image_url')
 });
 
 export const vehicleAttribute = pgTable('vehicle_attribute', {
-	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }).notNull(),
+	id: text('id').primaryKey(),
 	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
 	name: text('name'),
 	value: text('value')

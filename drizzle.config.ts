@@ -2,15 +2,15 @@ import type { Config } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-if (!process.env.POSTGRES_URL) {
-	throw new Error('POSTGRES_URL environment variable is required');
+if (!process.env.POSTGRES_URL_NON_POOLING) {
+	throw new Error('POSTGRES_URL_NON_POOLING environment variable is required');
 }
 
 export default {
 	schema: './src/lib/server/db/schema.ts',
 	out: './drizzle',
-	dialect: 'pg',
+	dialect: 'postgresql',
 	dbCredentials: {
-		connectionString: process.env.POSTGRES_URL + "?sslmode=require",
+		url: process.env.POSTGRES_URL_NON_POOLING + '&ssl=true&sslmode=require'
 	}
 } satisfies Config;

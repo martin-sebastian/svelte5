@@ -1,4 +1,6 @@
-import { getVehicleWithCaching } from '$lib/services/vehicle';
+import { db } from '$lib/server/db';
+import { vehicle } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -10,25 +12,25 @@ export const load: PageServerLoad = async ({ params }) => {
 			throw error(400, 'Vehicle ID is required');
 		}
 
-		const vehicle = await getVehicleWithCaching(params.id);
-		console.log('Debug: Found vehicle:', vehicle);
+		const [vehicleData] = await db.select().from(vehicle).where(eq(vehicle.id, params.id));
 
-		if (!vehicle) {
+		console.log('Debug: Found vehicle:', vehicleData);
+
+		if (!vehicleData) {
 			throw error(404, 'Vehicle not found');
 		}
 
-		const primaryImage = vehicle.primaryImage;
+		// Assuming primaryImage is the first image in the images array
+		const primaryImage = vehicleData.primaryImage;
 
-		return { vehicle, primaryImage };
+		return { vehicle: vehicleData, primaryImage };
 	} catch (e) {
-		// Log the full error details to your server console
 		console.error('Failed to load vehicle:', {
 			id: params.id,
 			error: e.message,
 			stack: e.stack
 		});
 
-		// Re-throw as a proper HTTP error
 		throw error(500, {
 			message: 'Failed to load vehicle details',
 			cause: e.message
