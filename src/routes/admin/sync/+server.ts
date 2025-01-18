@@ -143,25 +143,42 @@ export const GET: RequestHandler = async () => {
 						})
 						.where(eq(vehicle.id, vehicleData.id));
 
-					try {
+					if (images.length > 0) {
 						try {
 							await db.delete(vehicleImage).where(eq(vehicleImage.vehicle_id, vehicleData.id));
+							await db.insert(vehicleImage).values(
+								images.map((image) => ({
+									id: crypto.randomUUID(),
+									vehicle_id: vehicleData.id,
+									image_url: image.image_url
+								}))
+							);
+							results.imagesAdded += images.length;
 						} catch (imageError) {
-							console.warn('Image deletion skipped:', imageError);
+							console.error('Failed to update images:', imageError);
 						}
+					}
 
+					if (attributes.length > 0) {
 						try {
 							await db
 								.delete(vehicleAttribute)
 								.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
+							await db.insert(vehicleAttribute).values(
+								attributes.map(({ name, value }) => ({
+									id: crypto.randomUUID(),
+									vehicle_id: vehicleData.id,
+									name,
+									value
+								}))
+							);
+							results.attributesAdded += attributes.length;
 						} catch (attrError) {
-							console.warn('Attribute deletion skipped:', attrError);
+							console.error('Failed to update attributes:', attrError);
 						}
-
-						results.updated++;
-					} catch (deleteError) {
-						console.error('Delete operation failed:', deleteError);
 					}
+
+					results.updated++;
 				} else {
 					await db.insert(vehicle).values({
 						...vehicleData,
