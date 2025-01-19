@@ -6,12 +6,10 @@
 	let importMessage = $state('');
 
 	async function handleImport() {
-		console.log('Starting import...');
 		try {
 			isLoading = true;
 			const response = await fetch('/admin/sync');
 			const result = await response.json();
-			console.log('Import result:', result);
 
 			if (result.success) {
 				importMessage = result.message;
