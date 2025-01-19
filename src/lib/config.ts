@@ -1,1 +1,1 @@
-export const PUBLIC_URL = 'https://martinsebastian.io'; // Your production domain
+export const PUBLIC_URL = 'https://dealerops.app'; // Your production domain
