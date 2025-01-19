@@ -13,7 +13,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const {
 			data: { session }
 		} = await event.locals.supabase.auth.getSession();
-		
+
 		return session;
 	};
 
@@ -29,27 +29,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		console.log('Token:', session.access_token.slice(0, 10) + '...');
 	}
 	console.log('================');
-
-	// Temporarily disable auth checks
-	// if (event.url.pathname.startsWith('/admin')) {
-	// 	if (event.url.pathname === '/admin/auth/login') {
-	// 		if (session) {
-	// 			return new Response(null, {
-	// 				status: 303,
-	// 				headers: { Location: '/admin/auth' }
-	// 			});
-	// 		}
-	// 		return resolve(event);
-	// 	}
-
-	// 	if (!session) {
-	// 		console.log('No session, redirecting to login');
-	// 		return new Response(null, {
-	// 			status: 303,
-	// 			headers: { Location: '/admin/auth/login' }
-	// 		});
-	// 	}
-	// }
 
 	// Proceed with the request
 	const response = await resolve(event, {

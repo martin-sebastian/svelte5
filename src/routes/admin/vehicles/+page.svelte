@@ -108,85 +108,100 @@
 
 <div class="container sticky top-0 z-50 mx-auto my-1">
 	<div
-		class="mb-6 flex items-center justify-between rounded-lg border border-gray-400/25 bg-background px-2 py-2 backdrop:blur-sm"
+		class="mb-6 flex flex-col gap-2 rounded-lg border border-gray-400/25 bg-background p-2 backdrop:blur-sm sm:flex-row sm:items-center sm:justify-between"
 	>
-		<div class="flex flex-row items-center">
-			<!-- Search input -->
+		<!-- Search input and count - full width on mobile -->
+		<div class="flex w-full flex-row items-center sm:w-auto">
 			<input
 				type="search"
 				bind:value={searchTerm}
 				placeholder="Filter..."
-				class=" rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+				class="w-full rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 			/>
-			<span class="mx-2 block w-full text-sm text-gray-500">
+			<span class="mx-2 whitespace-nowrap text-sm text-gray-500">
 				{totalShowing} of {data?.vehicles?.length || 0}
 			</span>
 		</div>
-		<!-- Scroll to type anchor -->
-		<div class="flex flex-row items-center">
-			<select
-				on:change={(e) => {
-					const groupName = e.target.value;
-					if (!groupName) {
-						// If empty option is selected, scroll to top
-						window.scrollTo({ top: 0, behavior: 'smooth' });
-						return;
-					}
-					const element = document.getElementById(groupName);
-					if (element) {
-						const navbarHeight = 64;
-						const y = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
-						window.scrollTo({ top: y, behavior: 'smooth' });
-					}
-				}}
-				class="rounded-full border border-gray-400/50 bg-gray-100/50 px-5 py-1 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50"
-			>
-				<option value="">Jump to...</option>
-				{#each sortedGroups as [groupName]}
-					<option value={groupName}>{groupName}</option>
-				{/each}
-			</select>
-		</div>
 
-		<!-- Sort Dropdown -->
-		<div class="flex items-center gap-2">
-			<label for="sort" class="text-gray-400/50">Group by:</label>
-			<select
-				id="sort"
-				bind:value={selectedSort}
-				class="rounded-full border border-gray-400/50 bg-gray-100/50 px-5 py-1 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50"
-			>
-				{#each sortOptions as option}
-					<option value={option.value}>{option.label}</option>
-				{/each}
-			</select>
-		</div>
+		<!-- Controls container - stack on mobile -->
+		<div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+			<!-- Jump to dropdown -->
+			<div class="w-full sm:w-auto">
+				<select
+					on:change={(e) => {
+						const groupName = e.target.value;
+						if (!groupName) {
+							window.scrollTo({ top: 0, behavior: 'smooth' });
+							return;
+						}
+						const element = document.getElementById(groupName);
+						if (element) {
+							const navbarHeight = 64;
+							const y = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+							window.scrollTo({ top: y, behavior: 'smooth' });
+						}
+					}}
+					class="w-full rounded-full border border-gray-400/50 bg-gray-100/50 px-5 py-1 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50 sm:w-auto"
+				>
+					<option value="">Jump to...</option>
+					{#each sortedGroups as [groupName]}
+						<option value={groupName}>{groupName}</option>
+					{/each}
+				</select>
+			</div>
 
-		<!-- Add view toggle buttons -->
-		<div class="flex items-center gap-2">
-			<button
-				class={`rounded-full p-2 ${viewMode === 'grid' ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
-				on:click={() => (viewMode = 'grid')}
-				aria-label="Grid view"
-			>
-				<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<rect width="7" height="7" x="3" y="3" rx="1" />
-					<rect width="7" height="7" x="14" y="3" rx="1" />
-					<rect width="7" height="7" x="14" y="14" rx="1" />
-					<rect width="7" height="7" x="3" y="14" rx="1" />
-				</svg>
-			</button>
-			<button
-				class={`rounded-full p-2 ${viewMode === 'list' ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
-				on:click={() => (viewMode = 'list')}
-				aria-label="List view"
-			>
-				<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<line x1="3" y1="6" x2="21" y2="6" />
-					<line x1="3" y1="12" x2="21" y2="12" />
-					<line x1="3" y1="18" x2="21" y2="18" />
-				</svg>
-			</button>
+			<!-- Sort Dropdown -->
+			<div class="flex w-full items-center gap-2 sm:w-auto">
+				<label for="sort" class="text-gray-400/50">Group by:</label>
+				<select
+					id="sort"
+					bind:value={selectedSort}
+					class="w-full rounded-full border border-gray-400/50 bg-gray-100/50 px-5 py-1 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50 sm:w-auto"
+				>
+					{#each sortOptions as option}
+						<option value={option.value}>{option.label}</option>
+					{/each}
+				</select>
+			</div>
+
+			<!-- View toggle buttons -->
+			<div class="flex items-center justify-end gap-2">
+				<button
+					class={`rounded-full p-2 ${viewMode === 'grid' ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+					on:click={() => (viewMode = 'grid')}
+					aria-label="Grid view"
+				>
+					<svg
+						class="h-5 w-5"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<rect width="7" height="7" x="3" y="3" rx="1" />
+						<rect width="7" height="7" x="14" y="3" rx="1" />
+						<rect width="7" height="7" x="14" y="14" rx="1" />
+						<rect width="7" height="7" x="3" y="14" rx="1" />
+					</svg>
+				</button>
+				<button
+					class={`rounded-full p-2 ${viewMode === 'list' ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+					on:click={() => (viewMode = 'list')}
+					aria-label="List view"
+				>
+					<svg
+						class="h-5 w-5"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<line x1="3" y1="6" x2="21" y2="6" />
+						<line x1="3" y1="12" x2="21" y2="12" />
+						<line x1="3" y1="18" x2="21" y2="18" />
+					</svg>
+				</button>
+			</div>
 		</div>
 	</div>
 </div>
