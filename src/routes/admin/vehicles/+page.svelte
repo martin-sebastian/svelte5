@@ -127,6 +127,11 @@
 			<select
 				on:change={(e) => {
 					const groupName = e.target.value;
+					if (!groupName) {
+						// If empty option is selected, scroll to top
+						window.scrollTo({ top: 0, behavior: 'smooth' });
+						return;
+					}
 					const element = document.getElementById(groupName);
 					if (element) {
 						const navbarHeight = 64;

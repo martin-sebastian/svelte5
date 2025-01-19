@@ -22,7 +22,6 @@ async function parseXML(xmlText: string) {
 	});
 
 	const result = parser.parse(xmlText);
-	console.log('Parsed XML structure:', JSON.stringify(result, null, 2));
 
 	let inventory;
 	if (result.feed?.item) {
@@ -41,7 +40,6 @@ async function parseXML(xmlText: string) {
 		.filter((item) => item)
 		.map((item: any) => {
 			if (!item.vin) {
-				console.warn('Skipping item without VIN:', item);
 				return null;
 			}
 
@@ -50,10 +48,6 @@ async function parseXML(xmlText: string) {
 
 			const imageUrls = Array.isArray(images) ? images : [images];
 			const attributeList = Array.isArray(attributes) ? attributes : [attributes];
-
-			console.log(
-				`Found ${imageUrls.length} images and ${attributeList.length} attributes for VIN: ${item.vin}`
-			);
 
 			return {
 				vehicle: {
@@ -96,8 +90,6 @@ async function parseXML(xmlText: string) {
 
 export const GET: RequestHandler = async () => {
 	try {
-		console.log('Starting sync process');
-
 		const xmlText = await fetchXMLData();
 		const parsedData = await parseXML(xmlText);
 
@@ -187,9 +179,6 @@ export const GET: RequestHandler = async () => {
 
 					if (images.length > 0) {
 						try {
-							console.log(
-								`Attempting to insert ${images.length} images for vehicle ID: ${vehicleData.id}`
-							);
 							await db.insert(vehicleImage).values(
 								images.map((image) => ({
 									id: crypto.randomUUID(),

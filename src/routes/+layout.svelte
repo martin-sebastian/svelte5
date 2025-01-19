@@ -116,7 +116,7 @@
 			</svg>
 		</Button>
 
-		<Button href="/admin/auth" variant="outline" class="mr-1">
+		<Button href="/auth" variant="outline" class="mr-1">
 			<svg
 				width="24"
 				height="24"
