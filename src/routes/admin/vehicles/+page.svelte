@@ -127,9 +127,9 @@
 				type="search"
 				bind:value={searchTerm}
 				placeholder="Filter..."
-				class="w-full rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+				class="w-full min-w-96 rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 			/>
-			<span class="mx-2 whitespace-nowrap text-sm text-gray-500">
+			<span class="ml-[-120px] whitespace-nowrap pe-10 text-sm text-gray-500">
 				{totalShowing} of {data?.vehicles?.length || 0}
 			</span>
 		</div>
