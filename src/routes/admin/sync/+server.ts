@@ -88,6 +88,16 @@ async function parseXML(xmlText: string) {
 		.filter((item) => item !== null);
 }
 
+function getChangedFields(existing: any, updated: any) {
+	const changes: Record<string, any> = {};
+	for (const key in updated) {
+		if (existing[key] !== updated[key]) {
+			changes[key] = updated[key];
+		}
+	}
+	return Object.keys(changes).length ? changes : null;
+}
+
 export const GET: RequestHandler = async () => {
 	try {
 		const xmlText = await fetchXMLData();
@@ -112,108 +122,141 @@ export const GET: RequestHandler = async () => {
 		};
 
 		const processedIds = new Set<string>();
+		let batchCount = 0;
+		const BATCH_SIZE = 50;
 
-		for (const data of parsedData) {
-			if (!data) continue;
-			const { vehicle: vehicleData, images, attributes } = data;
+		for (let i = 0; i < parsedData.length; i += BATCH_SIZE) {
+			batchCount++;
+			const batch = parsedData.slice(i, i + BATCH_SIZE);
+			console.log(`Processing batch ${batchCount} of ${Math.ceil(parsedData.length / BATCH_SIZE)}`);
 
-			processedIds.add(vehicleData.id);
+			await Promise.all(
+				batch.map(async (data) => {
+					if (!data) return;
+					const { vehicle: vehicleData, images, attributes } = data;
+					processedIds.add(vehicleData.id);
 
-			try {
-				const existingVehicles = await db
-					.select()
-					.from(vehicle)
-					.where(eq(vehicle.id, vehicleData.id));
+					try {
+						const existingVehicles = await db
+							.select()
+							.from(vehicle)
+							.where(eq(vehicle.id, vehicleData.id));
 
-				const existingVehicle = existingVehicles[0];
+						const existingVehicle = existingVehicles[0];
 
-				if (existingVehicle) {
-					await db
-						.update(vehicle)
-						.set({
-							...vehicleData
-						})
-						.where(eq(vehicle.id, vehicleData.id));
+						if (existingVehicle) {
+							const vehicleChanges = getChangedFields(existingVehicle, vehicleData);
+							if (vehicleChanges) {
+								await db.update(vehicle).set(vehicleChanges).where(eq(vehicle.id, vehicleData.id));
+								results.updated++;
+							}
 
-					if (images.length > 0) {
-						try {
-							await db.delete(vehicleImage).where(eq(vehicleImage.vehicle_id, vehicleData.id));
-							await db.insert(vehicleImage).values(
-								images.map((image) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									image_url: image.image_url
-								}))
-							);
-							results.imagesAdded += images.length;
-						} catch (imageError) {
-							console.error('Failed to update images:', imageError);
+							if (images.length > 0) {
+								try {
+									const existingImages = await db
+										.select()
+										.from(vehicleImage)
+										.where(eq(vehicleImage.vehicle_id, vehicleData.id));
+
+									const existingUrls = new Set(existingImages.map((img) => img.image_url));
+									const newUrls = new Set(images.map((img) => img.image_url));
+
+									if (!setsAreEqual(existingUrls, newUrls)) {
+										await db
+											.delete(vehicleImage)
+											.where(eq(vehicleImage.vehicle_id, vehicleData.id));
+
+										await db.insert(vehicleImage).values(
+											images.map((image) => ({
+												id: crypto.randomUUID(),
+												vehicle_id: vehicleData.id,
+												image_url: image.image_url
+											}))
+										);
+										results.imagesAdded += images.length;
+									}
+								} catch (imageError) {
+									console.error('Failed to update images:', imageError);
+								}
+							}
+
+							if (attributes.length > 0) {
+								try {
+									const existingAttributes = await db
+										.select()
+										.from(vehicleAttribute)
+										.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
+
+									const existingAttrs = new Map(
+										existingAttributes.map((attr) => [`${attr.name}-${attr.value}`, attr])
+									);
+									const newAttrs = new Map(
+										attributes.map((attr) => [`${attr.name}-${attr.value}`, attr])
+									);
+
+									if (!mapsAreEqual(existingAttrs, newAttrs)) {
+										await db
+											.delete(vehicleAttribute)
+											.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
+
+										await db.insert(vehicleAttribute).values(
+											attributes.map(({ name, value }) => ({
+												id: crypto.randomUUID(),
+												vehicle_id: vehicleData.id,
+												name,
+												value
+											}))
+										);
+										results.attributesAdded += attributes.length;
+									}
+								} catch (attrError) {
+									console.error('Failed to update attributes:', attrError);
+								}
+							}
+						} else {
+							await db.insert(vehicle).values({
+								...vehicleData,
+								status: 'ACTIVE'
+							});
+
+							if (images.length > 0) {
+								try {
+									await db.insert(vehicleImage).values(
+										images.map((image) => ({
+											id: crypto.randomUUID(),
+											vehicle_id: vehicleData.id,
+											image_url: image.image_url
+										}))
+									);
+									results.imagesAdded += images.length;
+								} catch (imageError) {
+									console.error('Failed to insert images:', imageError);
+								}
+							}
+
+							if (attributes.length > 0) {
+								try {
+									await db.insert(vehicleAttribute).values(
+										attributes.map(({ name, value }) => ({
+											id: crypto.randomUUID(),
+											vehicle_id: vehicleData.id,
+											name,
+											value
+										}))
+									);
+									results.attributesAdded += attributes.length;
+								} catch (attrError) {
+									console.error('Failed to insert attributes:', attrError);
+								}
+							}
+
+							results.added++;
 						}
+					} catch (dbError) {
+						console.error(`Error processing vehicle ${vehicleData.id}:`, dbError.message);
 					}
-
-					if (attributes.length > 0) {
-						try {
-							await db
-								.delete(vehicleAttribute)
-								.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
-							await db.insert(vehicleAttribute).values(
-								attributes.map(({ name, value }) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									name,
-									value
-								}))
-							);
-							results.attributesAdded += attributes.length;
-						} catch (attrError) {
-							console.error('Failed to update attributes:', attrError);
-						}
-					}
-
-					results.updated++;
-				} else {
-					await db.insert(vehicle).values({
-						...vehicleData,
-						status: 'ACTIVE'
-					});
-
-					if (images.length > 0) {
-						try {
-							await db.insert(vehicleImage).values(
-								images.map((image) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									image_url: image.image_url
-								}))
-							);
-							results.imagesAdded += images.length;
-						} catch (imageError) {
-							console.error('Failed to insert images:', imageError);
-						}
-					}
-
-					if (attributes.length > 0) {
-						try {
-							await db.insert(vehicleAttribute).values(
-								attributes.map(({ name, value }) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									name,
-									value
-								}))
-							);
-							results.attributesAdded += attributes.length;
-						} catch (attrError) {
-							console.error('Failed to insert attributes:', attrError);
-						}
-					}
-
-					results.added++;
-				}
-			} catch (dbError) {
-				console.error('Database operation failed for ID:', vehicleData.id, dbError);
-				throw dbError;
-			}
+				})
+			);
 		}
 
 		try {
@@ -245,6 +288,8 @@ export const GET: RequestHandler = async () => {
 			console.error('Processed IDs:', Array.from(processedIds));
 		}
 
+		console.log('Sync completed with results:', results);
+
 		return json({
 			success: true,
 			message: `Sync completed: ${results.added} added, ${results.updated} updated, ${results.markedAsSold} marked as sold, ${results.imagesAdded} images added, ${results.attributesAdded} attributes added`,
@@ -263,75 +308,114 @@ export const GET: RequestHandler = async () => {
 };
 
 export const POST: RequestHandler = async ({ request }) => {
+	const { action } = await request.json();
+
 	try {
-		const data = await request.json();
+		switch (action) {
+			case 'truncateVehicles':
+				await db.delete(vehicle);
+				return json({ success: true, message: 'Vehicles truncated successfully' });
 
-		for (const item of data) {
-			const [existingVehicle] = await db
-				.select()
-				.from(vehicle)
-				.where(eq(vehicle.stockNumber, item.stockNumber))
-				.limit(1);
+			case 'truncateImages':
+				await db.delete(vehicleImage);
+				return json({ success: true, message: 'Vehicle images truncated successfully' });
 
-			const vehicleData = {
-				stockNumber: item.stockNumber,
-				vin: item.vin,
-				year: item.year,
-				manufacturer: item.manufacturer,
-				modelType: item.type,
-				modelTypestyle: item.style,
-				trimName: item.trimName,
-				trimColor: item.trimColor,
-				usage: item.usage,
-				title: item.title,
-				description: item.description,
-				price: item.price,
-				color: item.color,
-				metricType: item.metricType,
-				metricValue: item.metricValue,
-				status: 'ACTIVE'
-			};
+			case 'truncateAttributes':
+				await db.delete(vehicleAttribute);
+				return json({ success: true, message: 'Vehicle attributes truncated successfully' });
 
-			let vehicleId;
-			if (existingVehicle) {
-				await db.update(vehicle).set(vehicleData).where(eq(vehicle.id, existingVehicle.id));
-				vehicleId = existingVehicle.id;
-			} else {
-				const [newVehicle] = await db
-					.insert(vehicle)
-					.values(vehicleData)
-					.returning({ id: vehicle.id });
-				vehicleId = newVehicle.id;
-			}
+			default:
+				const data = await request.json();
 
-			if (item.images?.length) {
-				await db.delete(vehicleImage).where(eq(vehicleImage.vehicleId, vehicleId));
+				for (const item of data) {
+					const [existingVehicle] = await db
+						.select()
+						.from(vehicle)
+						.where(eq(vehicle.stockNumber, item.stockNumber))
+						.limit(1);
 
-				await db.insert(vehicleImage).values(
-					item.images.map((url: string) => ({
-						vehicleId,
-						imageUrl: url
-					}))
-				);
-			}
+					const vehicleData = {
+						stockNumber: item.stockNumber,
+						vin: item.vin,
+						year: item.year,
+						manufacturer: item.manufacturer,
+						modelType: item.type,
+						modelTypestyle: item.style,
+						trimName: item.trimName,
+						trimColor: item.trimColor,
+						usage: item.usage,
+						title: item.title,
+						description: item.description,
+						price: item.price,
+						color: item.color,
+						metricType: item.metricType,
+						metricValue: item.metricValue,
+						status: 'ACTIVE'
+					};
 
-			if (item.attributes?.length) {
-				await db.delete(vehicleAttribute).where(eq(vehicleAttribute.vehicleId, vehicleId));
+					let vehicleId;
+					if (existingVehicle) {
+						await db.update(vehicle).set(vehicleData).where(eq(vehicle.id, existingVehicle.id));
+						vehicleId = existingVehicle.id;
+					} else {
+						const [newVehicle] = await db
+							.insert(vehicle)
+							.values(vehicleData)
+							.returning({ id: vehicle.id });
+						vehicleId = newVehicle.id;
+					}
 
-				await db.insert(vehicleAttribute).values(
-					item.attributes.map(({ name, value }: { name: string; value: string }) => ({
-						id: crypto.randomUUID(),
-						vehicle_id: vehicleId,
-						name,
-						value
-					}))
-				);
-			}
+					if (item.images?.length) {
+						await db.delete(vehicleImage).where(eq(vehicleImage.vehicleId, vehicleId));
+
+						await db.insert(vehicleImage).values(
+							item.images.map((url: string) => ({
+								vehicleId,
+								imageUrl: url
+							}))
+						);
+					}
+
+					if (item.attributes?.length) {
+						await db.delete(vehicleAttribute).where(eq(vehicleAttribute.vehicleId, vehicleId));
+
+						await db.insert(vehicleAttribute).values(
+							item.attributes.map(({ name, value }: { name: string; value: string }) => ({
+								id: crypto.randomUUID(),
+								vehicle_id: vehicleId,
+								name,
+								value
+							}))
+						);
+					}
+				}
+
+				return json({ success: true });
 		}
-
-		return json({ success: true });
 	} catch (error) {
-		console.error('Sync error:', error);
-		return json({ error: 'Sync failed' }, { status: 500 });
+		console.error('Operation failed:', error);
+		return json(
+			{
+				success: false,
+				error: error instanceof Error ? error.message : 'Operation failed'
+			},
+			{ status: 500 }
+		);
 	}
 };
+
+function setsAreEqual(a: Set<string>, b: Set<string>) {
+	if (a.size !== b.size) return false;
+	for (const item of a) {
+		if (!b.has(item)) return false;
+	}
+	return true;
+}
+
+function mapsAreEqual(a: Map<string, any>, b: Map<string, any>) {
+	if (a.size !== b.size) return false;
+	for (const [key, value] of a) {
+		if (!b.has(key)) return false;
+	}
+	return true;
+}
