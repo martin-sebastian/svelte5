@@ -227,7 +227,7 @@
 			</h2>
 
 			{#if viewMode === 'grid'}
-				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+				<div class="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 					{#each vehicles as vehicle}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
