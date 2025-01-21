@@ -7,7 +7,7 @@ import { XMLParser } from 'fast-xml-parser';
 import { sql } from 'drizzle-orm';
 
 async function fetchXMLData() {
-	const response = await fetch('https://www.flatoutmotorcycles.com/unitinventory_univ.xml');
+	const response = await fetch('https://www.bigrockpowersportsmarine.com/unitinventory_univ.xml');
 	const xmlText = await response.text();
 	return xmlText;
 }

@@ -53,6 +53,15 @@
 			console.error(error);
 		}
 	}
+
+	function formatPrice(price: number) {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(price);
+	}
 </script>
 
 <div class="flex h-screen w-full flex-col items-center justify-center">

@@ -100,6 +100,17 @@
 	});
 
 	$: totalShowing = filteredVehicles?.length || 0;
+
+	// Add this helper function at the top with other functions
+	function formatPrice(price: number | null) {
+		if (!price) return 'N/A';
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(price);
+	}
 </script>
 
 <div class="container mx-auto mt-24">
@@ -246,7 +257,7 @@
 								</div>
 								<div class="my-0">
 									<p class="my-1 text-2xl font-bold text-green-600">
-										{vehicle.price ? `$${(vehicle.price / 100).toLocaleString()}` : 'N/A'}
+										{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
 									</p>
 									<div class="flex flex-row items-center gap-1">
 										{#if vehicle.usage === 'Used'}
@@ -443,7 +454,7 @@
 									</div>
 								</div>
 								<div class="text-lg font-bold text-green-600">
-									{vehicle.price ? `$${(vehicle.price / 100).toLocaleString()}` : 'N/A'}
+									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
 								</div>
 								<div class="text-sm text-gray-500">
 									<div>{vehicle.manufacturer} • {vehicle.color}</div>
