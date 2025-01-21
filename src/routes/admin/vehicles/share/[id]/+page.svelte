@@ -34,8 +34,29 @@
 		}
 	}
 
+	function formatPrice(price: number): string {
+		if (!price) return '';
+		return `$${price.toFixed(2)}`;
+	}
+
+	function constructOgDescription(vehicle: any): string {
+		const parts = [
+			vehicle.vin ? `VIN: ${vehicle.vin}` : null,
+			vehicle.stockNumber ? `Stock #${vehicle.stockNumber}` : null,
+			vehicle.usage,
+			vehicle.condition,
+			vehicle.metricValue && vehicle.metricType
+				? `${vehicle.metricValue} ${vehicle.metricType}`
+				: null,
+			vehicle.price ? formatPrice(vehicle.price) : null
+		];
+
+		return parts.filter(Boolean).join(' | ');
+	}
+
 	$: sanitizedDescription = browser ? sanitizeHtml(vehicle.description || '') : '';
 	$: plainTextDescription = browser ? stripHtmlAndFormatText(vehicle.description || '') : '';
+	$: ogDescription = hasValidVehicle ? constructOgDescription(vehicle) : 'Vehicle Not Found';
 </script>
 
 <svelte:head>
@@ -57,13 +78,13 @@
 			<meta property="og:image:type" content="image/jpeg" />
 		{/if}
 
-		<meta property="og:description" content={plainTextDescription} />
+		<meta property="og:description" content={ogDescription} />
 
 		<!-- Enhanced Twitter Card Tags -->
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:site" content="@YourTwitterHandle" />
 		<meta name="twitter:title" content={vehicle.title || 'Vehicle Details'} />
-		<meta name="twitter:description" content={plainTextDescription} />
+		<meta name="twitter:description" content={ogDescription} />
 		{#if vehicle.primaryImage}
 			<meta name="twitter:image" content={vehicle.primaryImage} />
 			<meta name="twitter:image:alt" content={vehicle.title} />
@@ -87,7 +108,7 @@
 						<div
 							class="absolute bottom-2 right-2 rounded-full bg-green-600 px-4 py-1 text-lg font-bold text-white"
 						>
-							${(vehicle.price / 100).toLocaleString()}
+							{formatPrice(vehicle.price)}
 						</div>
 					{/if}
 				</div>
@@ -109,15 +130,24 @@
 							>{vehicle.metricValue} {vehicle.metricType}</span
 						>{/if}
 				</div>
+				<p class="text-sm text-gray-700">
+					{vehicle.vin}
+					{vehicle.stockNumber}
+					{#if vehicle.price}
+						<span class="text-xl font-bold text-green-800">
+							{formatPrice(vehicle.price)}
+						</span>
+					{/if}
+				</p>
 
 				<!-- Description -->
-				<p class="text-sm text-gray-700">
+				<!-- <p class="text-sm text-gray-700">
 					{#if browser}
 						{@html sanitizedDescription}
 					{:else}
 						{@html vehicle.description || ''}
 					{/if}
-				</p>
+				</p> -->
 
 				<!-- Footer -->
 				<div class="mt-4 border-t pt-4">
