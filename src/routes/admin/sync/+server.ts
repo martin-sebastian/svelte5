@@ -6,8 +6,12 @@ import { eq, and, notInArray } from 'drizzle-orm';
 import { XMLParser } from 'fast-xml-parser';
 import { sql } from 'drizzle-orm';
 
+function formatDate(date: Date) {
+	return date.toISOString();
+}
+
 async function fetchXMLData() {
-	const response = await fetch('https://www.flatoutmotorcycles.com/unitinventory_univ.xml');
+	const response = await fetch('https://www.bigrockpowersportsmarine.com/unitinventory_univ.xml');
 	const xmlText = await response.text();
 	return xmlText;
 }
@@ -39,7 +43,7 @@ async function parseXML(xmlText: string) {
 	return items
 		.filter((item) => item)
 		.map((item: any) => {
-			if (!item.vin) {
+			if (!item.id) {
 				return null;
 			}
 
@@ -49,13 +53,17 @@ async function parseXML(xmlText: string) {
 			const imageUrls = Array.isArray(images) ? images : [images];
 			const attributeList = Array.isArray(attributes) ? attributes : [attributes];
 
+			// Convert price to integer (cents)
+			const priceFloat = parseFloat(item.price) || 0;
+			const priceInCents = Math.round(priceFloat * 100);
+
 			return {
 				vehicle: {
 					id: item.id,
 					title: item.title || '',
 					link: item.link || '',
 					description: item.description || '',
-					price: parseFloat(item.price) || 0,
+					price: priceInCents, // Store price as integer cents
 					priceType: item.price_type || '',
 					stockNumber: item.stocknumber || '',
 					vin: item.vin,
@@ -128,87 +136,77 @@ export const GET: RequestHandler = async () => {
 				const existingVehicle = existingVehicles[0];
 
 				if (existingVehicle) {
-					await db
-						.update(vehicle)
-						.set({
-							...vehicleData
-						})
-						.where(eq(vehicle.id, vehicleData.id));
+					const hasChanged = Object.keys(vehicleData).some(
+						(key) => vehicleData[key] !== existingVehicle[key]
+					);
+
+					if (hasChanged) {
+						await db
+							.update(vehicle)
+							.set({
+								...vehicleData,
+								lastModified: formatDate(new Date())
+							})
+							.where(eq(vehicle.id, vehicleData.id));
+						results.updated++;
+					}
 
 					if (images.length > 0) {
-						try {
-							await db.delete(vehicleImage).where(eq(vehicleImage.vehicle_id, vehicleData.id));
-							await db.insert(vehicleImage).values(
-								images.map((image) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									image_url: image.image_url
-								}))
-							);
-							results.imagesAdded += images.length;
-						} catch (imageError) {
-							console.error('Failed to update images:', imageError);
-						}
+						await db.delete(vehicleImage).where(eq(vehicleImage.vehicle_id, vehicleData.id));
+						await db.insert(vehicleImage).values(
+							images.map((image) => ({
+								id: crypto.randomUUID(),
+								vehicle_id: vehicleData.id,
+								image_url: image.image_url
+							}))
+						);
+						results.imagesAdded += images.length;
 					}
 
 					if (attributes.length > 0) {
-						try {
-							await db
-								.delete(vehicleAttribute)
-								.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
-							await db.insert(vehicleAttribute).values(
-								attributes.map(({ name, value }) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									name,
-									value
-								}))
-							);
-							results.attributesAdded += attributes.length;
-						} catch (attrError) {
-							console.error('Failed to update attributes:', attrError);
-						}
+						await db
+							.delete(vehicleAttribute)
+							.where(eq(vehicleAttribute.vehicle_id, vehicleData.id));
+						await db.insert(vehicleAttribute).values(
+							attributes.map(({ name, value }) => ({
+								id: crypto.randomUUID(),
+								vehicle_id: vehicleData.id,
+								name,
+								value
+							}))
+						);
+						results.attributesAdded += attributes.length;
 					}
-
-					results.updated++;
 				} else {
 					await db.insert(vehicle).values({
 						...vehicleData,
-						status: 'ACTIVE'
+						status: 'ACTIVE',
+						lastModified: formatDate(new Date())
 					});
+					results.added++;
 
 					if (images.length > 0) {
-						try {
-							await db.insert(vehicleImage).values(
-								images.map((image) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									image_url: image.image_url
-								}))
-							);
-							results.imagesAdded += images.length;
-						} catch (imageError) {
-							console.error('Failed to insert images:', imageError);
-						}
+						await db.insert(vehicleImage).values(
+							images.map((image) => ({
+								id: crypto.randomUUID(),
+								vehicle_id: vehicleData.id,
+								image_url: image.image_url
+							}))
+						);
+						results.imagesAdded += images.length;
 					}
 
 					if (attributes.length > 0) {
-						try {
-							await db.insert(vehicleAttribute).values(
-								attributes.map(({ name, value }) => ({
-									id: crypto.randomUUID(),
-									vehicle_id: vehicleData.id,
-									name,
-									value
-								}))
-							);
-							results.attributesAdded += attributes.length;
-						} catch (attrError) {
-							console.error('Failed to insert attributes:', attrError);
-						}
+						await db.insert(vehicleAttribute).values(
+							attributes.map(({ name, value }) => ({
+								id: crypto.randomUUID(),
+								vehicle_id: vehicleData.id,
+								name,
+								value
+							}))
+						);
+						results.attributesAdded += attributes.length;
 					}
-
-					results.added++;
 				}
 			} catch (dbError) {
 				console.error('Database operation failed for ID:', vehicleData.id, dbError);
@@ -220,17 +218,10 @@ export const GET: RequestHandler = async () => {
 			const soldUpdate = await db
 				.update(vehicle)
 				.set({
-					status: 'SOLD'
+					status: 'SOLD',
+					lastModified: formatDate(new Date())
 				})
-				.where(
-					and(
-						notInArray(
-							vehicle.id,
-							Array.from(processedIds).map((id) => String(id))
-						),
-						eq(vehicle.status, 'ACTIVE')
-					)
-				);
+				.where(and(notInArray(vehicle.id, Array.from(processedIds)), eq(vehicle.status, 'ACTIVE')));
 
 			const soldCount = await db
 				.select({ count: sql`count(*)` })
@@ -333,5 +324,31 @@ export const POST: RequestHandler = async ({ request }) => {
 	} catch (error) {
 		console.error('Sync error:', error);
 		return json({ error: 'Sync failed' }, { status: 500 });
+	}
+};
+
+export const DELETE: RequestHandler = async ({ request }) => {
+	try {
+		const { table } = await request.json();
+
+		switch (table) {
+			case 'vehicle':
+				await db.delete(vehicle);
+				return json({ success: true, message: 'All vehicles deleted successfully' });
+
+			case 'vehicle_image':
+				await db.delete(vehicleImage);
+				return json({ success: true, message: 'All vehicle images deleted successfully' });
+
+			case 'vehicle_attribute':
+				await db.delete(vehicleAttribute);
+				return json({ success: true, message: 'All vehicle attributes deleted successfully' });
+
+			default:
+				return json({ success: false, error: 'Invalid table specified' }, { status: 400 });
+		}
+	} catch (error) {
+		console.error('Delete error:', error);
+		return json({ success: false, error: 'Failed to delete data' }, { status: 500 });
 	}
 };

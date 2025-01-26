@@ -1,4 +1,4 @@
-import { pgTable, text, integer, timestamp, primaryKey, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const user = pgTable('user', {
@@ -20,40 +20,34 @@ export const session = pgTable('session', {
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
-export const vehicle = pgTable(
-	'vehicle',
-	{
-		id: text('id').primaryKey(),
-		title: text('title').notNull(),
-		link: text('link'),
-		description: text('description'),
-		price: integer('price'),
-		priceType: text('price_type'),
-		stockNumber: text('stock_number'),
-		vin: text('vin'),
-		manufacturer: text('manufacturer'),
-		year: integer('year'),
-		color: text('color'),
-		modelType: text('model_type'),
-		modelTypestyle: text('model_typestyle'),
-		modelName: text('model_name'),
-		trimName: text('trim_name'),
-		trimColor: text('trim_color'),
-		condition: text('condition'),
-		usage: text('usage'),
-		location: text('location'),
-		updated: text('updated'),
-		metricType: text('metric_type'),
-		metricValue: integer('metric_value'),
-		status: text('status', { enum: ['ACTIVE', 'SOLD', 'HIDDEN', 'ARCHIVED'] })
-			.notNull()
-			.default('ACTIVE'),
-		lastModified: text('last_modified')
-	},
-	(table) => ({
-		uniqVin: uniqueIndex('uniq_vin').on(table.vin)
-	})
-);
+export const vehicle = pgTable('vehicle', {
+	id: text('id').primaryKey(),
+	title: text('title').notNull(),
+	link: text('link'),
+	description: text('description'),
+	price: integer('price'),
+	priceType: text('price_type'),
+	stockNumber: text('stock_number'),
+	vin: text('vin'),
+	manufacturer: text('manufacturer'),
+	year: integer('year'),
+	color: text('color'),
+	modelType: text('model_type'),
+	modelTypestyle: text('model_typestyle'),
+	modelName: text('model_name'),
+	trimName: text('trim_name'),
+	trimColor: text('trim_color'),
+	condition: text('condition'),
+	usage: text('usage'),
+	location: text('location'),
+	updated: text('updated'),
+	metricType: text('metric_type'),
+	metricValue: integer('metric_value'),
+	status: text('status', { enum: ['ACTIVE', 'SOLD', 'HIDDEN', 'ARCHIVED'] })
+		.notNull()
+		.default('ACTIVE'),
+	lastModified: text('last_modified')
+});
 
 export const vehicleImage = pgTable('vehicle_image', {
 	id: text('id').primaryKey(),

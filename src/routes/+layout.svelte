@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 
 	const { children } = $props();
-	let theme = 'light';
+	let theme = $state('light');
 
 	function toggleTheme() {
 		theme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';

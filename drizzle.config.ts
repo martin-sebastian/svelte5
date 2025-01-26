@@ -11,6 +11,10 @@ export default {
 	out: './drizzle',
 	dialect: 'postgresql',
 	dbCredentials: {
-		url: process.env.POSTGRES_URL_NON_POOLING + '&ssl=true&sslmode=require'
+		url: process.env.POSTGRES_URL_NON_POOLING,
+		ssl: {
+			rejectUnauthorized: false,
+			sslmode: 'require'
+		}
 	}
 } satisfies Config;
