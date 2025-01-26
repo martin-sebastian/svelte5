@@ -1,9 +1,9 @@
 <script lang="ts">
 	import '../app.css';
-	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button/index.js';
+	import { onMount } from 'svelte';
 
-	let { children } = $props();
+	const { children } = $props();
 	let theme = 'light';
 
 	function toggleTheme() {
@@ -12,7 +12,7 @@
 		localStorage.setItem('theme', theme);
 	}
 
-	$effect(() => {
+	onMount(() => {
 		if (typeof window !== 'undefined') {
 			theme =
 				localStorage.getItem('theme') ||
@@ -76,28 +76,9 @@
 		</a>
 	</div>
 	<div class="flex-grow justify-start align-middle">
-		<Button href="/admin/vehicles" variant="outline" class="mx-1">Dashboard</Button>
+		<Button href="/admin/vehicles" variant="outline" class="mx-1">Vehicles</Button>
 	</div>
 	<div class="flex-none">
-		<Button href="/admin/sync" variant="outline">
-			<div class="relative flex h-6 w-6 items-center justify-center">
-				<svg
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					class="lucide lucide-settings"
-					aria-label="Sync"
-					><path
-						d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
-					/><circle cx="12" cy="12" r="3" /></svg
-				>
-			</div>
-		</Button>
 		<Button onclick={toggleTheme} variant="outline">
 			<svg
 				width="24"
@@ -130,23 +111,6 @@
 				class="lucide lucide-moon rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
 			>
 				<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-			</svg>
-		</Button>
-
-		<Button href="/auth" variant="outline" class="mr-1">
-			<svg
-				width="24"
-				height="24"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				class="lucide lucide-user"
-			>
-				<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-				<circle cx="12" cy="7" r="4" />
 			</svg>
 		</Button>
 	</div>
