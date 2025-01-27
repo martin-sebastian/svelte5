@@ -9,7 +9,7 @@
 <main class="align-start flex h-full min-h-screen w-full flex-col items-center pt-20">
 	<div class="flex max-w-6xl flex-col items-center text-center">
 		<h1
-			class="my-5 bg-gradient-to-r from-gray-400/50 to-blue-500/50 bg-clip-text text-8xl font-extrabold text-transparent"
+			class="my-5 bg-gradient-to-r from-gray-400/50 to-blue-500/50 bg-clip-text text-5xl font-extrabold text-transparent md:text-6xl lg:text-8xl"
 		>
 			{message}
 		</h1>
