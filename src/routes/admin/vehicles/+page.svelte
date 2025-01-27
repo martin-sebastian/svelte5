@@ -236,7 +236,7 @@
 										</h3>
 									</div>
 									<div class="my-0">
-										<p class="my-1 text-2xl font-bold text-green-600">
+										<p class="my-2 text-2xl font-bold text-green-600">
 											{vehicle.price ? `$${(vehicle.price / 100).toLocaleString()}` : 'N/A'}
 										</p>
 										<div class="flex flex-row items-center gap-1">
@@ -280,10 +280,10 @@
 												</h5>
 											</div>
 											<p class="text-sm text-gray-500">Stock #</p>
-											<h3 class="w-full text-lg font-bold text-gray-500">
+											<div class="text-md line-clamp-2 font-bold leading-tight text-foreground">
 												{vehicle.stockNumber}
-											</h3>
-											<p class="text-sm text-gray-500">VIN: {vehicle.vin}</p>
+											</div>
+											<div class="border-t text-sm text-gray-500">VIN: {vehicle.vin}</div>
 										</div>
 									</div>
 

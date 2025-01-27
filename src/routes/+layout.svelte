@@ -37,13 +37,13 @@
 	<div class="flex flex-row items-center justify-start">
 		<a href="/"><ShieldPlus class="ml-2 mr-[-15px] h-8 w-8" /></a>
 		<a href="/" class="mx-4 p-1" aria-label="Home">
-			<div class="font-bold">DEALER<span class="font-extrabold">OPS</span></div>
+			<div class="font-bold">DEALER<span class="font-black">OPS</span></div>
 		</a>
 		<Button href="/admin/vehicles" variant="outline" class="p-3">
 			<Grip /> <span class="hidden sm:block">Inventory</span>
 		</Button>
 	</div>
-	<div class="flex-grow justify-start gap-0 align-middle"></div>
+	<div class="flex-grow justify-center gap-0 align-middle"></div>
 	<div class="flex flex-row items-center justify-end">
 		<Button onclick={toggleTheme} variant="outline" class="mx-1 my-1">
 			<Sun class="dark:hidden" />
@@ -53,6 +53,9 @@
 			<User class=" h-4 w-4" />
 		</Button>
 		<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
+			<DatabaseZap class=" h-4 w-4" />
+		</Button>
+		<Button href="/admin" variant="outline" class="my-1 ml-1 mr-2">
 			<Settings class="h-4 w-4" />
 		</Button>
 	</div>
