@@ -116,7 +116,7 @@
 	<h1 class="text-3xl font-bold">Vehicles</h1>
 </div>
 
-<div class="container sticky top-0 z-50 mx-auto my-1">
+<div class="container sticky top-16 z-50 mx-auto my-1">
 	<div
 		class="mb-6 flex flex-col gap-2 rounded-lg border border-gray-400/25 bg-background p-2 backdrop:blur-sm sm:flex-row sm:items-center sm:justify-between"
 	>

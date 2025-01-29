@@ -49,7 +49,7 @@
 			<Sun class="dark:hidden" />
 			<Moon class="hidden dark:block" />
 		</Button>
-		<Button href="/admin/login" variant="outline" class="mx-1 my-1">
+		<Button href="/auth" variant="outline" class="mx-1 my-1">
 			<User class=" h-4 w-4" />
 		</Button>
 		<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
