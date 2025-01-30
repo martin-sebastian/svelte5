@@ -25,7 +25,7 @@
 		<div class="mb-8 flex items-center gap-4">
 			{#if data.session}
 				<a
-					href="/admin/vehicles"
+					href="/admin"
 					class="rounded-md bg-blue-500 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-600"
 				>
 					Go to Dashboard

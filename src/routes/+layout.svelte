@@ -9,7 +9,8 @@
 	import { User } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
 	import { Sun } from 'lucide-svelte';
-
+	import { LayoutDashboard } from 'lucide-svelte';
+	import { Bike } from 'lucide-svelte';
 	const { children } = $props();
 	let theme = $state('light');
 
@@ -39,14 +40,16 @@
 		<a href="/" class="mx-4 p-1" aria-label="Home">
 			<div class="flex flex-row items-center">
 				<ShieldPlus class="h-8 w-8" />
-				<div class="font-bold">DEALER<span class="font-black">OPS</span></div>
+				<div class="hidden sm:flex">
+					<span class="font-bold">DEALER</span><span class="font-black">OPS</span>
+				</div>
 			</div>
 		</a>
 		<Button href="/admin" variant="outline" class="mx-1 p-3">
-			<Grip /> <span class="hidden sm:block">Dashboard</span>
+			<LayoutDashboard /> <span class="hidden sm:block">Dashboard</span>
 		</Button>
 		<Button href="/admin/vehicles" variant="outline" class="mx-1 p-3">
-			<Grip /> <span class="hidden sm:block">Inventory</span>
+			<Bike /> <span class="hidden sm:block">Inventory</span>
 		</Button>
 	</div>
 	<div class="flex-grow justify-center gap-0 align-middle"></div>
