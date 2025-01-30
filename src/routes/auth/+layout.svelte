@@ -4,7 +4,7 @@
 </script>
 
 <header
-	class="group fixed flex h-screen w-[56px] flex-col items-start justify-center border-r border-gray-600/25 bg-gray-900/50 py-1 shadow-sm backdrop-blur-sm hover:w-[150px] print:hidden"
+	class="group fixed hidden h-screen w-[56px] flex-col items-start justify-center border-r border-gray-600/25 bg-gray-900/50 py-1 shadow-sm backdrop-blur-sm hover:w-[150px] print:hidden"
 >
 	<nav>
 		<div
