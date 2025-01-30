@@ -25,15 +25,15 @@
 	let subMessage =
 		'Dealer Ops connects to your Dealer Spike inventory and lets you print vehicle keytags, hangtags, and easily post individual vehicles to your social media.';
 
-	// Create a tweened store for the animation
+	// Create a tweened store for the animation with shorter duration and linear easing
 	const position = tweened(0, {
-		duration: 30000,
+		duration: 15000,
 		easing: (t) => t
 	});
 
-	// Set up infinite animation
+	// Set up infinite animation with a reset that happens before the end
 	function animate() {
-		position.set(100).then(() => {
+		position.set(50).then(() => {
 			position.set(0, { duration: 0 });
 			animate();
 		});
@@ -69,14 +69,14 @@
 				{#if data.session}
 					<Button
 						href="/admin"
-						class="flex-1 rounded-md bg-blue-500 px-6 py-3 text-base font-semibold text-white transition-all hover:bg-blue-600 hover:shadow-lg"
+						class="flex-1 rounded-md bg-blue-500 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-blue-600 hover:shadow-lg"
 					>
 						Go to Dashboard
 					</Button>
 					<form action="/auth?/signout" method="POST" class="flex-1">
 						<Button
 							type="submit"
-							class="w-full rounded-md bg-gray-500 px-6 py-3 text-base font-semibold text-white transition-all hover:bg-gray-600 hover:shadow-lg"
+							class="w-full rounded-md bg-gray-500 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-gray-600 hover:shadow-lg"
 						>
 							Sign Out
 						</Button>
@@ -84,13 +84,13 @@
 				{:else}
 					<Button
 						href="/auth/register"
-						class="flex-1 rounded-md border border-gray-400/50 bg-blue-600 px-6 py-3 text-base font-semibold text-white transition-all hover:bg-blue-600/75 hover:shadow-lg"
+						class="flex-1 rounded-md border border-gray-400/50 bg-blue-600 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-blue-600/75 hover:shadow-lg"
 					>
 						Sign Up Now!
 					</Button>
 					<Button
 						href="/auth"
-						class="flex-1 rounded-md border border-gray-600/50 bg-gray-500/50 px-6 py-3 text-base font-semibold text-white transition-all hover:bg-gray-600/75 hover:shadow-lg"
+						class="flex-1 rounded-md border border-gray-600/50 bg-gray-500/50 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-gray-600/75 hover:shadow-lg"
 					>
 						Login
 					</Button>
@@ -100,68 +100,63 @@
 	</div>
 
 	<!-- Sliding icons section -->
-	<div class="relative mb-3 w-full max-w-4xl overflow-hidden px-2 sm:mb-5 sm:px-4">
-		<div
-			class="animate-slide flex flex-row items-center gap-1 sm:gap-4"
-			style:transform="translateX(-{$position}%)"
-		>
-			<!-- First set -->
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<KeySquare class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Keytags</span
-				>
-			</div>
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<Tags class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Hangtags</span
-				>
-			</div>
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<Share2 class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Social Media Sharing</span
-				>
-			</div>
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<DatabaseZap class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Database Sync</span
-				>
-			</div>
-			<!-- Repeat first set for seamless loop -->
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<KeySquare class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Keytags</span
-				>
-			</div>
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<Tags class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Hangtags</span
-				>
-			</div>
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<Share2 class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Social Media Sharing</span
-				>
-			</div>
-			<div class="flex flex-shrink-0 flex-row items-center gap-1 sm:gap-2">
-				<DatabaseZap class="h-3 w-3 sm:h-5 sm:w-5" />
-				<span
-					class="text-nowrap text-[10px] font-normal capitalize text-gray-200/50 sm:text-xs md:text-sm"
-					>Database Sync</span
-				>
+	<div class="relative my-8 w-full max-w-4xl overflow-hidden px-2 sm:my-8 sm:px-4">
+		<div class="flex flex-row items-center">
+			<div
+				class="flex flex-row items-center gap-4"
+				style:transform="translateX(-{$position}%)"
+				style:transition="transform {15}s linear"
+			>
+				<!-- First set -->
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<KeySquare class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Keytags</span
+					>
+				</div>
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<Tags class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Hangtags</span
+					>
+				</div>
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<Share2 class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Social Media</span
+					>
+				</div>
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<DatabaseZap class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Database Sync</span
+					>
+				</div>
+				<!-- Duplicate set for seamless loop -->
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<KeySquare class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Keytags</span
+					>
+				</div>
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<Tags class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Hangtags</span
+					>
+				</div>
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<Share2 class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Social Media</span
+					>
+				</div>
+				<div class="flex flex-shrink-0 flex-row items-center gap-2">
+					<DatabaseZap class="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+					<span class="whitespace-nowrap text-sm font-medium text-gray-500 sm:text-base"
+						>Database Sync</span
+					>
+				</div>
 			</div>
 		</div>
 	</div>
