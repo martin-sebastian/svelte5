@@ -9,6 +9,7 @@
 	import { User } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
 	import { Sun } from 'lucide-svelte';
+
 	const { children } = $props();
 	let theme = $state('light');
 
@@ -34,10 +35,12 @@
 <nav
 	class="fixed z-40 flex w-full justify-center border-b bg-background/50 py-1 shadow-sm backdrop-blur-sm print:hidden"
 >
-	<div class="flex flex-row items-center justify-start">
-		<a href="/"><ShieldPlus class="ml-2 mr-[-15px] h-8 w-8" /></a>
+	<div class="flex items-center">
 		<a href="/" class="mx-4 p-1" aria-label="Home">
-			<div class="font-bold">DEALER<span class="font-black">OPS</span></div>
+			<div class="flex flex-row items-center">
+				<ShieldPlus class="h-8 w-8" />
+				<div class="font-bold">DEALER<span class="font-black">OPS</span></div>
+			</div>
 		</a>
 		<Button href="/admin" variant="outline" class="mx-1 p-3">
 			<Grip /> <span class="hidden sm:block">Dashboard</span>
@@ -53,10 +56,10 @@
 			<Moon class="hidden dark:block" />
 		</Button>
 		<Button href="/auth" variant="outline" class="mx-1 my-1">
-			<User class=" h-4 w-4" />
+			<User class="h-4 w-4" />
 		</Button>
 		<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
-			<DatabaseZap class=" h-4 w-4" />
+			<DatabaseZap class="h-4 w-4" />
 		</Button>
 		<Button href="/admin" variant="outline" class="my-1 ml-1 mr-2">
 			<Settings class="h-4 w-4" />
