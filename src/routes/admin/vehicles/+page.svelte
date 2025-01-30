@@ -110,6 +110,17 @@
 	});
 
 	$: totalShowing = filteredVehicles?.length || 0;
+
+	// Add this helper function at the top with other functions
+	function formatPrice(price: number | null) {
+		if (!price) return 'N/A';
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(price);
+	}
 </script>
 
 <div class="container mx-auto mt-24">
@@ -122,15 +133,15 @@
 	>
 		<!-- Search input and count - full width on mobile -->
 		<div class="flex w-full flex-row items-center sm:w-auto">
-			<input
-				type="search"
-				bind:value={searchTerm}
-				placeholder="Filter..."
-				class="w-full min-w-[350px] rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-			/>
-			<span class="ml-[-100px] mr-2 whitespace-nowrap text-sm text-gray-500">
-				{totalShowing} of {data?.vehicles?.length || 0}
-			</span>
+<input
+    type="search"
+    bind:value={searchTerm}
+    placeholder="Filter..."
+    class="w-full min-w-96 rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+/>
+<span class="ml-[-120px] whitespace-nowrap pe-10 text-sm text-gray-500">
+    {totalShowing} of {data?.vehicles?.length || 0}
+</span>
 		</div>
 
 		<!-- Controls container - stack on mobile -->
@@ -205,7 +216,7 @@
 			</h2>
 
 			{#if viewMode === 'grid'}
-				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+				<div class="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 					{#each vehicles as vehicle}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
@@ -243,6 +254,11 @@
 											{#if vehicle.usage === 'Used'}
 												<div
 													class="flex flex-row items-center rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
+                      <div class="my-0">
+                          <p class="my-1 text-2xl font-bold text-green-600">
+                              {vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
+                          </p>
+                          <div class="flex flex-row items-center gap-1">
 												>
 													<CircleGauge class="mx-1 h-4 w-4" />
 													{vehicle.metricValue}
@@ -382,7 +398,7 @@
 									</div>
 								</div>
 								<div class="text-lg font-bold text-green-600">
-									{vehicle.price ? `$${(vehicle.price / 100).toLocaleString()}` : 'N/A'}
+									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
 								</div>
 								<div class="text-sm text-gray-500">
 									<div>{vehicle.manufacturer} • {vehicle.color}</div>
