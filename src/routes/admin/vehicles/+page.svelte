@@ -118,7 +118,7 @@
 
 <div class="container sticky top-16 z-50 mx-auto my-1">
 	<div
-		class="mb-6 flex flex-col gap-2 rounded-lg border border-gray-400/25 bg-background p-2 backdrop:blur-sm sm:flex-row sm:items-center sm:justify-between"
+		class="mb-6 flex flex-col gap-2 rounded-lg border border-gray-400/25 bg-background/75 p-2 shadow-sm backdrop-blur-sm backdrop:blur-sm sm:flex-row sm:items-center sm:justify-between"
 	>
 		<!-- Search input and count - full width on mobile -->
 		<div class="flex w-full flex-row items-center sm:w-auto">
@@ -283,7 +283,7 @@
 											<div class="text-md line-clamp-2 font-bold leading-tight text-foreground">
 												{vehicle.stockNumber}
 											</div>
-											<div class="border-t text-sm text-gray-500">VIN: {vehicle.vin}</div>
+											<div class="my-2 border-b pb-3 text-sm text-gray-500">VIN: {vehicle.vin}</div>
 										</div>
 									</div>
 

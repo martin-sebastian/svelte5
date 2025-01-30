@@ -7,14 +7,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		cookies: {
 			get: (key) => event.cookies.get(key),
 			set: (key, value, options) => {
-				if (!event.cookies.getAll().some((cookie) => cookie.name === key)) {
-					event.cookies.set(key, value, {
-						...options,
-						path: '/',
-						sameSite: 'lax',
-						secure: process.env.NODE_ENV === 'production'
-					});
-				}
+				event.cookies.set(key, value, {
+					...options,
+					path: '/',
+					sameSite: 'lax',
+					secure: process.env.NODE_ENV === 'production'
+				});
 			},
 			remove: (key, options) => {
 				event.cookies.delete(key, {
@@ -25,11 +23,23 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 
-	const response = await resolve(event, {
-		filterSerializeResponse(response) {
-			return response.status === 200;
-		}
-	});
+	event.locals.getSession = async () => {
+		const {
+			data: { session }
+		} = await event.locals.supabase.auth.getSession();
 
-	return response;
+		if (!session) return null;
+
+		// Verify the user is valid
+		const {
+			data: { user },
+			error
+		} = await event.locals.supabase.auth.getUser();
+
+		if (error || !user) return null;
+
+		return session;
+	};
+
+	return resolve(event);
 };

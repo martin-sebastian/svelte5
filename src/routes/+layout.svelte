@@ -39,7 +39,10 @@
 		<a href="/" class="mx-4 p-1" aria-label="Home">
 			<div class="font-bold">DEALER<span class="font-black">OPS</span></div>
 		</a>
-		<Button href="/admin/vehicles" variant="outline" class="p-3">
+		<Button href="/admin" variant="outline" class="mx-1 p-3">
+			<Grip /> <span class="hidden sm:block">Dashboard</span>
+		</Button>
+		<Button href="/admin/vehicles" variant="outline" class="mx-1 p-3">
 			<Grip /> <span class="hidden sm:block">Inventory</span>
 		</Button>
 	</div>
@@ -61,7 +64,7 @@
 	</div>
 </nav>
 
-<main class="flex min-h-screen flex-col bg-background text-foreground">
+<main class="flex min-h-screen flex-col bg-background align-middle text-foreground">
 	{@render children()}
 </main>
 
