@@ -100,7 +100,7 @@
 	</div>
 
 	<!-- Sliding icons section -->
-	<div class="relative my-8 w-full max-w-4xl overflow-hidden px-2 sm:my-8 sm:px-4">
+	<div class="relative my-10 w-full max-w-4xl overflow-hidden px-2 py-10">
 		<div class="flex flex-row items-center">
 			<div
 				class="flex flex-row items-center gap-4"
