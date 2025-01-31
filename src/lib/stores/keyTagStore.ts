@@ -12,7 +12,7 @@ const defaultTemplates: KeyTagTemplate[] = [
 			marginTop: '0.125in',
 			marginLeft: '0.125in'
 		},
-		backgroundImage: '/versa-tag-3x3.png',
+		backgroundImage: '/images/versa-tag-3x3.png',
 		backgroundColor: '#ffeb3b',
 		orientation: 'landscape',
 		description: 'Standard yellow self-laminating key tag'

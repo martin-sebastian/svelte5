@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { CircleDashed } from 'lucide-svelte';
+	import { CircleDashed, X, Printer, ZoomOut, ZoomIn } from 'lucide-svelte';
 	import QRCode from 'qrcode';
 	import { onMount } from 'svelte';
 	export let data;
@@ -52,50 +52,36 @@
 {#if vehicle}
 	<div class="fixed bottom-4 right-4 flex gap-2 print:hidden">
 		<button
-			on:click={handleClose}
+			type="button"
+			onclick={handleClose}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Close and return to vehicles"
 		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M6 18L18 6M6 6l12 12"
-				/>
-			</svg>
+			<X class="h-6 w-6" />
 		</button>
 		<button
-			on:click={handlePrint}
+			type="button"
+			onclick={handlePrint}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Print hangtag"
 		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4"
-				/>
-			</svg>
+			<Printer class="h-6 w-6" />
 		</button>
 		<button
-			on:click={zoomOut}
+			type="button"
+			onclick={zoomOut}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Zoom out"
 		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-			</svg>
+			<ZoomOut class="h-6 w-6" />
 		</button>
 		<button
-			on:click={zoomIn}
+			type="button"
+			onclick={zoomIn}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Zoom in"
 		>
-			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-			</svg>
+			<ZoomIn class="h-6 w-6" />
 		</button>
 	</div>
 

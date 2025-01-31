@@ -173,7 +173,7 @@
 				<!-- Jump to dropdown -->
 				<div class="flex flex-row items-center gap-2">
 					<select
-						on:change={(e: Event) => {
+						onchange={(e: Event) => {
 							const target = e.target as HTMLSelectElement;
 							const groupName = target.value;
 							if (!groupName) {
@@ -234,7 +234,7 @@
 					class={`ml-2 rounded-full p-1 hover:bg-gray-200/50 ${
 						viewMode === 'grid' ? 'bg-gray-200 dark:bg-gray-700' : ''
 					}`}
-					on:click={() => (viewMode = 'grid')}
+					onclick={() => (viewMode = 'grid')}
 					aria-label="Grid view"
 				>
 					<LayoutGrid class="h-5 w-5" />
@@ -243,7 +243,7 @@
 					class={`mr-2 rounded-full p-1 hover:bg-gray-200/50 ${
 						viewMode === 'list' ? 'bg-gray-200 dark:bg-gray-700' : ''
 					}`}
-					on:click={() => (viewMode = 'list')}
+					onclick={() => (viewMode = 'list')}
 					aria-label="List view"
 				>
 					<AlignLeft class="h-5 w-5" />
@@ -263,7 +263,7 @@
 				</h2>
 				{#if group.total > 5}
 					<button
-						on:click={() => toggleGroupExpansion(groupName)}
+						onclick={() => toggleGroupExpansion(groupName)}
 						class="text-sm text-blue-500 hover:text-blue-700"
 					>
 						{group.expanded ? 'Show Less' : `Show All (${group.total})`}
@@ -358,7 +358,7 @@
 									<div class="mt-auto flex gap-1 pt-3">
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
 											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="View Key Tag"
 										>
@@ -366,7 +366,7 @@
 										</button>
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
 											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="View Hang Tag"
 										>
@@ -374,7 +374,7 @@
 										</button>
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
 											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="Share Vehicle"
 										>
@@ -382,7 +382,7 @@
 										</button>
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
 											class="flex flex-row items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="Edit Vehicle Details"
 										>
@@ -467,7 +467,7 @@
 									<div class="flex flex-row items-center justify-end gap-1">
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
 											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="View Key Tag"
 										>
@@ -475,7 +475,7 @@
 										</button>
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
 											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="View Hang Tag"
 										>
@@ -483,7 +483,7 @@
 										</button>
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
 											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="Share Vehicle"
 										>
@@ -491,7 +491,7 @@
 										</button>
 										<button
 											type="button"
-											on:click={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
+											onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
 											class="flex flex-row items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
 											aria-label="Edit Vehicle Details"
 										>

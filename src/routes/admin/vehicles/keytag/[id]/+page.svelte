@@ -3,11 +3,11 @@
 	import { goto } from '$app/navigation';
 	import KeyTag from '$lib/components/keytag/KeyTag.svelte';
 	import TemplateSelector from '$lib/components/keytag/TemplateSelector.svelte';
+	import VersaTagStandard from '$lib/components/keytag/templates/VersaTagStandard.svelte';
 	import { Printer, X, ZoomIn, ZoomOut } from 'lucide-svelte';
 
-	const data = $props();
-	const { vehicle } = data;
-
+	const { data } = $props();
+	const vehicle = $derived(data.vehicle);
 	let scale = $state(2);
 
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));
@@ -20,38 +20,7 @@
 	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden p-4">
 		<div style:transform="scale({scale})" style:transform-origin="center">
 			<KeyTag>
-				<div class="overflow-hidden text-center text-xs">
-					<div class="mt-1 text-[10pt]">
-						{vehicle.usage}
-					</div>
-					<div
-						class="mb-1 line-clamp-2 flex min-h-[2em] items-center justify-center text-[14pt] font-bold"
-					>
-						#{vehicle.stockNumber}
-					</div>
-					<div class="mb-1 text-[14pt] font-bold">
-						{vehicle.year}
-					</div>
-					<div class="mb-1 text-[12pt] font-bold">
-						{vehicle.manufacturer}
-					</div>
-					<div
-						class="mb-1 line-clamp-2 flex min-h-[2em] items-center justify-center text-[10pt] font-bold"
-					>
-						{vehicle.modelName}
-					</div>
-					<div class="mb-1 overflow-hidden text-[10pt]">
-						{vehicle.color}
-					</div>
-					<div class="mb-0 text-[10pt]">
-						{vehicle.metricValue}
-						{vehicle.metricType}
-					</div>
-
-					<div class="mb-1 text-[9pt]">
-						{vehicle.vin}
-					</div>
-				</div>
+				<VersaTagStandard {vehicle} />
 			</KeyTag>
 		</div>
 	</div>
@@ -59,28 +28,28 @@
 	<div class="fixed bottom-4 right-4 flex gap-2 print:hidden">
 		<TemplateSelector />
 		<button
-			on:click={handleClose}
+			onclick={handleClose}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Close and return to vehicles"
 		>
 			<X class="h-6 w-6" />
 		</button>
 		<button
-			on:click={handlePrint}
+			onclick={handlePrint}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Print keytag"
 		>
 			<Printer class="h-6 w-6" />
 		</button>
 		<button
-			on:click={zoomOut}
+			onclick={zoomOut}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Zoom out"
 		>
 			<ZoomOut class="h-6 w-6" />
 		</button>
 		<button
-			on:click={zoomIn}
+			onclick={zoomIn}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
 			aria-label="Zoom in"
 		>
@@ -101,7 +70,7 @@
 		background-size: 10px 10px;
 	}
 	@media print {
-		.label-card {
+		.key-tag {
 			width: 1.5in !important;
 			height: 2in !important;
 			margin: 0 !important;
