@@ -103,7 +103,7 @@
 	<div class="relative my-10 w-full max-w-4xl overflow-hidden px-2 py-10">
 		<div class="flex flex-row items-center">
 			<div
-				class="flex flex-row items-center gap-4"
+				class="animate-slide flex flex-row items-center gap-4"
 				style:transform="translateX(-{$position}%)"
 				style:transition="transform {15}s linear"
 			>

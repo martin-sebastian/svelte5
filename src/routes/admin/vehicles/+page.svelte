@@ -127,76 +127,81 @@
 	<h1 class="text-3xl font-bold">Vehicles</h1>
 </div>
 
-<div class="container sticky top-16 z-50 mx-auto my-1">
-	<div
-		class="mb-6 flex flex-col gap-2 rounded-lg border border-gray-400/25 bg-background/75 p-2 shadow-sm backdrop-blur-sm backdrop:blur-sm sm:flex-row sm:items-center sm:justify-between"
-	>
-		<!-- Search input and count -->
-		<div class="flex w-full flex-row items-center sm:w-auto">
-			<input
-				type="search"
-				bind:value={searchTerm}
-				placeholder="Filter..."
-				class="w-full min-w-96 rounded-full border border-gray-800/25 bg-gray-300/25 px-4 py-1 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-			/>
-			<span class="ml-[-120px] whitespace-nowrap pe-10 text-sm text-gray-500">
-				{totalShowing} of {data?.vehicles?.length || 0}
-			</span>
-		</div>
-
-		<!-- Controls container - stack on mobile -->
-		<div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-			<!-- Jump to dropdown -->
-			<div class="w-full sm:w-auto">
-				<select
-					on:change={(e: Event) => {
-						const target = e.target as HTMLSelectElement;
-						const groupName = target.value;
-						if (!groupName) {
-							window.scrollTo({ top: 0, behavior: 'smooth' });
-							return;
-						}
-						const element = document.getElementById(groupName);
-						if (element) {
-							const navbarHeight = 64;
-							const y = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
-							window.scrollTo({ top: y, behavior: 'smooth' });
-						}
-					}}
-					class="w-full rounded-full border border-gray-400/50 bg-gray-100/50 px-5 py-1 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50 sm:w-auto"
-				>
-					<option value="">Jump to...</option>
-					{#each sortedGroups as [groupName]}
-						<option value={groupName}>{groupName}</option>
-					{/each}
-				</select>
+<div class="sticky top-14 z-50 my-0 w-full">
+	<div class="container mx-auto">
+		<div
+			class="flex h-12 w-full flex-row items-center justify-between gap-1 rounded-full border border-gray-200/75 bg-gray-100/75 px-2 dark:border-gray-700/50 dark:bg-gray-800/75"
+		>
+			<!-- Search Input -->
+			<div class="flex items-center gap-2">
+				<input
+					type="search"
+					bind:value={searchTerm}
+					placeholder="Filter..."
+					class="w-[200px] rounded-full border border-gray-400/75 bg-white px-3 py-0.5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+				/>
+				<span class="rounded-full bg-gray-500 px-3 py-1.5 text-xs text-white">
+					{totalShowing} of {data?.vehicles?.length || 0}
+				</span>
 			</div>
 
-			<!-- Sort Dropdown -->
-			<div class="flex w-full items-center gap-2 sm:w-auto">
-				<label for="sort" class="hidden text-gray-400/50 sm:block">Group by:</label>
-				<select
-					id="sort"
-					bind:value={selectedSort}
-					class="w-full rounded-full border border-gray-400/50 bg-gray-100/50 px-5 py-1 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50 sm:w-auto"
-				>
-					{#each sortOptions as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
+			<!-- Middle section with dropdowns -->
+			<div class="flex flex-1 items-center justify-center gap-4">
+				<!-- Jump to dropdown -->
+				<div class="w-[200px]">
+					<select
+						on:change={(e: Event) => {
+							const target = e.target as HTMLSelectElement;
+							const groupName = target.value;
+							if (!groupName) {
+								window.scrollTo({ top: 0, behavior: 'smooth' });
+								return;
+							}
+							const element = document.getElementById(groupName);
+							if (element) {
+								const navbarHeight = 64;
+								const y = element.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+								window.scrollTo({ top: y, behavior: 'smooth' });
+							}
+						}}
+						class="w-full rounded-full border border-gray-400/75 bg-gray-100/75 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50"
+					>
+						<option value="">Jump to...</option>
+						{#each sortedGroups as [groupName]}
+							<option value={groupName}>{groupName}</option>
+						{/each}
+					</select>
+				</div>
+
+				<!-- Sort Dropdown -->
+				<div class="flex w-[200px] items-center gap-2">
+					<select
+						id="sort"
+						bind:value={selectedSort}
+						class="w-full rounded-full border border-gray-400/50 bg-gray-100/50 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50"
+					>
+						{#each sortOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+				</div>
 			</div>
 
 			<!-- View toggle buttons -->
-			<div class="flex flex-row items-center justify-end gap-2">
+			<div class="flex items-center gap-2">
 				<button
-					class={`ml-4 rounded-full p-2 ${viewMode === 'grid' ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+					class={`rounded-full p-1 hover:bg-gray-200/50 ${
+						viewMode === 'grid' ? 'bg-gray-200 dark:bg-gray-700' : ''
+					}`}
 					on:click={() => (viewMode = 'grid')}
 					aria-label="Grid view"
 				>
 					<LayoutGrid class="h-5 w-5" />
 				</button>
 				<button
-					class={`rounded-full p-2 ${viewMode === 'list' ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
+					class={`rounded-full p-2 hover:bg-gray-200/50 ${
+						viewMode === 'list' ? 'bg-gray-200 dark:bg-gray-700' : ''
+					}`}
 					on:click={() => (viewMode = 'list')}
 					aria-label="List view"
 				>

@@ -5,7 +5,6 @@
 	import { ShieldPlus } from 'lucide-svelte';
 	import { Settings } from 'lucide-svelte';
 	import { Grip } from 'lucide-svelte';
-	import { DatabaseZap } from 'lucide-svelte';
 	import { User } from 'lucide-svelte';
 	import { Moon } from 'lucide-svelte';
 	import { Sun } from 'lucide-svelte';
@@ -61,9 +60,7 @@
 		<Button href="/auth" variant="outline" class="mx-1 my-1">
 			<User class="h-4 w-4" />
 		</Button>
-		<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
-			<DatabaseZap class="h-4 w-4" />
-		</Button>
+
 		<Button href="/admin" variant="outline" class="my-1 ml-1 mr-2">
 			<Settings class="h-4 w-4" />
 		</Button>
