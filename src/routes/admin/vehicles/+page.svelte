@@ -18,11 +18,31 @@
 	export let data: PageData;
 	$: ({ supabase, session, vehicles } = data);
 
+	// Add type definition for vehicle
+	type Vehicle = {
+		images: any;
+		primaryImage: string | null;
+		id: string;
+		stockNumber: string | null;
+		vin: string | null;
+		year: number | null;
+		manufacturer: string | null;
+		type: string | null;
+		style: string | null;
+		title: string | null;
+		color: string | null;
+		usage: string | null;
+		price: number | null;
+		metricValue: string | null;
+		metricType: string | null;
+		status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+	};
+
 	// Sorting options
 	const sortOptions = [
 		{ value: 'modelType', label: 'Type ' },
 		{ value: 'year', label: 'Year ' },
-		{ value: 'manufacturer', label: 'Manufacturer ' },
+		{ value: 'manufacturer', label: 'Make ' },
 		{ value: 'usage', label: 'Usage ' }
 	];
 
@@ -93,12 +113,17 @@
 			}
 
 			if (!groups[key]) {
-				groups[key] = [];
+				groups[key] = {
+					items: [],
+					total: 0,
+					expanded: false
+				};
 			}
-			groups[key].push(vehicle);
+			groups[key].items.push(vehicle);
+			groups[key].total = groups[key].total + 1;
 			return groups;
 		},
-		{} as Record<string, typeof vehicles>
+		{} as Record<string, { items: Vehicle[]; total: number; expanded: boolean }>
 	);
 
 	// Sort the groups
@@ -108,6 +133,16 @@
 		}
 		return keyA.localeCompare(keyB);
 	});
+
+	function toggleGroupExpansion(groupName: string) {
+		groupedVehicles[groupName].expanded = !groupedVehicles[groupName].expanded;
+		groupedVehicles = groupedVehicles;
+	}
+
+	// Helper to get visible items for a group
+	function getVisibleItems(group: { items: Vehicle[]; expanded: boolean }) {
+		return group.expanded ? group.items : group.items.slice(0, 5);
+	}
 
 	$: totalShowing = filteredVehicles?.length || 0;
 
@@ -127,28 +162,16 @@
 	<h1 class="text-3xl font-bold">Vehicles</h1>
 </div>
 
+<!-- FILTER,SEARCH and Sort Bar -->
 <div class="sticky top-14 z-50 my-0 w-full">
 	<div class="container mx-auto">
 		<div
-			class="flex h-12 w-full flex-row items-center justify-between gap-1 rounded-full border border-gray-200/75 bg-gray-100/75 px-2 dark:border-gray-700/50 dark:bg-gray-800/75"
+			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 dark:border-gray-800/90 dark:bg-gray-900/90"
 		>
-			<!-- Search Input -->
-			<div class="flex items-center gap-2">
-				<input
-					type="search"
-					bind:value={searchTerm}
-					placeholder="Filter..."
-					class="w-[200px] rounded-full border border-gray-400/75 bg-white px-3 py-0.5 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-				/>
-				<span class="rounded-full bg-gray-500 px-3 py-1.5 text-xs text-white">
-					{totalShowing} of {data?.vehicles?.length || 0}
-				</span>
-			</div>
-
-			<!-- Middle section with dropdowns -->
-			<div class="flex flex-1 items-center justify-center gap-4">
+			<!-- Left section with dropdowns -->
+			<div class="ml-2 flex w-1/4 items-center gap-2">
 				<!-- Jump to dropdown -->
-				<div class="w-[200px]">
+				<div class="flex flex-row items-center gap-2">
 					<select
 						on:change={(e: Event) => {
 							const target = e.target as HTMLSelectElement;
@@ -164,7 +187,7 @@
 								window.scrollTo({ top: y, behavior: 'smooth' });
 							}
 						}}
-						class="w-full rounded-full border border-gray-400/75 bg-gray-100/75 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50"
+						class="w-full rounded-full border border-gray-400/75 bg-gray-100/75 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
 					>
 						<option value="">Jump to...</option>
 						{#each sortedGroups as [groupName]}
@@ -172,25 +195,43 @@
 						{/each}
 					</select>
 				</div>
+			</div>
 
-				<!-- Sort Dropdown -->
-				<div class="flex w-[200px] items-center gap-2">
-					<select
-						id="sort"
-						bind:value={selectedSort}
-						class="w-full rounded-full border border-gray-400/50 bg-gray-100/50 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-800/50 dark:bg-gray-800/50"
-					>
-						{#each sortOptions as option}
-							<option value={option.value}>{option.label}</option>
-						{/each}
-					</select>
+			<!-- Center search input -->
+			<div class="flex w-2/4 justify-center">
+				<div class="relative w-full max-w-xl">
+					<input
+						type="search"
+						bind:value={searchTerm}
+						placeholder="Filter..."
+						class="w-full rounded-full border border-gray-400/25 bg-background px-3 py-1 pr-20 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+					/>
+					<div class="absolute right-2 top-1/2 -translate-y-1/2">
+						<span
+							class="my-2 rounded-full bg-gray-200 px-1 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+						>
+							{totalShowing}/{data?.vehicles?.length || 0}
+						</span>
+					</div>
 				</div>
 			</div>
 
-			<!-- View toggle buttons -->
-			<div class="flex items-center gap-2">
+			<!-- Right section with sort and view controls -->
+			<div class="flex w-1/4 items-center justify-end gap-2">
+				<!-- Sort Dropdown -->
+				<select
+					id="sort"
+					bind:value={selectedSort}
+					class="w-32 rounded-full border border-gray-400/50 bg-gray-100/50 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
+				>
+					{#each sortOptions as option}
+						<option value={option.value}>{option.label}</option>
+					{/each}
+				</select>
+
+				<!-- View toggle buttons -->
 				<button
-					class={`rounded-full p-1 hover:bg-gray-200/50 ${
+					class={`ml-2 rounded-full p-1 hover:bg-gray-200/50 ${
 						viewMode === 'grid' ? 'bg-gray-200 dark:bg-gray-700' : ''
 					}`}
 					on:click={() => (viewMode = 'grid')}
@@ -199,7 +240,7 @@
 					<LayoutGrid class="h-5 w-5" />
 				</button>
 				<button
-					class={`rounded-full p-2 hover:bg-gray-200/50 ${
+					class={`mr-2 rounded-full p-1 hover:bg-gray-200/50 ${
 						viewMode === 'list' ? 'bg-gray-200 dark:bg-gray-700' : ''
 					}`}
 					on:click={() => (viewMode = 'list')}
@@ -211,19 +252,28 @@
 		</div>
 	</div>
 </div>
+
+<!-- Vehicle List -->
 <div class="container mx-auto my-2">
-	{#each sortedGroups as [groupName, vehicles]}
+	{#each sortedGroups as [groupName, group]}
 		<div class="mb-0">
-			<h2
-				id={`${groupName}`}
-				class="mb-2 mt-0 line-clamp-1 border-b border-gray-400/25 pb-1 text-xl font-semibold"
-			>
-				{groupName}
-			</h2>
+			<div class="flex items-center justify-between">
+				<h2 id={`${groupName}`} class="mb-1 mt-5 line-clamp-1 pb-1 font-semibold">
+					{groupName}
+				</h2>
+				{#if group.total > 5}
+					<button
+						on:click={() => toggleGroupExpansion(groupName)}
+						class="text-sm text-blue-500 hover:text-blue-700"
+					>
+						{group.expanded ? 'Show Less' : `Show All (${group.total})`}
+					</button>
+				{/if}
+			</div>
 
 			{#if viewMode === 'grid'}
 				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-					{#each vehicles as vehicle}
+					{#each getVisibleItems(group) as vehicle}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
 						>
@@ -346,7 +396,7 @@
 				</div>
 			{:else}
 				<div class="flex flex-col gap-3">
-					{#each vehicles as vehicle}
+					{#each getVisibleItems(group) as vehicle}
 						<div
 							class="flex overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 p-4 shadow-md dark:bg-gray-800/50"
 						>
