@@ -1,86 +1,97 @@
 import { writable } from 'svelte/store';
-import type { KeyTagTemplate } from '$lib/types/keyTag';
+
+export interface KeyTagTemplate {
+	id: string;
+	name: string;
+	description: string;
+	width: string;
+	height: string;
+	orientation: 'portrait' | 'landscape';
+	backgroundImage?: string;
+	backgroundColor?: string;
+	printableArea: {
+		width: string;
+		height: string;
+		marginTop: string;
+		marginLeft: string;
+	};
+}
 
 const defaultTemplates: KeyTagTemplate[] = [
 	{
 		id: 'versa-tag-standard-yellow',
-		name: 'Versa-Tag Standard Yellow',
-		width: '3in',
-		height: '3in',
-		printableArea: {
-			width: '3in',
-			height: '3in',
-			marginTop: '0in',
-			marginLeft: '0in'
-		},
-		backgroundImage: '/images/versa-tag-3x3-yellow-custom.png',
-		backgroundColor: '#ffeb3b',
-		orientation: 'landscape',
-		description: 'Standard yellow self-laminating key tag'
-	},
-	{
-		id: 'versa-tag-narrow-yellow',
-		name: 'Versa-Tag Narrow Yellow',
+		name: 'Versa-Tag Standard (Yellow)',
+		description: 'Standard yellow key tag with black text',
 		width: '1.22in',
 		height: '3in',
+		orientation: 'portrait',
+		backgroundColor: '#FFEB3B',
 		printableArea: {
 			width: '1.22in',
 			height: '3in',
-			marginTop: '0in',
-			marginLeft: '0in'
-		},
-		backgroundImage: '/images/versa-tag-narrow-yellow.png',
-		backgroundColor: '#ffeb3b',
+			marginTop: '0',
+			marginLeft: '0'
+		}
+	},
+	{
+		id: 'versa-tag-narrow-yellow',
+		name: 'Versa-Tag Narrow (Yellow)',
+		description: 'Narrow yellow key tag with black text',
+		width: '1.22in',
+		height: '3in',
 		orientation: 'portrait',
-		description: 'Narrow yellow self-laminating key tag'
+		backgroundColor: '#FFEB3B',
+		printableArea: {
+			width: '1.22in',
+			height: '3in',
+			marginTop: '0',
+			marginLeft: '0'
+		}
 	},
 	{
 		id: 'versa-tag-white',
-		name: 'Versa-Tag White',
-		width: '3in',
+		name: 'Versa-Tag (White)',
+		description: 'Standard white key tag with black text',
+		width: '1.22in',
 		height: '3in',
+		orientation: 'portrait',
+		backgroundColor: '#FFFFFF',
 		printableArea: {
-			width: '3in',
+			width: '1.22in',
 			height: '3in',
-			marginTop: '0in',
-			marginLeft: '0in'
-		},
-		backgroundImage: '/images/versa-tag-3x3-white.png',
-		backgroundColor: '#ffffff',
-		orientation: 'landscape',
-		description: 'Standard white self-laminating key tag'
+			marginTop: '0',
+			marginLeft: '0'
+		}
 	},
 	{
 		id: 'versa-tag-gray',
-		name: 'Versa-Tag Gray',
-		width: '3in',
+		name: 'Versa-Tag (Gray)',
+		description: 'Standard gray key tag with black text',
+		width: '1.22in',
 		height: '3in',
+		orientation: 'portrait',
+		backgroundColor: '#E0E0E0',
 		printableArea: {
-			width: '3in',
+			width: '1.22in',
 			height: '3in',
-			marginTop: '0in',
-			marginLeft: '0in'
-		},
-		backgroundImage: '/images/versa-tag-3x3-gray.png',
-		backgroundColor: '#ffffff',
-		orientation: 'landscape',
-		description: 'Standard gray self-laminating key tag'
+			marginTop: '0',
+			marginLeft: '0'
+		}
 	},
 	{
 		id: 'standard-label',
 		name: 'Standard Label',
-		width: '2in',
-		height: '1.5in',
+		description: 'Standard label with black text',
+		width: '1.22in',
+		height: '3in',
+		orientation: 'portrait',
+		backgroundColor: '#FFFFFF',
 		printableArea: {
-			width: '1.875in',
-			height: '1.375in',
-			marginTop: '0.0625in',
-			marginLeft: '0.0625in'
-		},
-		backgroundImage: '',
-		backgroundColor: '#ffffff',
-		orientation: 'landscape',
-		description: 'Original 1.5 x 2 inch label'
+			width: '1.22in',
+			height: '3in',
+			marginTop: '0',
+			marginLeft: '0'
+		}
 	}
 ];
 
@@ -93,8 +104,8 @@ function createKeyTagStore() {
 	return {
 		subscribe,
 		setSelectedTemplateId: (id: string) =>
-			update((store) => ({
-				...store,
+			update((state) => ({
+				...state,
 				selectedTemplateId: id
 			})),
 		reset: () =>

@@ -1,45 +1,49 @@
-import { createServerClient } from '@supabase/ssr';
-import type { Handle } from '@sveltejs/kit';
+import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		cookies: {
-			get: (key) => event.cookies.get(key),
-			set: (key, value, options) => {
-				event.cookies.set(key, value, {
-					...options,
-					path: '/',
-					sameSite: 'lax',
-					secure: process.env.NODE_ENV === 'production'
-				});
-			},
-			remove: (key, options) => {
-				event.cookies.delete(key, {
-					...options,
-					path: '/'
-				});
-			}
+	event.locals.supabase = createSupabaseServerClient({
+		supabaseUrl: PUBLIC_SUPABASE_URL,
+		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
+		event
+	});
+
+	// Get session from cookie
+	const {
+		data: { session }
+	} = await event.locals.supabase.auth.getSession();
+
+	// Get user if session exists
+	const {
+		data: { user },
+		error: userError
+	} = session ? await event.locals.supabase.auth.getUser() : { data: { user: null }, error: null };
+
+	// Set user in locals
+	event.locals.user = user;
+
+	// Handle auth protection for admin routes
+	if (event.url.pathname.startsWith('/admin')) {
+		if (!session || userError || !user) {
+			throw redirect(303, `/auth?redirectTo=${event.url.pathname}`);
+		}
+	}
+
+	// For /auth routes, redirect to admin if user is already authenticated
+	// But skip this check if we're handling a form action
+	if (event.url.pathname === '/auth' && event.request.method !== 'POST') {
+		if (session && user && !userError) {
+			const redirectTo = event.url.searchParams.get('redirectTo') || '/admin';
+			throw redirect(303, redirectTo);
+		}
+	}
+
+	const response = await resolve(event, {
+		filterSerializedResponseHeaders(name) {
+			return name === 'content-range';
 		}
 	});
 
-	event.locals.getSession = async () => {
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-
-		if (!session) return null;
-
-		// Verify the user is valid
-		const {
-			data: { user },
-			error
-		} = await event.locals.supabase.auth.getUser();
-
-		if (error || !user) return null;
-
-		return session;
-	};
-
-	return resolve(event);
+	return response;
 };

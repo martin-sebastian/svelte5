@@ -3,40 +3,24 @@
 	import { ShieldCheck, Loader2, User, Camera, Phone } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
-	import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 	const { data } = $page;
 	let loading = $state(false);
 	let error = $state('');
 	let success = $state(false);
 
-	// Get user's metadata
-	$effect(() => {
-		if (data.session?.user) {
-			// Verify user data
-			data.supabase.auth
-				.getUser()
-				.then(
-					({
-						data: { user },
-						error
-					}: {
-						data: { user: SupabaseUser | null };
-						error: Error | null;
-					}) => {
-						if (!error && user) {
-							firstName = user.user_metadata?.first_name || '';
-							lastName = user.user_metadata?.last_name || '';
-							phone = user.user_metadata?.phone || '';
-						}
-					}
-				);
-		}
-	});
-
 	let firstName = $state('');
 	let lastName = $state('');
 	let phone = $state('');
+
+	// Get user's metadata
+	$effect(() => {
+		if (data.user) {
+			firstName = data.user.user_metadata?.first_name || '';
+			lastName = data.user.user_metadata?.last_name || '';
+			phone = data.user.user_metadata?.phone || '';
+		}
+	});
 
 	function handleSubmit() {
 		loading = true;
@@ -45,13 +29,10 @@
 		return async ({ result }: { result: ActionResult }) => {
 			loading = false;
 
-			if (result.type === 'error') {
-				error = result.error.message;
+			if (result.type === 'failure') {
+				error = result.data?.error || 'An error occurred';
 			} else if (result.type === 'success') {
 				success = true;
-			} else if (result.type === 'redirect') {
-				// Force a full page reload on redirect
-				window.location.href = result.location;
 			}
 		};
 	}
@@ -61,15 +42,15 @@
 	<div
 		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md"
 	>
-		{#if data.session}
+		{#if data.user}
 			<div class="relative">
 				<div class="relative mb-4">
 					<div
 						class="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 text-gray-500"
 					>
-						{#if data.session.user.user_metadata?.avatar_url}
+						{#if data.user.user_metadata?.avatar_url}
 							<img
-								src={data.session.user.user_metadata.avatar_url}
+								src={data.user.user_metadata.avatar_url}
 								alt="Profile"
 								class="h-24 w-24 rounded-full object-cover"
 							/>
@@ -152,14 +133,14 @@
 						class="w-full rounded-md bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
 					>
 						{#if loading}
-							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+							<Loader2 class="mr-2 inline h-4 w-4 animate-spin" />
 						{/if}
 						Update Profile
 					</button>
 				</div>
 			</form>
 
-			<form action="?/signout" method="POST" use:enhance class="mt-4 w-full">
+			<form action="?/signout" method="POST" use:enhance={handleSubmit} class="mt-4 w-full">
 				<button
 					type="submit"
 					class="w-full rounded-md bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600"
@@ -207,7 +188,7 @@
 					class="w-full rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-800 disabled:opacity-50"
 				>
 					{#if loading}
-						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+						<Loader2 class="mr-2 inline h-4 w-4 animate-spin" />
 					{/if}
 					Login
 				</button>

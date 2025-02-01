@@ -1,42 +1,45 @@
-import { redirect, fail } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
+import { supabase } from '$lib/supabase';
+import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals: { getSession } }) => {
-	const session = await getSession();
+export const load: PageServerLoad = async () => {
+	const {
+		data: { user },
+		error
+	} = await supabase.auth.getUser();
 
-	if (!session) {
-		throw redirect(303, '/auth');
+	if (error || !user) {
+		return fail(500, { message: 'Error fetching user', user: null });
 	}
 
 	return {
-		session
+		user
 	};
 };
 
-export const actions = {
-	updateProfile: async ({ request, locals: { supabase, getSession } }) => {
-		const session = await getSession();
-		if (!session) {
-			throw redirect(303, '/auth');
+export const actions: Actions = {
+	updateProfile: async ({ request }) => {
+		const {
+			data: { user },
+			error
+		} = await supabase.auth.getUser();
+		if (error || !user) {
+			return fail(500, { message: 'Error fetching user', user: null });
 		}
 
 		const formData = await request.formData();
-		const firstName = formData.get('firstName') as string;
-		const lastName = formData.get('lastName') as string;
-		const phone = formData.get('phone') as string;
+		const email = formData.get('email') as string;
+		const password = formData.get('password') as string;
 
-		const { error } = await supabase.auth.updateUser({
-			data: { firstName, lastName, phone }
+		const { error: updateError } = await supabase.auth.updateUser({
+			email: email || undefined,
+			password: password || undefined
 		});
 
-		if (error) {
-			return fail(400, {
-				error: error.message
-			});
+		if (updateError) {
+			return fail(500, { message: updateError.message, user });
 		}
 
-		return {
-			success: true
-		};
+		return { success: true, user };
 	}
-} satisfies Actions;
+};

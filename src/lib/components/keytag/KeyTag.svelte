@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { keyTagStore } from '$lib/stores/keyTagStore.svelte';
+	import { keyTagStore } from '$lib/stores/keyTagStore';
 
 	const selectedTemplate = $derived(
-		keyTagStore.templates.find((t) => t.id === keyTagStore.selectedTemplateId)
+		$keyTagStore.templates.find((t) => t.id === $keyTagStore.selectedTemplateId)
 	);
 
-	let slots = $props<{ default: any }>();
+	const { default: content } = $props<{ default: any }>();
 </script>
 
 <div
@@ -27,7 +27,7 @@
 		style:margin-top={selectedTemplate?.printableArea.marginTop}
 		style:margin-left={selectedTemplate?.printableArea.marginLeft}
 	>
-		{@render slots.default()}
+		{@render content()}
 	</div>
 </div>
 

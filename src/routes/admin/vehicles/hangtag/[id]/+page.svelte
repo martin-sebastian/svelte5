@@ -2,10 +2,12 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { CircleDashed, X, Printer, ZoomOut, ZoomIn } from 'lucide-svelte';
+	import type { QRCodeToDataURLOptions } from 'qrcode';
 	import QRCode from 'qrcode';
-	import { onMount } from 'svelte';
-	export let data;
-	const { vehicle } = data;
+	import { browser } from '$app/environment';
+
+	const { data } = $props<{ data: PageData }>();
+	const { vehicle } = $derived(data);
 
 	const primaryImage = vehicle.primaryImage;
 
@@ -24,29 +26,44 @@
 		window.print();
 	};
 
-	const handleClose = () => {
-		goto('/admin/vehicles');
-	};
+	let qrCodeDataUrl = $state<string | null>(null);
 
-	let qrCodeDataUrl = '';
-
-	onMount(async () => {
-		// Use the vehicle.link from the database
-		const vehicleUrl = vehicle.link;
-
-		try {
-			qrCodeDataUrl = await QRCode.toDataURL(vehicleUrl, {
+	$effect(() => {
+		if (browser && vehicle) {
+			const url = `${window.location.origin}/vehicles/share/${vehicle.id}`;
+			const options: QRCodeToDataURLOptions = {
 				width: 200,
-				margin: 2,
+				margin: 1,
 				color: {
 					dark: '#000000',
 					light: '#ffffff'
 				}
-			});
-		} catch (err) {
-			console.error('Error generating QR code:', err);
+			};
+
+			QRCode.toDataURL(url, options)
+				.then((dataUrl: string) => {
+					qrCodeDataUrl = dataUrl;
+				})
+				.catch((err: Error) => {
+					console.error('Error generating QR code:', err);
+				});
 		}
 	});
+
+	const handleClose = () => {
+		goto('/admin/vehicles');
+	};
+
+	function formatPrice(price: number | null) {
+		if (!price) return 'N/A';
+		const actualPrice = price / 100;
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(actualPrice);
+	}
 </script>
 
 {#if vehicle}
@@ -146,7 +163,7 @@
 							class="fixed bottom-0 left-0 z-10 mx-auto my-0 w-1/2 bg-red-800 p-6 text-center text-[44pt] font-bold text-white"
 						>
 							{#if vehicle.price}
-								${(vehicle.price / 100).toLocaleString()}
+								{formatPrice(vehicle.price)}
 							{:else}
 								Not Available
 							{/if}
@@ -155,7 +172,7 @@
 							class="fixed bottom-0 right-0 z-10 mx-auto my-0 w-1/2 bg-red-800 p-6 text-center text-[44pt] font-bold text-white"
 						>
 							{#if vehicle.price}
-								${(vehicle.price / 100).toLocaleString()}
+								{formatPrice(vehicle.price)}
 							{:else}
 								Not Available
 							{/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { KeyTag } from '$lib/components/keytag/KeyTag.svelte';
-	import { TemplateSelector } from '$lib/components/keytag/TemplateSelector.svelte';
+	import KeyTag from '$lib/components/keytag/KeyTag.svelte';
+	import TemplateSelector from '$lib/components/keytag/TemplateSelector.svelte';
 
 	let scale = $state(2); // For better visibility during preview
 </script>

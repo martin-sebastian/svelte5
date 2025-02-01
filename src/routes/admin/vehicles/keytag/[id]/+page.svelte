@@ -11,11 +11,12 @@
 	import { Printer, X, ZoomIn, ZoomOut } from 'lucide-svelte';
 
 	const { data } = $props<{ data: PageData }>();
-	const vehicle = $derived(data.vehicle);
+	const { vehicle } = $derived(data);
+
 	let scale = $state(2);
 
-	$: selectedTemplate = $keyTagStore.templates.find(
-		(t) => t.id === $keyTagStore.selectedTemplateId
+	const selectedTemplate = $derived(
+		$keyTagStore.templates.find((t) => t.id === $keyTagStore.selectedTemplateId)
 	);
 
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));
@@ -80,7 +81,18 @@
 		</button>
 	</div>
 {:else}
-	<div class="loading print:hidden">Loading...</div>
+	<div class="flex h-screen items-center justify-center">
+		<div class="text-center">
+			<h2 class="text-xl font-semibold">Vehicle not found</h2>
+			<p class="mt-2 text-gray-600">The requested vehicle could not be loaded.</p>
+			<button
+				onclick={handleClose}
+				class="mt-4 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+			>
+				Return to Vehicles
+			</button>
+		</div>
+	</div>
 {/if}
 
 <style>

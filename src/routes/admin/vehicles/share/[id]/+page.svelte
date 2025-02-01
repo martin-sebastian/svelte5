@@ -2,42 +2,67 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { sanitizeHtml, stripHtmlAndFormatText } from '$lib/utils/sanitize';
-	export let data: PageData;
-	const { vehicle } = data;
+	import { sanitizeHtml } from '$lib/utils/sanitize';
 
-	// Check if we have a valid vehicle
-	$: hasValidVehicle = vehicle && Object.keys(vehicle).length > 0;
+	const { data } = $props<{ data: PageData }>();
+	const { vehicle } = $derived(data);
+
+	const hasValidVehicle = $derived(!!vehicle);
+	const sanitizedDescription = $derived(
+		browser && vehicle?.description ? sanitizeHtml(vehicle.description) : ''
+	);
+
+	const plainTextDescription = $derived(
+		browser && vehicle?.description ? sanitizeHtml(vehicle.description) : ''
+	);
+
+	const ogDescription = $derived(
+		`${vehicle?.year || ''} ${vehicle?.manufacturer || ''} ${vehicle?.modelName || ''} - ${
+			vehicle?.metricValue || ''
+		} ${vehicle?.metricType || ''}`
+	);
+
+	function formatPrice(price: number | null) {
+		if (!price) return 'N/A';
+		const actualPrice = price / 100;
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(actualPrice);
+	}
 
 	// Generate sharing URLs
-	function getSharingUrls() {
-		if (!vehicle || !browser) return null;
+	function generateSharingUrls() {
+		if (!browser || !vehicle) return null;
 
 		const currentUrl = window.location.href;
-		const sanitizedDescription = browser ? stripHtmlAndFormatText(vehicle.description || '') : '';
+		const sanitizedText = browser ? sanitizeHtml(vehicle.description || '') : '';
 		const smsText = `Check out this ${vehicle.title}: ${currentUrl}`;
 
 		return {
 			facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
-			twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(vehicle.title)}`,
-			sms: `sms:?body=${encodeURIComponent(smsText)}`
+			twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+				currentUrl
+			)}&text=${encodeURIComponent(`Check out this ${vehicle.title}`)}`,
+			email: `mailto:?subject=${encodeURIComponent(
+				`Check out this ${vehicle.title}`
+			)}&body=${encodeURIComponent(`${sanitizedText}\n\n${currentUrl}`)}`,
+			sms: `sms:?&body=${encodeURIComponent(smsText)}`
 		};
 	}
+
+	const sharingUrls = $derived(generateSharingUrls());
+
+	function shareToSocial(url: string) {
+		if (!url) return;
+		window.open(url, '_blank', 'noopener,noreferrer');
+	}
+
 	const handleClose = () => {
 		goto('/admin/vehicles');
 	};
-
-	// Handle share button clicks
-	function shareToSocial(url: string) {
-		if (browser) {
-			window.open(url, '_blank', 'width=600,height=400,resizable=yes');
-		}
-	}
-
-	function formatPrice(price: number): string {
-		if (!price) return '';
-		return `$${price.toFixed(2)}`;
-	}
 
 	function constructOgDescription(vehicle: any): string {
 		const parts = [
@@ -53,10 +78,6 @@
 
 		return parts.filter(Boolean).join(' | ');
 	}
-
-	$: sanitizedDescription = browser ? sanitizeHtml(vehicle.description || '') : '';
-	$: plainTextDescription = browser ? stripHtmlAndFormatText(vehicle.description || '') : '';
-	$: ogDescription = hasValidVehicle ? constructOgDescription(vehicle) : 'Vehicle Not Found';
 </script>
 
 <svelte:head>
@@ -164,19 +185,25 @@
 			{#if browser}
 				<div class="my-5 flex gap-2">
 					<button
-						on:click={() => shareToSocial(getSharingUrls()?.facebook || '')}
+						on:click={() => shareToSocial(sharingUrls?.facebook || '')}
 						class="flex-0 rounded bg-[#1877F2] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1877F2]/90"
 					>
 						Post to Meta
 					</button>
 					<button
-						on:click={() => shareToSocial(getSharingUrls()?.twitter || '')}
+						on:click={() => shareToSocial(sharingUrls?.twitter || '')}
 						class="flex-0 rounded bg-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
 					>
 						Post to X
 					</button>
 					<button
-						on:click={() => shareToSocial(getSharingUrls()?.sms || '')}
+						on:click={() => shareToSocial(sharingUrls?.email || '')}
+						class="flex-0 rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600"
+					>
+						Email
+					</button>
+					<button
+						on:click={() => shareToSocial(sharingUrls?.sms || '')}
 						class="flex-0 rounded bg-green-800 px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
 					>
 						Paste as SMS

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import {
 		CircleGauge,
 		ImageOff,
@@ -20,8 +19,8 @@
 	} from 'lucide-svelte';
 	import { page } from '$app/stores';
 
-	export let data: PageData;
-	$: ({ supabase, session, vehicles } = data);
+	const { data } = $props<{ data: PageData }>();
+	const { supabase, session, vehicles } = $derived(data);
 
 	// Add type definition for vehicle
 	type Vehicle = {
@@ -45,62 +44,71 @@
 		condition: string | null;
 	};
 
+	type SortOption = 'modelType' | 'year' | 'manufacturer' | 'usage';
+
 	// Sorting options
 	const sortOptions = [
-		{ value: 'modelType', label: 'Type ' },
-		{ value: 'year', label: 'Year ' },
-		{ value: 'manufacturer', label: 'Make ' },
-		{ value: 'usage', label: 'Usage ' }
+		{ value: 'modelType' as const, label: 'Type ' },
+		{ value: 'year' as const, label: 'Year ' },
+		{ value: 'manufacturer' as const, label: 'Make ' },
+		{ value: 'usage' as const, label: 'Usage ' }
 	];
 
-	// Initialize without default values
-	let viewMode: 'grid' | 'list';
-	let selectedSort: string;
+	// Initialize state variables
+	let viewMode = $state<'grid' | 'list'>('grid');
+	let selectedSort = $state<SortOption>('modelType');
+	let searchTerm = $state('');
 
-	// Load saved preferences on mount
-	onMount(() => {
-		// Load view mode preference
-		const savedView = localStorage.getItem('vehiclesViewMode');
-		viewMode = savedView === 'grid' || savedView === 'list' ? savedView : 'grid';
-
-		// Load sort preference
-		const savedSort = localStorage.getItem('vehiclesSortMode');
-		selectedSort = savedSort || 'modelType'; // Default to 'modelType' if no preference
-	});
-
-	// Save user preferences
-	$: {
-		if (typeof window !== 'undefined') {
-			if (viewMode) {
-				localStorage.setItem('vehiclesViewMode', viewMode);
-			}
-			if (selectedSort) {
-				localStorage.setItem('vehiclesSortMode', selectedSort);
-			}
+	// Load saved preferences
+	if (typeof window !== 'undefined') {
+		const savedView = localStorage.getItem('vehiclesViewMode') as 'grid' | 'list' | null;
+		if (savedView === 'grid' || savedView === 'list') {
+			viewMode = savedView;
+		}
+		const savedSort = localStorage.getItem('vehiclesSortMode') as SortOption | null;
+		if (savedSort && sortOptions.some((opt) => opt.value === savedSort)) {
+			selectedSort = savedSort;
 		}
 	}
 
+	// Save preferences when they change
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			localStorage.setItem('vehiclesViewMode', viewMode);
+			localStorage.setItem('vehiclesSortMode', selectedSort);
+		}
+	});
+
 	// Filter vehicles
-	let searchTerm = '';
+	const filteredVehicles = $derived(
+		vehicles
+			? vehicles.filter((vehicle: Vehicle) => {
+					if (!searchTerm) return true;
+					const searchLower = searchTerm.toLowerCase();
+					return (
+						vehicle.stockNumber?.toLowerCase().includes(searchLower) ||
+						vehicle.title?.toLowerCase().includes(searchLower) ||
+						vehicle.year?.toString().includes(searchLower) ||
+						vehicle.manufacturer?.toLowerCase().includes(searchLower) ||
+						vehicle.color?.toLowerCase().includes(searchLower) ||
+						vehicle.vin?.toLowerCase().includes(searchLower)
+					);
+				})
+			: []
+	);
 
-	$: filteredVehicles = vehicles
-		? vehicles.filter((vehicle) => {
-				if (!searchTerm) return true; // Show all vehicles when no search term
-				const searchLower = searchTerm.toLowerCase();
-				return (
-					vehicle.stockNumber?.toLowerCase().includes(searchLower) ||
-					vehicle.title?.toLowerCase().includes(searchLower) ||
-					vehicle.year?.toString().includes(searchLower) ||
-					vehicle.manufacturer?.toLowerCase().includes(searchLower) ||
-					vehicle.color?.toLowerCase().includes(searchLower) ||
-					vehicle.vin?.toLowerCase().includes(searchLower)
-				);
-			})
-		: [];
+	type GroupedVehicles = Record<
+		string,
+		{
+			items: Vehicle[];
+			total: number;
+			expanded: boolean;
+		}
+	>;
 
-	// Then group the filtered vehicles
-	$: groupedVehicles = filteredVehicles.reduce(
-		(groups, vehicle) => {
+	// Group vehicles
+	const groupedVehicles = $derived(
+		filteredVehicles.reduce((groups: GroupedVehicles, vehicle: Vehicle) => {
 			let key;
 			switch (selectedSort) {
 				case 'modelType':
@@ -126,37 +134,17 @@
 					expanded: false
 				};
 			}
+
 			groups[key].items.push(vehicle);
-			groups[key].total = groups[key].total + 1;
+			groups[key].total++;
+
 			return groups;
-		},
-		{} as Record<string, { items: Vehicle[]; total: number; expanded: boolean }>
+		}, {} as GroupedVehicles)
 	);
 
-	// Sort the groups
-	$: sortedGroups = Object.entries(groupedVehicles).sort(([keyA], [keyB]) => {
-		if (selectedSort === 'year') {
-			return parseInt(keyB) - parseInt(keyA);
-		}
-		return keyA.localeCompare(keyB);
-	});
-
-	function toggleGroupExpansion(groupName: string) {
-		groupedVehicles[groupName].expanded = !groupedVehicles[groupName].expanded;
-		groupedVehicles = groupedVehicles;
-	}
-
-	// Helper to get visible items for a group
-	function getVisibleItems(group: { items: Vehicle[]; expanded: boolean }) {
-		return group.expanded ? group.items : group.items.slice(0, 5);
-	}
-
-	$: totalShowing = filteredVehicles?.length || 0;
-
-	// Add this helper function at the top with other functions
+	// Format price helper
 	function formatPrice(price: number | null) {
 		if (!price) return 'N/A';
-		// Divide by 100 to handle cents correctly
 		const actualPrice = price / 100;
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
@@ -199,7 +187,7 @@
 						class="w-full rounded-full border border-gray-400/75 bg-gray-100/75 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
 					>
 						<option value="">Jump to...</option>
-						{#each sortedGroups as [groupName]}
+						{#each Object.entries(groupedVehicles) as [groupName]}
 							<option value={groupName}>{groupName}</option>
 						{/each}
 					</select>
@@ -219,7 +207,7 @@
 						<span
 							class="my-2 rounded-full bg-gray-200 px-1 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300"
 						>
-							{totalShowing}/{data?.vehicles?.length || 0}
+							{filteredVehicles?.length || 0}/{data?.vehicles?.length || 0}
 						</span>
 					</div>
 				</div>
@@ -264,7 +252,7 @@
 
 <!-- Vehicle List -->
 <div class="container mx-auto my-1">
-	{#each sortedGroups as [groupName, group]}
+	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
 				<h2 id={`${groupName}`} class="mb-1 mt-5 line-clamp-1 pb-1 font-semibold">
@@ -272,7 +260,10 @@
 				</h2>
 				{#if group.total > 5}
 					<button
-						onclick={() => toggleGroupExpansion(groupName)}
+						onclick={() => {
+							const updatedGroup = groupedVehicles[groupName];
+							updatedGroup.expanded = !updatedGroup.expanded;
+						}}
 						class="text-sm text-blue-500 hover:text-blue-700"
 					>
 						{group.expanded ? 'Show Less' : `Show All (${group.total})`}
@@ -282,7 +273,7 @@
 
 			{#if viewMode === 'grid'}
 				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-					{#each getVisibleItems(group) as vehicle}
+					{#each group.items.slice(0, group.expanded ? undefined : 5) as vehicle (vehicle.id)}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
 						>
@@ -405,7 +396,7 @@
 				</div>
 			{:else}
 				<div class="flex flex-col gap-2">
-					{#each getVisibleItems(group) as vehicle}
+					{#each group.items.slice(0, group.expanded ? undefined : 5) as vehicle (vehicle.id)}
 						<div
 							class="grid grid-cols-[96px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
 						>
@@ -498,3 +489,14 @@
 		</div>
 	{/each}
 </div>
+
+<style>
+	.dots {
+		background-image: radial-gradient(
+			circle at center,
+			rgba(120, 120, 120, 0.2) 1px,
+			transparent 1px
+		);
+		background-size: 10px 10px;
+	}
+</style>

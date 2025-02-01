@@ -3,34 +3,21 @@
 	import { redirect } from '@sveltejs/kit';
 	import { Button } from '$lib/components/ui/button';
 	import { ShieldPlus, Sun, Moon, User, Settings, LayoutDashboard, Bike } from 'lucide-svelte';
+	import { theme } from '$lib/theme';
 
-	let theme = $state<'light' | 'dark'>(
-		typeof localStorage !== 'undefined'
-			? (localStorage.getItem('theme') as 'light' | 'dark') ||
-					(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-			: 'light'
-	);
-
-	$effect(() => {
-		if (theme === 'dark') {
-			document.documentElement.classList.add('dark');
-		} else {
-			document.documentElement.classList.remove('dark');
-		}
-		localStorage.setItem('theme', theme);
-	});
-
-	function toggleTheme() {
-		theme = theme === 'dark' ? 'light' : 'dark';
+	interface LayoutProps {
+		default: () => any;
 	}
 
 	// Protect all admin routes
 	const { data } = $page;
 	$effect(() => {
-		if (!data.session) {
+		if (!data.user) {
 			throw redirect(303, '/auth');
 		}
 	});
+
+	const $$slots = $props<LayoutProps>();
 </script>
 
 <nav
@@ -52,9 +39,9 @@
 			<Bike /> <span class="hidden sm:block">Inventory</span>
 		</Button>
 	</div>
-	<div class="flex-grow justify-center gap-0 align-middle" />
+	<div class="flex-grow justify-center gap-0 align-middle"></div>
 	<div class="flex flex-row items-center justify-end">
-		<Button onclick={toggleTheme} variant="outline" class="mx-1 my-1">
+		<Button onclick={() => theme.toggle()} variant="outline" class="mx-1 my-1">
 			<Sun class="dark:hidden" />
 			<Moon class="hidden dark:block" />
 		</Button>
@@ -67,4 +54,4 @@
 	</div>
 </nav>
 
-<slot />
+{@render $$slots.default()}

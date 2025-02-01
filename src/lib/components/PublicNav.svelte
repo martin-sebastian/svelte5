@@ -1,26 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { ShieldPlus, Sun, Moon, User } from 'lucide-svelte';
-
-	let theme = $state<'light' | 'dark'>(
-		typeof localStorage !== 'undefined'
-			? (localStorage.getItem('theme') as 'light' | 'dark') ||
-					(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-			: 'light'
-	);
-
-	$effect(() => {
-		if (theme === 'dark') {
-			document.documentElement.classList.add('dark');
-		} else {
-			document.documentElement.classList.remove('dark');
-		}
-		localStorage.setItem('theme', theme);
-	});
-
-	function toggleTheme() {
-		theme = theme === 'dark' ? 'light' : 'dark';
-	}
+	import { theme } from '$lib/theme';
 </script>
 
 <nav
@@ -36,9 +17,9 @@
 			</div>
 		</a>
 	</div>
-	<div class="flex-grow justify-center gap-0 align-middle" />
+	<div class="flex-grow justify-center gap-0 align-middle"></div>
 	<div class="flex flex-row items-center justify-end">
-		<Button onclick={toggleTheme} variant="outline" class="mx-1 my-1">
+		<Button onclick={() => theme.toggle()} variant="outline" class="mx-1 my-1">
 			<Sun class="dark:hidden" />
 			<Moon class="hidden dark:block" />
 		</Button>

@@ -2,17 +2,6 @@
 	import { page } from '$app/stores';
 	import PublicNav from '$lib/components/PublicNav.svelte';
 	import '../app.css';
-	import { Button } from '$lib/components/ui/button';
-	import {
-		ShieldPlus,
-		Settings,
-		Grip,
-		User,
-		Moon,
-		Sun,
-		LayoutDashboard,
-		Bike
-	} from 'lucide-svelte';
 
 	const { children } = $props();
 	let theme = $state(

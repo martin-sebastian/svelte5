@@ -5,17 +5,15 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 
+	const { data } = $props<{ data: PageData }>();
+	const { vehicle } = $derived(data);
+
+	let currentSlide = $state(0);
+	let api = $state<any>(null);
+
 	const handleClose = () => {
 		goto('/admin/vehicles');
 	};
-
-	// First, get the data
-	export let data: PageData;
-
-	// Then destructure or process it
-	const { vehicle } = data;
-
-	// Any other variables or reactive statements should come after
 
 	// Function to get sorted images array with primary image first
 	function getOrderedImages(vehicle: any) {
@@ -41,15 +39,12 @@
 		return uniqueImages;
 	}
 
+	const orderedImages = $derived(vehicle.images || []);
+
 	// Log the vehicle data when component mounts
 	console.log('Vehicle data:', vehicle);
 	console.log('Vehicle images:', vehicle?.images);
-	const orderedImages = vehicle.images;
 	console.log('Ordered images array length:', orderedImages.length);
-
-	// Add state for current slide
-	let currentSlide = 0;
-	let api: any;
 
 	// Function to handle thumbnail clicks
 	const goToSlide = (index: number) => {
