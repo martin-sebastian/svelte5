@@ -1,14 +1,22 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { keyTagStore } from '$lib/stores/keyTagStore.svelte';
 	import KeyTag from '$lib/components/keytag/KeyTag.svelte';
 	import TemplateSelector from '$lib/components/keytag/TemplateSelector.svelte';
 	import VersaTagStandard from '$lib/components/keytag/templates/VersaTagStandard.svelte';
+	import VersaTagWhite from '$lib/components/keytag/templates/VersaTagWhite.svelte';
+	import VersaTagGray from '$lib/components/keytag/templates/VersaTagGray.svelte';
+	import StandardLabel from '$lib/components/keytag/templates/StandardLabel.svelte';
 	import { Printer, X, ZoomIn, ZoomOut } from 'lucide-svelte';
 
 	const { data } = $props();
 	const vehicle = $derived(data.vehicle);
 	let scale = $state(2);
+
+	const selectedTemplate = $derived(
+		keyTagStore.templates.find((t) => t.id === keyTagStore.selectedTemplateId)
+	);
 
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));
 	const zoomOut = () => (scale = Math.max(scale - 0.1, 0.5));
@@ -25,7 +33,17 @@
 	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden p-4">
 		<div style:transform="scale({scale})" style:transform-origin="center">
 			<KeyTag>
-				<VersaTagStandard {vehicle} />
+				{#if selectedTemplate?.id === 'versa-tag-standard-yellow'}
+					<VersaTagStandard {vehicle} />
+				{:else if selectedTemplate?.id === 'versa-tag-narrow-yellow'}
+					<VersaTagStandard {vehicle} />
+				{:else if selectedTemplate?.id === 'versa-tag-white'}
+					<VersaTagWhite {vehicle} />
+				{:else if selectedTemplate?.id === 'versa-tag-gray'}
+					<VersaTagGray {vehicle} />
+				{:else if selectedTemplate?.id === 'standard-label'}
+					<StandardLabel {vehicle} />
+				{/if}
 			</KeyTag>
 		</div>
 	</div>

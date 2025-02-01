@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
+	import { CircleGauge, Car, Check } from 'lucide-svelte';
 
 	const { vehicle } = $props<{ vehicle: Vehicle }>();
 </script>
 
-<div class="versa-tag-standard">
+<div class="versa-tag-gray">
 	<!-- NEW checkbox -->
 	<div class="absolute left-[0.09in] top-[0.26in]">
 		{#if vehicle.usage?.toLowerCase() === 'new'}
@@ -14,7 +14,7 @@
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="absolute left-[0.973in] top-[0.26in]">
+	<div class="absolute right-[0.09in] top-[0.26in]">
 		{#if vehicle.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" />
 		{/if}
@@ -26,33 +26,33 @@
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.01in] top-[0.994in] text-[10pt] font-bold">
+	<div class="absolute left-[0.11in] top-[0.994in] text-[10pt] font-bold">
 		{vehicle.year}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute right-[0.01in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.manufacturer}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.4in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.modelName}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="absolute left-[0.39in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.modelType}
 	</div>
 
 	<!-- Color -->
-	<div class="absolute right-[0.01in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.color}
 	</div>
 
 	<!-- Metrics -->
 	<div
-		class="absolute left-[0.01in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
+		class="absolute left-[0.11in] top-[2.25in] flex items-center gap-[0.05in] text-[8pt] font-bold"
 	>
 		<CircleGauge class="h-[0.15in] w-[0.15in]" />
 		{vehicle.metricValue?.toString() || ''}
@@ -60,31 +60,25 @@
 	</div>
 
 	<!-- VIN -->
-	<div
-		class="absolute bottom-[0.4in] left-[0.01in] line-clamp-2 w-[1.22in] text-center text-[8pt] leading-none"
-	>
+	<div class="absolute bottom-[0.4in] left-[0.11in] line-clamp-2 text-[8pt] leading-none">
 		{vehicle.vin}
 	</div>
 </div>
 
 <style>
 	/* Template-specific styles */
-	:global(.versa-tag-standard) {
+	:global(.versa-tag-gray) {
 		position: relative;
-		width: 1.22in;
+		width: 3in;
 		height: 3in;
 		color: #000000 !important;
 		overflow: hidden;
 		text-transform: uppercase;
-		text-align: right;
-		/* Debug outline */
-		/* outline: 1px solid rgba(255, 0, 0, 0.2); */
 	}
 
 	/* Print-specific styles */
 	@media print {
-		:global(.versa-tag-standard) {
-			/* Ensure black text in print */
+		:global(.versa-tag-gray) {
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
@@ -92,8 +86,7 @@
 			height: 3in !important;
 		}
 
-		/* Ensure icons and boxes print correctly */
-		:global(.versa-tag-standard svg) {
+		:global(.versa-tag-gray svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #000000 !important;

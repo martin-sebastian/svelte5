@@ -21,6 +21,6 @@ export type Vehicle = {
 	updated: string | null;
 	metricType: string | null;
 	metricValue: number | null;
-	status: 'ACTIVE' | 'INACTIVE' | 'SOLD';
+	status: 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 	lastModified: string | null;
 };

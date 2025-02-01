@@ -1,22 +1,33 @@
 <script lang="ts">
-	import { keyTagStore } from '$lib/stores/keyTagStore';
+	import { keyTagStore } from '$lib/stores/keyTagStore.svelte';
 
-	let selectedTemplate = $state(keyTagStore.templates[0].id);
-	let template = $derived(keyTagStore.templates.find((t) => t.id === selectedTemplate));
+	const selectedTemplate = $derived(
+		keyTagStore.templates.find((t) => t.id === keyTagStore.selectedTemplateId)
+	);
+
+	const { children } = $props();
 </script>
 
 <div
 	class="key-tag"
-	style:width={template?.width}
-	style:height={template?.height}
-	style:background-image="url('{template?.backgroundImage}')"
+	style:width={selectedTemplate?.width}
+	style:height={selectedTemplate?.height}
+	style:background-image={selectedTemplate?.backgroundImage
+		? `url('${selectedTemplate.backgroundImage}')`
+		: 'none'}
+	style:background-color={selectedTemplate?.backgroundColor}
 	style:background-size="contain"
 	style:background-repeat="no-repeat"
 	style:background-position="center"
 >
-	<div class="printable-area" style:width={template?.width} style:height={template?.height}>
-		<!-- Template content goes here -->
-		<slot />
+	<div
+		class="printable-area"
+		style:width={selectedTemplate?.printableArea.width}
+		style:height={selectedTemplate?.printableArea.height}
+		style:margin-top={selectedTemplate?.printableArea.marginTop}
+		style:margin-left={selectedTemplate?.printableArea.marginLeft}
+	>
+		{@render children()}
 	</div>
 </div>
 

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
+	import { CircleGauge, Car, Check } from 'lucide-svelte';
 
 	const { vehicle } = $props<{ vehicle: Vehicle }>();
 </script>
 
-<div class="versa-tag-standard">
+<div class="versa-tag-white-custom">
 	<!-- NEW checkbox -->
 	<div class="absolute left-[0.09in] top-[0.26in]">
 		{#if vehicle.usage?.toLowerCase() === 'new'}
@@ -63,13 +63,13 @@
 	<div
 		class="absolute bottom-[0.4in] left-[0.01in] line-clamp-2 w-[1.22in] text-center text-[8pt] leading-none"
 	>
-		{vehicle.vin}
+		VIN{vehicle.vin}
 	</div>
 </div>
 
 <style>
 	/* Template-specific styles */
-	:global(.versa-tag-standard) {
+	:global(.versa-tag-white-custom) {
 		position: relative;
 		width: 1.22in;
 		height: 3in;
@@ -77,23 +77,19 @@
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: right;
-		/* Debug outline */
-		/* outline: 1px solid rgba(255, 0, 0, 0.2); */
 	}
 
 	/* Print-specific styles */
 	@media print {
-		:global(.versa-tag-standard) {
-			/* Ensure black text in print */
+		:global(.versa-tag-white-custom) {
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 3in !important;
+			width: 1.22in !important;
 			height: 3in !important;
 		}
 
-		/* Ensure icons and boxes print correctly */
-		:global(.versa-tag-standard svg) {
+		:global(.versa-tag-white-custom svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #000000 !important;
