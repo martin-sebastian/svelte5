@@ -2,12 +2,13 @@
 	import { keyTagStore } from '$lib/stores/keyTagStore.svelte';
 	import { Card } from '$lib/components/ui/card';
 
-	const selectedTemplateId = $derived(keyTagStore.selectedTemplateId);
+	let selectedTemplateId = $state(keyTagStore.selectedTemplateId);
 	const currentTemplate = $derived(keyTagStore.templates.find((t) => t.id === selectedTemplateId));
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
-		keyTagStore.selectedTemplateId = target.value;
+		keyTagStore.setSelectedTemplateId(target.value);
+		selectedTemplateId = target.value;
 	}
 </script>
 

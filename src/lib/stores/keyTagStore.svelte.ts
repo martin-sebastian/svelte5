@@ -87,13 +87,9 @@ const templates = $state(defaultTemplates);
 let selectedTemplateId = $state(defaultTemplates[0].id);
 
 export const keyTagStore = {
-	get templates() {
-		return templates;
-	},
-	get selectedTemplateId() {
-		return selectedTemplateId;
-	},
-	set selectedTemplateId(value: string) {
-		selectedTemplateId = value;
+	templates,
+	selectedTemplateId,
+	setSelectedTemplateId: (id: string) => {
+		selectedTemplateId = id;
 	}
 };
