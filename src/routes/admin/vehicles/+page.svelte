@@ -156,12 +156,14 @@
 	// Add this helper function at the top with other functions
 	function formatPrice(price: number | null) {
 		if (!price) return 'N/A';
+		// Divide by 100 to handle cents correctly
+		const actualPrice = price / 100;
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
 			minimumFractionDigits: 2,
 			maximumFractionDigits: 2
-		}).format(price);
+		}).format(actualPrice);
 	}
 </script>
 
@@ -279,7 +281,7 @@
 			</div>
 
 			{#if viewMode === 'grid'}
-				<div class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 					{#each getVisibleItems(group) as vehicle}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
@@ -405,11 +407,11 @@
 				<div class="flex flex-col gap-2">
 					{#each getVisibleItems(group) as vehicle}
 						<div
-							class="flex overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
+							class="grid grid-cols-[96px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
 						>
-							<!-- Image thumbnail list view -->
-							<div class="relative w-24 flex-shrink-0">
-								<div class="relative pb-[66.25%]">
+							<!-- Column 1: Image -->
+							<div class="relative flex-shrink-0">
+								<div class="relative pb-[50%]">
 									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
 										<img
 											src={vehicle.primaryImage}
@@ -427,105 +429,67 @@
 								</div>
 							</div>
 
-							<!-- Content list view -->
-							<div class="flex flex-1 flex-col px-2">
-								<div class="flex flex-row justify-between">
-									<div class="text-lg font-semibold">{vehicle.title}</div>
-									<div class="text-right text-lg font-bold text-green-600">
-										{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
-									</div>
-									<div class="flex flex-row items-center gap-1">
-										{#if vehicle.usage === 'Used'}
-											<div
-												class="flex flex-row items-center rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
-											>
-												<CircleGauge class="mx-1 h-4 w-4" />
-												{vehicle.metricValue}
-											</div>
-											<div
-												class="rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
-											>
-												{vehicle.usage}
-											</div>
-										{:else}
-											<div
-												class="flex flex-row items-center rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100"
-											>
-												<CircleGauge class="mx-1 h-4 w-4" />
-												{vehicle.metricValue}
-											</div>
-											<div class="rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100">
-												{vehicle.usage}
-											</div>
-										{/if}
-									</div>
-								</div>
+							<!-- Column 2: Title and Details -->
+							<div class="flex flex-col">
+								<div class="text-lg font-semibold">{vehicle.title}</div>
 								<div class="text-sm text-gray-500">
-									<div>{vehicle.manufacturer} • {vehicle.color} • VIN: {vehicle.vin}</div>
+									Stock # {vehicle.stockNumber} | {vehicle.color} | VIN: {vehicle.vin}
 								</div>
+							</div>
 
-								<!-- Action buttons list view -->
-								<div class="flex w-full flex-row items-center justify-between gap-1">
-									<div class="text-lg font-bold text-gray-500">
-										<div class="text-md w-full font-bold text-gray-500">
-											Stock # {vehicle.stockNumber}
-										</div>
-									</div>
+							<!-- Column 3: Price (fixed width) -->
+							<div class="mr-2 flex items-center justify-end text-lg font-bold text-green-600">
+								{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
+							</div>
 
-									<!-- Existing buttons list view -->
-									<div class="flex flex-row items-center justify-end gap-1">
-										<div
-											class="mr-1 flex flex-row items-center rounded-md bg-gray-700/75 px-2 py-1.5"
-										>
-											{#if vehicle.condition === 'Excellent'}
-												<CircleCheck class="h-7 w-7 text-yellow-500" />
-											{:else}
-												<Frown class="h-7 w-7 text-gray-400" />
-											{/if}
-										</div>
-										<div
-											class="mr-4 flex flex-row items-center rounded-md bg-gray-700/75 px-2 py-1.5"
-										>
-											{#if vehicle.imageCount > 6}
-												<Camera class="h-7 w-7 text-yellow-500" />
-											{:else}
-												<CameraOff class="h-7 w-7 text-gray-400" />
-											{/if}
-										</div>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
-											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="View Key Tag"
-										>
-											<KeySquare class="h-6 w-6" />
-										</button>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
-											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="View Hang Tag"
-										>
-											<Tags class="h-6 w-6" />
-										</button>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
-											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="Share Vehicle"
-										>
-											<Share2 class="h-6 w-6" />
-										</button>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
-											class="flex flex-row items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="Edit Vehicle Details"
-										>
-											<Settings class="h-6 w-6" />
-										</button>
-									</div>
+							<!-- Column 4: Action Buttons -->
+							<div class="flex items-center gap-1">
+								<div class="flex items-center rounded-md bg-gray-700/75 px-2 py-1.5">
+									{#if vehicle.condition === 'Excellent'}
+										<CircleCheck class="h-7 w-7 text-green-700" />
+									{:else}
+										<Frown class="h-7 w-7 text-gray-400" />
+									{/if}
 								</div>
+								<div class="flex items-center rounded-md bg-gray-700/75 px-2 py-1.5">
+									{#if vehicle.imageCount > 6}
+										<Camera class="h-7 w-7 text-yellow-400" />
+									{:else}
+										<CameraOff class="h-7 w-7 text-gray-600" />
+									{/if}
+								</div>
+								<button
+									type="button"
+									onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
+									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+									aria-label="View Key Tag"
+								>
+									<KeySquare class="h-6 w-6" />
+								</button>
+								<button
+									type="button"
+									onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
+									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+									aria-label="View Hang Tag"
+								>
+									<Tags class="h-6 w-6" />
+								</button>
+								<button
+									type="button"
+									onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
+									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+									aria-label="Share Vehicle"
+								>
+									<Share2 class="h-6 w-6" />
+								</button>
+								<button
+									type="button"
+									onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
+									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
+									aria-label="Edit Vehicle Details"
+								>
+									<Settings class="h-6 w-6" />
+								</button>
 							</div>
 						</div>
 					{/each}

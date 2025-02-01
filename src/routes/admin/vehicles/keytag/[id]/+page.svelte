@@ -26,7 +26,7 @@
 
 {#if vehicle}
 	<!-- Template selector in top right -->
-	<div class="fixed right-6 top-20 z-10 print:hidden">
+	<div class="fixed right-8 top-20 z-10 w-64 print:hidden">
 		<TemplateSelector />
 	</div>
 
@@ -91,14 +91,5 @@
 			transparent 1px
 		);
 		background-size: 10px 10px;
-	}
-	@media print {
-		.key-tag {
-			width: 1.5in !important;
-			height: 2in !important;
-			margin: 0 !important;
-			padding: 0.0125in !important;
-			overflow: hidden !important;
-		}
 	}
 </style>

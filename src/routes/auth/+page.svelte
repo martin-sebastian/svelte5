@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 	import { ShieldCheck, Loader2, User, Camera, Phone } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import type { ActionResult } from '@sveltejs/kit';
+	import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 	const { data } = $page;
 	let loading = $state(false);
@@ -11,18 +11,26 @@
 	let success = $state(false);
 
 	// Get user's metadata
-	$effect(async () => {
+	$effect(() => {
 		if (data.session?.user) {
 			// Verify user data
-			const {
-				data: { user },
-				error
-			} = await data.supabase.auth.getUser();
-			if (!error && user) {
-				firstName = user.user_metadata?.first_name || '';
-				lastName = user.user_metadata?.last_name || '';
-				phone = user.user_metadata?.phone || '';
-			}
+			data.supabase.auth
+				.getUser()
+				.then(
+					({
+						data: { user },
+						error
+					}: {
+						data: { user: SupabaseUser | null };
+						error: Error | null;
+					}) => {
+						if (!error && user) {
+							firstName = user.user_metadata?.first_name || '';
+							lastName = user.user_metadata?.last_name || '';
+							phone = user.user_metadata?.phone || '';
+						}
+					}
+				);
 		}
 	});
 
@@ -34,15 +42,13 @@
 		loading = true;
 		error = '';
 		success = false;
-		return async ({ result, update }) => {
+		return async ({ result }: { result: ActionResult }) => {
 			loading = false;
 
 			if (result.type === 'error') {
 				error = result.error.message;
-				await update();
 			} else if (result.type === 'success') {
 				success = true;
-				await update();
 			} else if (result.type === 'redirect') {
 				// Force a full page reload on redirect
 				window.location.href = result.location;
@@ -106,7 +112,7 @@
 						id="firstName"
 						name="firstName"
 						bind:value={firstName}
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="text"
 					/>
 				</div>
@@ -117,7 +123,7 @@
 						id="lastName"
 						name="lastName"
 						bind:value={lastName}
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="text"
 					/>
 				</div>
@@ -133,7 +139,7 @@
 						id="phone"
 						name="phone"
 						bind:value={phone}
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="tel"
 						placeholder="(555) 555-5555"
 					/>
@@ -178,7 +184,7 @@
 					<input
 						id="email"
 						name="email"
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="email"
 						required
 					/>
@@ -188,34 +194,21 @@
 					<input
 						id="password"
 						name="password"
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="password"
 						required
 					/>
 				</div>
-				<div class="flex gap-2">
-					<button
-						type="submit"
-						disabled={loading}
-						class="flex-1 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-800 disabled:opacity-50"
-					>
-						{#if loading}
-							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-						{/if}
-						Login
-					</button>
-					<button
-						type="submit"
-						formaction="?/signup"
-						disabled={loading}
-						class="flex-1 rounded-md bg-slate-600/50 px-4 py-2 text-white hover:bg-slate-600/75 disabled:opacity-50"
-					>
-						{#if loading}
-							<Loader2 class="mr-2 h-4 w-4 animate-spin" />
-						{/if}
-						Sign up
-					</button>
-				</div>
+				<button
+					type="submit"
+					disabled={loading}
+					class="w-full rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-800 disabled:opacity-50"
+				>
+					{#if loading}
+						<Loader2 class="mr-2 h-4 w-4 animate-spin" />
+					{/if}
+					Login
+				</button>
 			</form>
 		{/if}
 	</div>
