@@ -2,10 +2,10 @@
 	import { keyTagStore } from '$lib/stores/keyTagStore';
 
 	const selectedTemplate = $derived(
-		$keyTagStore.templates.find((t) => t.id === $keyTagStore.selectedTemplateId)
+		$keyTagStore?.templates?.find((t) => t?.id === $keyTagStore?.selectedTemplateId) ?? null
 	);
 
-	const { default: content } = $props<{ default: any }>();
+	const { children } = $props();
 </script>
 
 <div
@@ -22,12 +22,12 @@
 >
 	<div
 		class="printable-area"
-		style:width={selectedTemplate?.printableArea.width}
-		style:height={selectedTemplate?.printableArea.height}
-		style:margin-top={selectedTemplate?.printableArea.marginTop}
-		style:margin-left={selectedTemplate?.printableArea.marginLeft}
+		style:width={selectedTemplate?.printableArea?.width}
+		style:height={selectedTemplate?.printableArea?.height}
+		style:margin-top={selectedTemplate?.printableArea?.marginTop}
+		style:margin-left={selectedTemplate?.printableArea?.marginLeft}
 	>
-		{@render content()}
+		{@render children()}
 	</div>
 </div>
 

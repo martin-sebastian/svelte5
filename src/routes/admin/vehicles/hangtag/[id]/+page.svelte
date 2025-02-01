@@ -12,15 +12,15 @@
 	const primaryImage = vehicle.primaryImage;
 
 	// Add zoom state
-	let zoomLevel = 0.5; // Start at 50% zoom
+	let zoomLevel = $state(0.7); // Start at 50% zoom
 
-	const zoomIn = () => {
+	function zoomIn() {
 		zoomLevel = Math.min(zoomLevel + 0.1, 1.5);
-	};
+	}
 
-	const zoomOut = () => {
+	function zoomOut() {
 		zoomLevel = Math.max(zoomLevel - 0.1, 0.2);
-	};
+	}
 
 	const handlePrint = () => {
 		window.print();

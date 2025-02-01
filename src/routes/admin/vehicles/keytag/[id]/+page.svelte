@@ -33,7 +33,8 @@
 
 	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden p-4">
 		<div style:transform="scale({scale})" style:transform-origin="center">
-			<KeyTag>
+			<KeyTag let:children>
+				{@render children()}
 				{#if selectedTemplate?.id === 'versa-tag-standard-yellow'}
 					<VersaTagStandard {vehicle} />
 				{:else if selectedTemplate?.id === 'versa-tag-narrow-yellow'}

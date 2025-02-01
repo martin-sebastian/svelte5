@@ -15,18 +15,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 
-	// First get the session
-	const {
-		data: { session }
-	} = await event.locals.supabase.auth.getSession();
-
-	// Then get the user securely
+	// First get the user securely
 	const {
 		data: { user }
 	} = await event.locals.supabase.auth.getUser();
 
-	// Set both session and user in locals
-	event.locals.session = session;
+	// Set user in locals
 	event.locals.user = user;
 
 	// Update getSession to return the verified session
@@ -34,20 +28,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const {
 			data: { user: verifiedUser }
 		} = await event.locals.supabase.auth.getUser();
-		return verifiedUser ? session : null;
+		return verifiedUser ? user : null;
 	};
 
 	// Handle auth protection for admin routes
 	if (event.url.pathname.startsWith('/admin')) {
-		if (!session) {
-			// Simplified condition
+		if (!user) {
 			throw redirect(303, `/auth?redirectTo=${event.url.pathname}`);
 		}
 	}
 
 	// For /auth routes, redirect to admin if user is already authenticated
 	if (event.url.pathname === '/auth' && event.request.method === 'GET') {
-		if (session) {
+		if (user) {
 			// Simplified condition
 			const redirectTo = event.url.searchParams.get('redirectTo') || '/admin';
 			throw redirect(303, redirectTo);
