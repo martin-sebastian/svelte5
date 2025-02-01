@@ -15,7 +15,7 @@ export type Vehicle = {
 	modelName: string | null;
 	trimName: string | null;
 	trimColor: string | null;
-	condition: string | null;
+	condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | null;
 	usage: string | null;
 	location: string | null;
 	updated: string | null;
@@ -23,4 +23,9 @@ export type Vehicle = {
 	metricValue: number | null;
 	status: 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 	lastModified: string | null;
+	primaryImage: string | null;
+	imageCount: number;
+	images: string[];
+	type: string | null;
+	style: string | null;
 };

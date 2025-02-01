@@ -2,17 +2,22 @@
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { CircleGauge } from 'lucide-svelte';
-	import { ImageOff } from 'lucide-svelte';
-	import { Tags } from 'lucide-svelte';
-	import { Tag } from 'lucide-svelte';
-	import { Share } from 'lucide-svelte';
-	import { Share2 } from 'lucide-svelte';
-	import { Settings } from 'lucide-svelte';
-	import { KeySquare } from 'lucide-svelte';
-	import { LayoutGrid } from 'lucide-svelte';
-	import { List } from 'lucide-svelte';
-	import { AlignLeft } from 'lucide-svelte';
+	import {
+		CircleGauge,
+		ImageOff,
+		Tags,
+		Camera,
+		CameraOff,
+		Tag,
+		Frown,
+		Share2,
+		Settings,
+		KeySquare,
+		LayoutGrid,
+		List,
+		AlignLeft,
+		CircleCheck
+	} from 'lucide-svelte';
 	import { page } from '$app/stores';
 
 	export let data: PageData;
@@ -36,6 +41,8 @@
 		metricValue: string | null;
 		metricType: string | null;
 		status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+		imageCount: number;
+		condition: string | null;
 	};
 
 	// Sorting options
@@ -158,8 +165,8 @@
 	}
 </script>
 
-<div class="container mx-auto mt-24">
-	<h1 class="text-3xl font-bold">Vehicles</h1>
+<div class="container mx-auto mb-5 mt-24">
+	<h1 class="text-3xl font-bold">Inventory</h1>
 </div>
 
 <!-- FILTER,SEARCH and Sort Bar -->
@@ -254,7 +261,7 @@
 </div>
 
 <!-- Vehicle List -->
-<div class="container mx-auto my-2">
+<div class="container mx-auto my-1">
 	{#each sortedGroups as [groupName, group]}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
@@ -395,33 +402,38 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="flex flex-col gap-3">
+				<div class="flex flex-col gap-2">
 					{#each getVisibleItems(group) as vehicle}
 						<div
-							class="flex overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 p-4 shadow-md dark:bg-gray-800/50"
+							class="flex overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
 						>
 							<!-- Image thumbnail list view -->
-							<div class="relative h-32 w-48 flex-shrink-0">
-								{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
-									<img
-										src={vehicle.primaryImage}
-										alt={vehicle.title || ''}
-										loading="lazy"
-										class="absolute inset-0 h-full w-full rounded-lg object-cover"
-									/>
-								{:else}
-									<div
-										class="absolute inset-0 flex items-center justify-center rounded-lg bg-gray-200"
-									>
-										<span class="text-gray-400">No Image</span>
-									</div>
-								{/if}
+							<div class="relative w-24 flex-shrink-0">
+								<div class="relative pb-[66.25%]">
+									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
+										<img
+											src={vehicle.primaryImage}
+											alt={vehicle.title || ''}
+											loading="lazy"
+											class="absolute inset-0 h-full w-full rounded object-cover"
+										/>
+									{:else}
+										<div
+											class="absolute inset-0 flex items-center justify-center rounded bg-gray-200"
+										>
+											<span class="text-gray-400">No Image</span>
+										</div>
+									{/if}
+								</div>
 							</div>
 
 							<!-- Content list view -->
-							<div class="flex flex-1 flex-col px-4">
+							<div class="flex flex-1 flex-col px-2">
 								<div class="flex flex-row justify-between">
 									<div class="text-lg font-semibold">{vehicle.title}</div>
+									<div class="text-right text-lg font-bold text-green-600">
+										{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
+									</div>
 									<div class="flex flex-row items-center gap-1">
 										{#if vehicle.usage === 'Used'}
 											<div
@@ -448,23 +460,38 @@
 										{/if}
 									</div>
 								</div>
-								<div class="text-lg font-bold text-green-600">
-									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
-								</div>
 								<div class="text-sm text-gray-500">
-									<div>{vehicle.manufacturer} • {vehicle.color}</div>
-									<div class="text-sm text-gray-500">VIN: {vehicle.vin}</div>
+									<div>{vehicle.manufacturer} • {vehicle.color} • VIN: {vehicle.vin}</div>
 								</div>
 
 								<!-- Action buttons list view -->
 								<div class="flex w-full flex-row items-center justify-between gap-1">
 									<div class="text-lg font-bold text-gray-500">
-										<h3 class="w-full text-lg font-bold text-gray-500">
+										<div class="text-md w-full font-bold text-gray-500">
 											Stock # {vehicle.stockNumber}
-										</h3>
+										</div>
 									</div>
+
 									<!-- Existing buttons list view -->
 									<div class="flex flex-row items-center justify-end gap-1">
+										<div
+											class="mr-1 flex flex-row items-center rounded-md bg-gray-700/75 px-2 py-1.5"
+										>
+											{#if vehicle.condition === 'Excellent'}
+												<CircleCheck class="h-7 w-7 text-yellow-500" />
+											{:else}
+												<Frown class="h-7 w-7 text-gray-400" />
+											{/if}
+										</div>
+										<div
+											class="mr-4 flex flex-row items-center rounded-md bg-gray-700/75 px-2 py-1.5"
+										>
+											{#if vehicle.imageCount > 6}
+												<Camera class="h-7 w-7 text-yellow-500" />
+											{:else}
+												<CameraOff class="h-7 w-7 text-gray-400" />
+											{/if}
+										</div>
 										<button
 											type="button"
 											onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}

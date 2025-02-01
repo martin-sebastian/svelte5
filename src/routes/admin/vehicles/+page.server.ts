@@ -4,7 +4,7 @@ import { vehicle, vehicleImage, vehicleAttribute } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 
-export const load = (async ({ depends, locals: { getSession, supabase }, setHeaders }) => {
+export const load = (async ({ depends, setHeaders }) => {
 	setHeaders({
 		'cache-control': 'max-age=60'
 	});
@@ -28,14 +28,20 @@ export const load = (async ({ depends, locals: { getSession, supabase }, setHead
 				description: vehicle.description,
 				price: vehicle.price,
 				color: vehicle.color,
+				condition: vehicle.condition,
 				metricType: vehicle.metricType,
 				metricValue: vehicle.metricValue,
 				status: vehicle.status,
-				primaryImage: sql`(
+				primaryImage: sql<string | null>`(
 					SELECT image_url 
 					FROM ${vehicleImage} 
 					WHERE vehicle_id = ${vehicle.id} 
 					LIMIT 1
+				)`,
+				imageCount: sql<number>`(
+					SELECT COUNT(*)::integer
+					FROM ${vehicleImage}
+					WHERE vehicle_id = ${vehicle.id}
 				)`
 			})
 			.from(vehicle)
@@ -56,6 +62,7 @@ export const load = (async ({ depends, locals: { getSession, supabase }, setHead
 				vehicle.description,
 				vehicle.price,
 				vehicle.color,
+				vehicle.condition,
 				vehicle.metricType,
 				vehicle.metricValue,
 				vehicle.status
@@ -64,8 +71,9 @@ export const load = (async ({ depends, locals: { getSession, supabase }, setHead
 		return {
 			vehicles: vehicles.map((v) => ({
 				...v,
-				images: v.images ? v.images.split(',').filter(Boolean) : [],
-				primaryImage: v.primaryImage || null
+				images: [],
+				primaryImage: v.primaryImage || null,
+				imageCount: v.imageCount || 0
 			})),
 			revalidate: 60
 		};
