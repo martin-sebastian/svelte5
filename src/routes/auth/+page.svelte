@@ -169,7 +169,7 @@
 			</form>
 		{:else}
 			<ShieldCheck class="my-0 h-10 w-10" />
-			<h1 class="my-5 text-2xl font-bold">Sign In</h1>
+			<h1 class="my-2 text-2xl font-bold">Sign In</h1>
 
 			{#if error}
 				<div class="mb-4 rounded-md bg-red-500/10 p-3 text-red-500">
@@ -186,6 +186,7 @@
 						name="email"
 						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="email"
+						placeholder="example@email.com"
 						required
 					/>
 				</div>
@@ -196,6 +197,7 @@
 						name="password"
 						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
 						type="password"
+						placeholder="********"
 						required
 					/>
 				</div>
