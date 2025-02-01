@@ -7,10 +7,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 		cookies: {
 			get: (key) => event.cookies.get(key),
 			set: (key, value, options) => {
-				event.cookies.set(key, value, options);
+				event.cookies.set(key, value, { ...options, path: '/' });
 			},
 			remove: (key, options) => {
-				event.cookies.delete(key, options);
+				event.cookies.delete(key, { ...options, path: '/' });
 			}
 		}
 	});
@@ -28,7 +28,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const {
 			data: { user: verifiedUser }
 		} = await event.locals.supabase.auth.getUser();
-		return verifiedUser ? user : null;
+		return verifiedUser ? { user: verifiedUser } : null;
 	};
 
 	// Handle auth protection for admin routes
