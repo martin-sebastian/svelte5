@@ -23,11 +23,9 @@
 			<Sun class="dark:hidden" />
 			<Moon class="hidden dark:block" />
 		</Button>
-		<Button href="/auth" variant="outline" class="mx-1 my-1">
+		<Button href="/auth" variant="outline" class="my-1 ml-1 mr-4 bg-orange-700">
 			<User class="h-4 w-4" />
-		</Button>
-		<Button href="/auth/register" variant="outline" class="mx-1 my-1">
-			<UserPlus class="h-4 w-4" />
+			<span class="text-sm">Login</span>
 		</Button>
 	</div>
 </nav>
