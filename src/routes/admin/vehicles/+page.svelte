@@ -20,7 +20,7 @@
 	import { page } from '$app/stores';
 
 	const { data } = $props<{ data: PageData }>();
-	const { supabase, session, vehicles } = $derived(data);
+	const { user, vehicles } = $derived(data);
 
 	// Add type definition for vehicle
 	type Vehicle = {

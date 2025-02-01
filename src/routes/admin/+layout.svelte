@@ -1,23 +1,23 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { redirect } from '@sveltejs/kit';
 	import { Button } from '$lib/components/ui/button';
-	import { ShieldPlus, Sun, Moon, User, Settings, LayoutDashboard, Bike } from 'lucide-svelte';
-	import { theme } from '$lib/theme';
+	import { ShieldPlus, LogOut, LayoutDashboard, Bike, DatabaseZap } from 'lucide-svelte';
+	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabaseClient';
 
-	interface LayoutProps {
-		default: () => any;
-	}
+	let { children } = $props();
 
-	// Protect all admin routes
-	const { data } = $page;
-	$effect(() => {
-		if (!data.user) {
-			throw redirect(303, '/auth');
+	async function handleLogout() {
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				console.error('Logout failed:', error.message);
+				return;
+			}
+			goto('/auth');
+		} catch (error) {
+			console.error('Logout error:', error);
 		}
-	});
-
-	const $$slots = $props<LayoutProps>();
+	}
 </script>
 
 <nav
@@ -41,17 +41,16 @@
 	</div>
 	<div class="flex-grow justify-center gap-0 align-middle"></div>
 	<div class="flex flex-row items-center justify-end">
-		<Button onclick={() => theme.toggle()} variant="outline" class="mx-1 my-1">
-			<Sun class="dark:hidden" />
-			<Moon class="hidden dark:block" />
+		<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
+			<DatabaseZap class="h-4 w-4" />
 		</Button>
-		<Button href="/auth" variant="outline" class="mx-1 my-1">
-			<User class="h-4 w-4" />
-		</Button>
-		<Button href="/admin/settings" variant="outline" class="my-1 ml-1 mr-2">
-			<Settings class="h-4 w-4" />
+		<Button onclick={handleLogout} variant="outline" class="mx-1 my-1">
+			<LogOut class="h-4 w-4" />
 		</Button>
 	</div>
 </nav>
 
-{@render $$slots.default()}
+<!-- Add padding-top to account for fixed nav -->
+<main class="flex min-h-screen flex-col bg-background align-middle text-foreground">
+	{@render children()}
+</main>

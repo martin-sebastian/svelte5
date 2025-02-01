@@ -1,15 +1,22 @@
-import { redirect } from '@sveltejs/kit';
+// import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { supabase } from '$lib/supabase';
 
-export const load: LayoutServerLoad = async ({ url }) => {
+export const load: LayoutServerLoad = async ({ locals: { supabase } }) => {
+	// Only use getUser() for secure authentication
 	const {
 		data: { user },
 		error
 	} = await supabase.auth.getUser();
 
+	// Log the user and error for debugging
+	console.log('User:', user);
+	console.error('Error:', error);
+
 	if (error || !user) {
-		throw redirect(303, `/auth?redirectTo=${url.pathname}`);
+		return {
+			user: null,
+			message: 'Error fetching user'
+		};
 	}
 
 	return {

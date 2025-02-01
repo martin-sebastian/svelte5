@@ -1,8 +1,4 @@
 import { supabase } from './supabaseClient';
-
-// Export types
-export type { Database } from './supabase.types';
-
 // Export utilities
 export { supabase } from './supabaseClient';
 

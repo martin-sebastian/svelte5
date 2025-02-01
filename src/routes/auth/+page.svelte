@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { ShieldCheck, Loader2, User, Camera, Phone } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
@@ -13,13 +14,10 @@
 	let lastName = $state('');
 	let phone = $state('');
 
-	// Get user's metadata
 	$effect(() => {
-		if (data.user) {
-			firstName = data.user.user_metadata?.first_name || '';
-			lastName = data.user.user_metadata?.last_name || '';
-			phone = data.user.user_metadata?.phone || '';
-		}
+		firstName = data.user?.user_metadata?.first_name ?? '';
+		lastName = data.user?.user_metadata?.last_name ?? '';
+		phone = data.user?.user_metadata?.phone ?? '';
 	});
 
 	function handleSubmit() {
@@ -33,6 +31,8 @@
 				error = result.data?.error || 'An error occurred';
 			} else if (result.type === 'success') {
 				success = true;
+			} else if (result.type === 'redirect') {
+				goto(result.location);
 			}
 		};
 	}
@@ -165,7 +165,7 @@
 					<input
 						id="email"
 						name="email"
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
 						type="email"
 						placeholder="example@email.com"
 						required
@@ -176,7 +176,7 @@
 					<input
 						id="password"
 						name="password"
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black dark:text-white"
+						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
 						type="password"
 						placeholder="********"
 						required
@@ -193,6 +193,10 @@
 					Login
 				</button>
 			</form>
+			<p class="mt-6 text-center text-sm text-gray-500">
+				Don't have an account?
+				<a href="/auth/register" class="text-blue-500 hover:text-blue-600">Sign up</a>
+			</p>
 		{/if}
 	</div>
 </div>

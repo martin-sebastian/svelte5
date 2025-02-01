@@ -1,12 +1,17 @@
+import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { supabase } from '$lib/supabase';
 
-export const load: LayoutServerLoad = async () => {
-	const {
-		data: { user }
-	} = await supabase.auth.getUser();
+export const load: LayoutServerLoad = async ({ locals, url }) => {
+	const session = await locals.getSession();
+
+	// Protect all routes under /admin
+	if (url.pathname.startsWith('/admin')) {
+		if (!session) {
+			throw redirect(303, '/auth');
+		}
+	}
 
 	return {
-		user
+		session
 	};
 };

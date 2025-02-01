@@ -11,7 +11,7 @@
 			: 'light'
 	);
 
-	// Don't show any navigation on auth pages
+	// We need this check to prevent double navigation
 	const showNav = $derived(
 		!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/admin')
 	);
@@ -24,10 +24,6 @@
 		}
 		localStorage.setItem('theme', theme);
 	});
-
-	function toggleTheme() {
-		theme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-	}
 </script>
 
 {#if showNav}

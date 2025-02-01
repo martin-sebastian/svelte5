@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { ShieldPlus, Sun, Moon, User } from 'lucide-svelte';
+	import { ShieldPlus, Sun, Moon, User, UserPlus } from 'lucide-svelte';
 	import { theme } from '$lib/theme';
 </script>
 
@@ -25,6 +25,9 @@
 		</Button>
 		<Button href="/auth" variant="outline" class="mx-1 my-1">
 			<User class="h-4 w-4" />
+		</Button>
+		<Button href="/auth/register" variant="outline" class="mx-1 my-1">
+			<UserPlus class="h-4 w-4" />
 		</Button>
 	</div>
 </nav>

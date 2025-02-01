@@ -1,5 +1,6 @@
-import { pgTable, text, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { users as authUsers } from '$lib/server/db/supabase-types';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
@@ -81,8 +82,20 @@ export const vehicleAttributeRelations = relations(vehicleAttribute, ({ one }) =
 	})
 }));
 
+export const profile = pgTable('profile', {
+	// Correct table name
+	id: uuid('id')
+		.primaryKey()
+		.references(() => authUsers.id)
+		.notNull(), // Foreign key to auth.users.id
+	name: text('name'),
+	phone: text('phone'),
+	email: text('email')
+});
+
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Vehicle = typeof vehicle.$inferSelect;
 export type VehicleImage = typeof vehicleImage.$inferSelect;
 export type VehicleAttribute = typeof vehicleAttribute.$inferSelect;
+export type Profile = typeof profile.$inferSelect; // Type for the profiles table

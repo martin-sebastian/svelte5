@@ -1,118 +1,33 @@
 import { writable } from 'svelte/store';
 
-export interface KeyTagTemplate {
-	id: string;
-	name: string;
-	description: string;
-	width: string;
-	height: string;
-	orientation: 'portrait' | 'landscape';
-	backgroundImage?: string;
-	backgroundColor?: string;
-	printableArea: {
-		width: string;
-		height: string;
-		marginTop: string;
-		marginLeft: string;
-	};
+export interface KeyTag {
+	id?: string;
+	template?: string;
+	templates?: Array<{ id: string; name: string }>;
+	selectedTemplateId?: string;
+	title?: string;
+	description?: string;
+	created_at?: string;
+	updated_at?: string;
+	user_id?: string;
+	// Add any other properties your KeyTag needs
 }
 
-const defaultTemplates: KeyTagTemplate[] = [
-	{
-		id: 'versa-tag-standard-yellow',
-		name: 'Versa-Tag Standard (Yellow)',
-		description: 'Standard yellow key tag with black text',
-		width: '1.22in',
-		height: '3in',
-		orientation: 'portrait',
-		backgroundColor: '#FFEB3B',
-		printableArea: {
-			width: '1.22in',
-			height: '3in',
-			marginTop: '0',
-			marginLeft: '0'
-		}
-	},
-	{
-		id: 'versa-tag-narrow-yellow',
-		name: 'Versa-Tag Narrow (Yellow)',
-		description: 'Narrow yellow key tag with black text',
-		width: '1.22in',
-		height: '3in',
-		orientation: 'portrait',
-		backgroundColor: '#FFEB3B',
-		printableArea: {
-			width: '1.22in',
-			height: '3in',
-			marginTop: '0',
-			marginLeft: '0'
-		}
-	},
-	{
-		id: 'versa-tag-white',
-		name: 'Versa-Tag (White)',
-		description: 'Standard white key tag with black text',
-		width: '1.22in',
-		height: '3in',
-		orientation: 'portrait',
-		backgroundColor: '#FFFFFF',
-		printableArea: {
-			width: '1.22in',
-			height: '3in',
-			marginTop: '0',
-			marginLeft: '0'
-		}
-	},
-	{
-		id: 'versa-tag-gray',
-		name: 'Versa-Tag (Gray)',
-		description: 'Standard gray key tag with black text',
-		width: '1.22in',
-		height: '3in',
-		orientation: 'portrait',
-		backgroundColor: '#E0E0E0',
-		printableArea: {
-			width: '1.22in',
-			height: '3in',
-			marginTop: '0',
-			marginLeft: '0'
-		}
-	},
-	{
-		id: 'standard-label',
-		name: 'Standard Label',
-		description: 'Standard label with black text',
-		width: '1.22in',
-		height: '3in',
-		orientation: 'portrait',
-		backgroundColor: '#FFFFFF',
-		printableArea: {
-			width: '1.22in',
-			height: '3in',
-			marginTop: '0',
-			marginLeft: '0'
-		}
-	}
-];
-
 function createKeyTagStore() {
-	const { subscribe, set, update } = writable({
-		templates: defaultTemplates,
-		selectedTemplateId: defaultTemplates[0].id
-	});
+	const { subscribe, set, update } = writable<KeyTag | null>(null);
 
 	return {
 		subscribe,
-		setSelectedTemplateId: (id: string) =>
-			update((state) => ({
-				...state,
-				selectedTemplateId: id
-			})),
-		reset: () =>
-			set({
-				templates: defaultTemplates,
-				selectedTemplateId: defaultTemplates[0].id
-			})
+		set: (keyTag: KeyTag) => set(keyTag),
+		update: (data: Partial<KeyTag>) =>
+			update(
+				(currentTag) =>
+					({
+						...currentTag,
+						...data
+					}) as KeyTag
+			),
+		reset: () => set(null)
 	};
 }
 

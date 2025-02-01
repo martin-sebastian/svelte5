@@ -1,10 +1,22 @@
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { vehicle, vehicleImage, vehicleAttribute } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 
-export const load = (async ({ depends, setHeaders }) => {
+export const load = (async ({ depends, setHeaders, parent }) => {
+	// Get parent data which includes verified user
+	const { user } = await parent();
+
+	// Log the user for debugging
+	console.log('User from parent:', user);
+
+	// Verify we have a user
+	if (!user) {
+		throw redirect(303, `/auth`);
+	}
+
 	setHeaders({
 		'cache-control': 'max-age=60'
 	});
@@ -75,12 +87,14 @@ export const load = (async ({ depends, setHeaders }) => {
 				primaryImage: v.primaryImage || null,
 				imageCount: v.imageCount || 0
 			})),
+			user,
 			revalidate: 60
 		};
 	} catch (error) {
 		console.error('Database error:', error);
 		return {
-			vehicles: []
+			vehicles: [],
+			user
 		};
 	}
 }) satisfies PageServerLoad;

@@ -16,7 +16,7 @@
 	let scale = $state(2);
 
 	const selectedTemplate = $derived(
-		$keyTagStore.templates.find((t) => t.id === $keyTagStore.selectedTemplateId)
+		$keyTagStore?.templates.find((t) => t.id === $keyTagStore?.selectedTemplateId)
 	);
 
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));
