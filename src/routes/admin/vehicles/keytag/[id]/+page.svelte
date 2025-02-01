@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { keyTagStore } from '$lib/stores/keyTagStore.svelte';
+	import { keyTagStore } from '$lib/stores/keyTagStore';
 	import KeyTag from '$lib/components/keytag/KeyTag.svelte';
 	import TemplateSelector from '$lib/components/keytag/TemplateSelector.svelte';
 	import VersaTagStandard from '$lib/components/keytag/templates/VersaTagStandard.svelte';
@@ -14,8 +14,8 @@
 	const vehicle = $derived(data.vehicle);
 	let scale = $state(2);
 
-	const selectedTemplate = $derived(
-		keyTagStore.templates.find((t) => t.id === keyTagStore.selectedTemplateId)
+	$: selectedTemplate = $keyTagStore.templates.find(
+		(t) => t.id === $keyTagStore.selectedTemplateId
 	);
 
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));

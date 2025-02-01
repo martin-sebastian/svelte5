@@ -1,14 +1,12 @@
 <script lang="ts">
-	import { keyTagStore } from '$lib/stores/keyTagStore.svelte';
+	import { keyTagStore } from '$lib/stores/keyTagStore';
 	import { Card } from '$lib/components/ui/card';
 
-	let selectedTemplateId = $state(keyTagStore.selectedTemplateId);
-	const currentTemplate = $derived(keyTagStore.templates.find((t) => t.id === selectedTemplateId));
+	$: currentTemplate = $keyTagStore.templates.find((t) => t.id === $keyTagStore.selectedTemplateId);
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
 		keyTagStore.setSelectedTemplateId(target.value);
-		selectedTemplateId = target.value;
 	}
 </script>
 
@@ -18,10 +16,10 @@
 
 		<select
 			class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-			value={selectedTemplateId}
+			value={$keyTagStore.selectedTemplateId}
 			onchange={handleChange}
 		>
-			{#each keyTagStore.templates as template}
+			{#each $keyTagStore.templates as template}
 				<option value={template.id}>
 					{template.name}
 				</option>
