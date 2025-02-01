@@ -10,7 +10,7 @@
 	import StandardLabel from '$lib/components/keytag/templates/StandardLabel.svelte';
 	import { Printer, X, ZoomIn, ZoomOut } from 'lucide-svelte';
 
-	const { data } = $props();
+	const { data } = $props<{ data: PageData }>();
 	const vehicle = $derived(data.vehicle);
 	let scale = $state(2);
 

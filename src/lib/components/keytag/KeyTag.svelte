@@ -5,7 +5,7 @@
 		keyTagStore.templates.find((t) => t.id === keyTagStore.selectedTemplateId)
 	);
 
-	const { children } = $props();
+	let slots = $props<{ default: any }>();
 </script>
 
 <div
@@ -27,7 +27,7 @@
 		style:margin-top={selectedTemplate?.printableArea.marginTop}
 		style:margin-left={selectedTemplate?.printableArea.marginLeft}
 	>
-		{@render children()}
+		{@render slots.default()}
 	</div>
 </div>
 
