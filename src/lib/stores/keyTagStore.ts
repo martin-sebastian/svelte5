@@ -8,9 +8,9 @@ const defaultTemplates: KeyTagTemplate[] = [
 		height: '3in',
 		printableArea: {
 			width: '3in',
-			height: '1.5in',
-			marginTop: '0.125in',
-			marginLeft: '0.125in'
+			height: '3in',
+			marginTop: '0in',
+			marginLeft: '0in'
 		},
 		backgroundImage: '/images/versa-tag-3x3.png',
 		backgroundColor: '#ffeb3b',

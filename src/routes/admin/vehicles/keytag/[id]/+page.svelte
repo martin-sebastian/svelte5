@@ -17,6 +17,11 @@
 </script>
 
 {#if vehicle}
+	<!-- Template selector in top right -->
+	<div class="fixed right-6 top-20 z-10 print:hidden">
+		<TemplateSelector />
+	</div>
+
 	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden p-4">
 		<div style:transform="scale({scale})" style:transform-origin="center">
 			<KeyTag>
@@ -25,8 +30,8 @@
 		</div>
 	</div>
 
+	<!-- Bottom controls -->
 	<div class="fixed bottom-4 right-4 flex gap-2 print:hidden">
-		<TemplateSelector />
 		<button
 			onclick={handleClose}
 			class="rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"

@@ -6,7 +6,7 @@
 </script>
 
 <div
-	class="key-tag relative"
+	class="key-tag"
 	style:width={template?.width}
 	style:height={template?.height}
 	style:background-image="url('{template?.backgroundImage}')"
@@ -14,13 +14,7 @@
 	style:background-repeat="no-repeat"
 	style:background-position="center"
 >
-	<div
-		class="printable-area absolute"
-		style:width={template?.printableArea.width}
-		style:height={template?.printableArea.height}
-		style:margin-top={template?.printableArea.marginTop}
-		style:margin-left={template?.printableArea.marginLeft}
-	>
+	<div class="printable-area" style:width={template?.width} style:height={template?.height}>
 		<!-- Template content goes here -->
 		<slot />
 	</div>
@@ -30,10 +24,18 @@
 	.key-tag {
 		position: relative;
 		overflow: hidden;
+		padding: 0;
+		margin: 0;
 	}
 
 	.printable-area {
 		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 0;
+		margin: 0;
 		z-index: 1;
 	}
 

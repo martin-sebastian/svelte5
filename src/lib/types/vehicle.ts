@@ -20,7 +20,7 @@ export type Vehicle = {
 	location: string | null;
 	updated: string | null;
 	metricType: string | null;
-	metricValue: string | null;
+	metricValue: number | null;
 	status: 'ACTIVE' | 'INACTIVE' | 'SOLD';
 	lastModified: string | null;
 };
