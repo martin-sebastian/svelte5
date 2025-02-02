@@ -53,14 +53,13 @@
 
 <div class="flex h-screen w-full items-center justify-center">
 	<div
-		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md"
+		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md sm:w-[350px] lg:w-1/2"
 	>
 		<a
 			href="/auth"
 			class="mb-6 flex items-center gap-2 self-start text-sm text-gray-500 hover:text-gray-700"
 		>
 			<ArrowLeft class="h-4 w-4" />
-			Back to Login
 		</a>
 
 		<a href="/" aria-label="Home">
