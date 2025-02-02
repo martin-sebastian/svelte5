@@ -85,7 +85,7 @@
 	/* Template-specific styles */
 	:global(.versa-tag-standard) {
 		position: relative;
-		width: 1.22in;
+		width: 1.25in;
 		height: 3in;
 		color: #000000 !important;
 		overflow: hidden;
