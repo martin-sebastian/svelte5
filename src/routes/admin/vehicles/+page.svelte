@@ -57,7 +57,7 @@
 
 	// Initialize state variables
 	let viewMode = $state<'grid' | 'list'>('grid');
-	let selectedSort = $state<SortOption>('');
+	let selectedSort = $state<SortOption>('modelType');
 	let searchTerm = $state('');
 
 	// Load saved preferences
@@ -69,6 +69,8 @@
 		const savedSort = localStorage.getItem('vehiclesSortMode') as SortOption | null;
 		if (savedSort && sortOptions.some((opt) => opt.value === savedSort)) {
 			selectedSort = savedSort;
+		} else {
+			selectedSort = 'modelType';
 		}
 	}
 
@@ -193,19 +195,29 @@
 			};
 		});
 	});
+
+	// Make the groupedVehicles reactive with $state
+	let groupExpanded = $state<Record<string, boolean>>({});
+
+	// Function to toggle group expansion
+	function toggleGroup(groupName: string) {
+		console.log('Toggling group:', groupName, 'Current state:', groupExpanded[groupName]);
+		groupExpanded[groupName] = !groupExpanded[groupName];
+		console.log('New state:', groupExpanded[groupName]);
+	}
 </script>
 
 <div class="my-2 w-full px-8 pt-10">
 	<!-- Loading indicator for remaining cards -->
 	{#if isLoading && displayedVehicles.length > 0}
-		<div class="py-4 text-center uppercase text-gray-500/50">
+		<div class="rounded-md bg-orange-400/50 py-4 text-center text-sm uppercase text-foreground">
 			Loading more inventory - {displayedVehicles.length} items loaded
 		</div>
 	{/if}
 </div>
 <!-- FILTER,SEARCH and Sort Bar -->
 <div class="sticky top-14 z-50 my-0">
-	<div class="w-full px-8">
+	<div class="container mx-auto px-8">
 		<div
 			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 shadow-lg backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
 		>
@@ -295,38 +307,32 @@
 </div>
 
 <!-- Vehicle List -->
-<div class="w-full px-8">
+<div class="container mx-auto px-8">
 	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
 				<h2 id={`${groupName}`} class="mb-1 mt-5 line-clamp-1 pb-1 font-semibold">
 					{groupName}
 				</h2>
-				<!-- Only show "Show More" button if sorted and more than 8 items -->
-				{#if selectedSort !== '' && group.total > 8}
+				{#if selectedSort !== '' && group.items.length > 6}
 					<button
-						onclick={() => {
-							const updatedGroup = groupedVehicles[groupName];
-							updatedGroup.expanded = !updatedGroup.expanded;
-						}}
+						onclick={() => toggleGroup(groupName)}
 						class="text-sm text-blue-500 hover:text-blue-700"
 					>
-						{group.expanded ? 'Show Less' : `Show All (${group.total})`}
+						{groupExpanded[groupName] ? 'Show Less' : `Show All (${group.items.length})`}
 					</button>
 				{/if}
 			</div>
 
 			{#if viewMode === 'grid'}
-				<div class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-					<!-- Show all items if no sort, otherwise respect the 8-item limit -->
-					{#each group.items.slice(0, selectedSort === '' ? undefined : group.expanded ? undefined : 8) as vehicle (vehicle.id)}
+				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+					{#each group.items.slice(0, selectedSort !== '' && !groupExpanded[groupName] ? 6 : undefined) as vehicle (vehicle.id)}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
 						>
-							<!-- Make the content wrapper a flex container with column direction -->
-							<div class="flex h-full flex-col">
-								<!-- Image section remains the same -->
-								<div class="relative w-full pb-[66.25%]">
+							<!-- Image section -->
+							<div class="relative">
+								<div class="relative pb-[66.25%]">
 									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
 										<img
 											src={vehicle.primaryImage}
@@ -351,109 +357,92 @@
 										</div>
 									{/if}
 								</div>
+							</div>
 
-								<!-- Content section with flex-1 to take remaining space -->
-								<div class="flex flex-1 flex-col p-4">
-									<div class="h-12">
-										<h3 class="mb-2 line-clamp-2 font-semibold leading-tight">
-											{vehicle.title}
-										</h3>
-									</div>
-									<div class="my-0">
-										<p class="my-1 text-2xl font-bold text-green-600">
-											{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
-										</p>
-										<div class="flex flex-row items-center gap-1">
-											{#if vehicle.usage === 'Used'}
-												<div
-													class="flex flex-row items-center rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
-												>
-													<CircleGauge class="mx-1 h-4 w-4" />
-													{vehicle.metricValue}
-													<span class="mx-1 text-sm font-semibold text-gray-100"
-														>{vehicle.metricType}</span
-													>
-												</div>
-												<div
-													class="rounded-sm bg-orange-500 px-2 py-1 text-sm font-bold text-gray-100"
-												>
-													{vehicle.usage}
-												</div>
-											{:else}
-												<div
-													class="flex flex-row items-center rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100"
-												>
-													<CircleGauge class="mx-1 h-4 w-4" />
-													{vehicle.metricValue}
-													<span class="mx-1 text-sm font-semibold text-gray-100"
-														>{vehicle.metricType}</span
-													>
-												</div>
-												<div
-													class="rounded-sm bg-blue-500 px-2 py-1 text-sm font-bold text-gray-100"
-												>
-													{vehicle.usage}
-												</div>
-											{/if}
-										</div>
-										<div class="text-sm text-gray-500">
-											<p class="mt-2">Color:</p>
-											<div class="h-8">
-												<h5 class="my-1 line-clamp-2 font-bold leading-tight">
-													{vehicle.color || 'N/A'}
-												</h5>
-											</div>
-											<p class="text-sm text-gray-500">Stock #</p>
-											<div class="text-md line-clamp-2 font-bold leading-tight text-foreground">
-												{vehicle.stockNumber}
-											</div>
-											<div class="my-2 border-b pb-3 text-sm text-gray-500">VIN: {vehicle.vin}</div>
-										</div>
-									</div>
+							<!-- Content section -->
+							<div class="p-3">
+								<!-- Title and basic info -->
+								<h3 class="line-clamp-2 text-sm font-semibold">{vehicle.title || 'No Title'}</h3>
+								<div class="mt-1 flex flex-col gap-0.5">
+									<p class="text-xs text-gray-500">
+										{vehicle.color ? `• ${vehicle.color}` : ''}
+									</p>
+									<p class="text-xs text-gray-500">
+										Stock #{vehicle.stockNumber || 'N/A'}
+									</p>
+									<p class="text-xs text-gray-500">
+										VIN: {vehicle.vin ? vehicle.vin.slice(-6) : 'N/A'}
+									</p>
+									<p class="text-xs text-gray-500">
+										{vehicle.manufacturer || ''}
+									</p>
+								</div>
 
-									<!-- Button container now sticks to bottom -->
-									<div class="mt-auto flex gap-1 pt-3">
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
-											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="View Key Tag"
-										>
-											<KeySquare class="h-6 w-6" />
-										</button>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
-											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="View Hang Tag"
-										>
-											<Tags class="h-6 w-6" />
-										</button>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
-											class="flex flex-col items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="Share Vehicle"
-										>
-											<Share2 class="h-6 w-6" />
-										</button>
-										<button
-											type="button"
-											onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
-											class="flex flex-row items-center rounded-md bg-gray-500 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-											aria-label="Edit Vehicle Details"
-										>
-											<Settings class="h-6 w-6" />
-										</button>
+								<!-- Price -->
+								<div class="mt-2 text-lg font-bold text-green-600">
+									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
+								</div>
+
+								<!-- Status indicators -->
+								<div class="mt-2 flex gap-1">
+									<div class="flex items-center rounded-md bg-gray-700/75 p-1">
+										{#if vehicle.condition === 'Excellent'}
+											<CircleCheck class="h-4 w-4 text-green-700" />
+										{:else}
+											<Frown class="h-4 w-4 text-gray-400" />
+										{/if}
 									</div>
+									<div class="flex items-center rounded-md bg-gray-700/75 p-1">
+										{#if vehicle.imageCount > 6}
+											<Camera class="h-4 w-4 text-yellow-400" />
+										{:else}
+											<CameraOff class="h-4 w-4 text-gray-600" />
+										{/if}
+									</div>
+								</div>
+
+								<!-- Action buttons -->
+								<div class="mt-2 flex flex-wrap gap-1">
+									<button
+										type="button"
+										onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
+										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
+										aria-label="View Key Tag"
+									>
+										<KeySquare class="h-4 w-4" />
+									</button>
+									<button
+										type="button"
+										onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
+										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
+										aria-label="View Hang Tag"
+									>
+										<Tags class="h-4 w-4" />
+									</button>
+									<button
+										type="button"
+										onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
+										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
+										aria-label="Share Vehicle"
+									>
+										<Share2 class="h-4 w-4" />
+									</button>
+									<button
+										type="button"
+										onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
+										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
+										aria-label="Edit Vehicle Details"
+									>
+										<Settings class="h-4 w-4" />
+									</button>
 								</div>
 							</div>
 						</div>
 					{/each}
 				</div>
 			{:else}
+				<!-- List View -->
 				<div class="flex flex-col gap-2">
-					<!-- Show all items if no sort, otherwise respect the 5-item limit -->
 					{#each group.items.slice(0, selectedSort === '' ? undefined : group.expanded ? undefined : 8) as vehicle (vehicle.id)}
 						<div
 							class="grid grid-cols-[96px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
@@ -496,8 +485,10 @@
 							</div>
 
 							<!-- Column 3: Price (fixed width) -->
-							<div class="mr-2 flex items-center justify-end text-lg font-bold text-green-600">
-								{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
+							<div class="mx-8 flex items-center justify-end border-r-[5px] border-green-800">
+								<h3 class="p-4 text-lg font-bold text-gray-100">
+									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
+								</h3>
 							</div>
 
 							<!-- Column 4: Action Buttons -->
@@ -509,7 +500,7 @@
 										<Frown class="h-7 w-7 text-gray-400" />
 									{/if}
 								</div>
-								<div class="flex items-center rounded-md bg-gray-700/75 px-2 py-1.5">
+								<div class="mr-4 flex items-center rounded-md bg-gray-700/75 px-2 py-1.5">
 									{#if vehicle.imageCount > 6}
 										<Camera class="h-7 w-7 text-yellow-400" />
 									{:else}
@@ -559,8 +550,8 @@
 
 <!-- Loading indicator -->
 {#await data.vehiclesPromise}
-	<div class="loading-skeleton my-4 w-full px-8">
-		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
+	<div class="loading-skeleton container mx-auto my-4 px-8">
+		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
 			{#each Array(16) as _}
 				<div
 					class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"

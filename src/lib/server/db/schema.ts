@@ -1,6 +1,13 @@
-import { pgTable, text, integer, uuid } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, uuid, timestamp } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { users as authUsers } from '$lib/server/db/supabase-types';
+
+export const users = pgTable('users', {
+	id: uuid('id').primaryKey().defaultRandom(),
+	email: text('email').notNull(),
+	created_at: timestamp('created_at').defaultNow()
+	// ... other user fields
+});
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),

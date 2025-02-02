@@ -1,5 +1,4 @@
 <script lang="ts">
-	const { children } = $props();
 	import { Button } from '$lib/components/ui/button';
 	import {
 		ShieldPlus,
@@ -34,7 +33,7 @@
 </script>
 
 <nav
-	class="fixed z-40 flex w-full justify-center border-b border-gray-600/25 bg-slate-900/90 py-1 shadow-md backdrop-blur-md print:hidden"
+	class="fixed z-40 flex w-full justify-center border-b border-gray-600/25 bg-gray-900/75 py-1 shadow-md backdrop-blur-md print:hidden"
 >
 	<div class="flex items-center">
 		<a href="/" class="mx-4 p-1" aria-label="Home">
@@ -76,16 +75,3 @@
 		</Button>
 	</div>
 </nav>
-
-<main class="flex min-h-screen flex-col bg-gray-900/75 align-middle text-foreground">
-	{@render children()}
-</main>
-
-<style>
-	@media print {
-		main {
-			background-color: white !important;
-			background: none !important;
-		}
-	}
-</style>
