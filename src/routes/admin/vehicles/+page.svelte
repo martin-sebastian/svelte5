@@ -7,20 +7,19 @@
 		Tags,
 		Camera,
 		CameraOff,
-		Tag,
 		Frown,
 		Share2,
 		Settings,
 		KeySquare,
 		LayoutGrid,
-		List,
 		AlignLeft,
 		CircleCheck
 	} from 'lucide-svelte';
 	import { page } from '$app/stores';
+	import { fade } from 'svelte/transition';
 
 	const { data } = $props<{ data: PageData }>();
-	const { user, vehicles } = $derived(data);
+	const { user, vehicles, modelTypes } = $derived(data);
 
 	// Add type definition for vehicle
 	type Vehicle = {
@@ -42,12 +41,14 @@
 		status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
 		imageCount: number;
 		condition: string | null;
+		model_type: string | null;
 	};
 
 	type SortOption = 'modelType' | 'year' | 'manufacturer' | 'usage';
 
 	// Sorting options
 	const sortOptions = [
+		//{ value: '' as const, label: 'No Sort' },
 		{ value: 'modelType' as const, label: 'Type ' },
 		{ value: 'year' as const, label: 'Year ' },
 		{ value: 'manufacturer' as const, label: 'Make ' },
@@ -56,7 +57,7 @@
 
 	// Initialize state variables
 	let viewMode = $state<'grid' | 'list'>('grid');
-	let selectedSort = $state<SortOption>('modelType');
+	let selectedSort = $state<SortOption>('');
 	let searchTerm = $state('');
 
 	// Load saved preferences
@@ -79,10 +80,35 @@
 		}
 	});
 
-	// Filter vehicles
+	const CHUNK_SIZE = 10; // Number of cards to render at once
+	let displayedVehicles = $state<typeof data.vehicles>([]);
+	let isLoading = $state(true);
+
+	// Progressive loading
+	$effect(() => {
+		data.vehiclesPromise.then((vehicles) => {
+			let currentIndex = 0;
+
+			function addMoreVehicles() {
+				const chunk = vehicles.slice(currentIndex, currentIndex + CHUNK_SIZE);
+				displayedVehicles = [...displayedVehicles, ...chunk];
+				currentIndex += CHUNK_SIZE;
+
+				if (currentIndex < vehicles.length) {
+					setTimeout(addMoreVehicles, 50);
+				} else {
+					isLoading = false;
+				}
+			}
+
+			addMoreVehicles();
+		});
+	});
+
+	// Filter and group displayed vehicles instead of all vehicles
 	const filteredVehicles = $derived(
-		vehicles
-			? vehicles.filter((vehicle: Vehicle) => {
+		displayedVehicles
+			? displayedVehicles.filter((vehicle: Vehicle) => {
 					if (!searchTerm) return true;
 					const searchLower = searchTerm.toLowerCase();
 					return (
@@ -106,13 +132,13 @@
 		}
 	>;
 
-	// Group vehicles
+	// Group vehicles using displayedVehicles
 	const groupedVehicles = $derived(
 		filteredVehicles.reduce((groups: GroupedVehicles, vehicle: Vehicle) => {
 			let key;
 			switch (selectedSort) {
 				case 'modelType':
-					key = vehicle.type || 'Unspecified';
+					key = vehicle.model_type || 'Unspecified';
 					break;
 				case 'year':
 					key = vehicle.year?.toString() || 'Unspecified Year';
@@ -124,7 +150,7 @@
 					key = vehicle.usage || 'Unspecified';
 					break;
 				default:
-					key = 'Other';
+					key = 'All Vehicles';
 			}
 
 			if (!groups[key]) {
@@ -153,17 +179,35 @@
 			maximumFractionDigits: 2
 		}).format(actualPrice);
 	}
+
+	let imageError = $state<Record<string, boolean>>({});
+
+	$effect(() => {
+		const images = document.querySelectorAll('img');
+		images.forEach((img) => {
+			img.onerror = () => {
+				const vehicleId = img.dataset.vehicleId;
+				if (vehicleId) {
+					imageError[vehicleId] = true;
+				}
+			};
+		});
+	});
 </script>
 
-<div class="container mx-auto mb-5 mt-24">
-	<h1 class="text-3xl font-bold">Inventory</h1>
+<div class="my-2 w-full px-8 pt-10">
+	<!-- Loading indicator for remaining cards -->
+	{#if isLoading && displayedVehicles.length > 0}
+		<div class="py-4 text-center uppercase text-gray-500/50">
+			Loading more inventory - {displayedVehicles.length} items loaded
+		</div>
+	{/if}
 </div>
-
 <!-- FILTER,SEARCH and Sort Bar -->
-<div class="sticky top-14 z-50 my-0 w-full">
-	<div class="container mx-auto">
+<div class="sticky top-14 z-50 my-0">
+	<div class="w-full px-8">
 		<div
-			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 dark:border-gray-800/90 dark:bg-gray-900/90"
+			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 shadow-lg backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
 		>
 			<!-- Left section with dropdowns -->
 			<div class="ml-2 flex w-1/4 items-center gap-2">
@@ -187,8 +231,8 @@
 						class="w-full rounded-full border border-gray-400/75 bg-gray-100/75 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
 					>
 						<option value="">Jump to...</option>
-						{#each Object.entries(groupedVehicles) as [groupName]}
-							<option value={groupName}>{groupName}</option>
+						{#each data.modelTypes as { model_type }}
+							<option value={model_type}>{model_type}</option>
 						{/each}
 					</select>
 				</div>
@@ -251,14 +295,15 @@
 </div>
 
 <!-- Vehicle List -->
-<div class="container mx-auto my-1">
+<div class="w-full px-8">
 	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
 				<h2 id={`${groupName}`} class="mb-1 mt-5 line-clamp-1 pb-1 font-semibold">
 					{groupName}
 				</h2>
-				{#if group.total > 5}
+				<!-- Only show "Show More" button if sorted and more than 8 items -->
+				{#if selectedSort !== '' && group.total > 8}
 					<button
 						onclick={() => {
 							const updatedGroup = groupedVehicles[groupName];
@@ -272,8 +317,9 @@
 			</div>
 
 			{#if viewMode === 'grid'}
-				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-					{#each group.items.slice(0, group.expanded ? undefined : 5) as vehicle (vehicle.id)}
+				<div class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+					<!-- Show all items if no sort, otherwise respect the 8-item limit -->
+					{#each group.items.slice(0, selectedSort === '' ? undefined : group.expanded ? undefined : 8) as vehicle (vehicle.id)}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
 						>
@@ -284,13 +330,24 @@
 									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
 										<img
 											src={vehicle.primaryImage}
-											alt={vehicle.title || ''}
-											loading="lazy"
+											alt={vehicle.title}
 											class="absolute inset-0 h-full w-full object-cover"
+											data-vehicle-id={vehicle.id}
+											style={imageError[vehicle.id] ? 'display: none;' : ''}
 										/>
+										<div
+											class="absolute inset-0 items-center justify-center bg-gray-100 dark:bg-gray-800"
+											style={imageError[vehicle.id] ? 'display: flex;' : 'display: none;'}
+											transition:fade
+										>
+											<CameraOff class="h-12 w-12 text-gray-400" />
+										</div>
 									{:else}
-										<div class="absolute inset-0 flex items-center justify-center bg-gray-100">
-											<ImageOff class="h-12 w-12 text-gray-400" />
+										<div
+											class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800"
+											transition:fade
+										>
+											<CameraOff class="h-12 w-12 text-gray-400" />
 										</div>
 									{/if}
 								</div>
@@ -396,7 +453,8 @@
 				</div>
 			{:else}
 				<div class="flex flex-col gap-2">
-					{#each group.items.slice(0, group.expanded ? undefined : 5) as vehicle (vehicle.id)}
+					<!-- Show all items if no sort, otherwise respect the 5-item limit -->
+					{#each group.items.slice(0, selectedSort === '' ? undefined : group.expanded ? undefined : 8) as vehicle (vehicle.id)}
 						<div
 							class="grid grid-cols-[96px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
 						>
@@ -406,15 +464,24 @@
 									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
 										<img
 											src={vehicle.primaryImage}
-											alt={vehicle.title || ''}
-											loading="lazy"
-											class="absolute inset-0 h-full w-full rounded object-cover"
+											alt={vehicle.title}
+											class="absolute inset-0 h-full w-full object-cover"
+											data-vehicle-id={vehicle.id}
+											style={imageError[vehicle.id] ? 'display: none;' : ''}
 										/>
+										<div
+											class="absolute inset-0 items-center justify-center bg-gray-100 dark:bg-gray-800"
+											style={imageError[vehicle.id] ? 'display: flex;' : 'display: none;'}
+											transition:fade
+										>
+											<CameraOff class="h-12 w-12 text-gray-400" />
+										</div>
 									{:else}
 										<div
-											class="absolute inset-0 flex items-center justify-center rounded bg-gray-200"
+											class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800"
+											transition:fade
 										>
-											<span class="text-gray-400">No Image</span>
+											<CameraOff class="h-12 w-12 text-gray-400" />
 										</div>
 									{/if}
 								</div>
@@ -489,6 +556,63 @@
 		</div>
 	{/each}
 </div>
+
+<!-- Loading indicator -->
+{#await data.vehiclesPromise}
+	<div class="loading-skeleton my-4 w-full px-8">
+		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8">
+			{#each Array(16) as _}
+				<div
+					class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
+				>
+					<!-- Image section with correct aspect ratio -->
+					<div class="relative w-full animate-pulse bg-gray-200 pb-[66.25%]"></div>
+
+					<!-- Content section -->
+					<div class="flex flex-col space-y-3 p-4">
+						<!-- Title placeholder -->
+						<div class="h-12">
+							<div class="mb-2 h-4 animate-pulse rounded bg-gray-200"></div>
+							<div class="h-4 w-2/3 animate-pulse rounded bg-gray-200"></div>
+						</div>
+
+						<!-- Price placeholder -->
+						<div class="h-8 w-1/2 animate-pulse rounded bg-gray-200"></div>
+
+						<!-- Usage badges placeholder -->
+						<div class="flex gap-1">
+							<div class="h-8 w-24 animate-pulse rounded bg-gray-200"></div>
+							<div class="h-8 w-16 animate-pulse rounded bg-gray-200"></div>
+						</div>
+
+						<!-- Details placeholder -->
+						<div class="space-y-2">
+							<div class="h-4 w-1/3 animate-pulse rounded bg-gray-200"></div>
+							<div class="h-4 w-2/3 animate-pulse rounded bg-gray-200"></div>
+							<div class="h-4 w-1/2 animate-pulse rounded bg-gray-200"></div>
+						</div>
+
+						<!-- Buttons placeholder -->
+						<div class="mt-auto flex gap-1 pt-3">
+							{#each Array(4) as _}
+								<div class="h-10 w-10 animate-pulse rounded-md bg-gray-200"></div>
+							{/each}
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
+{:then _}
+	<!-- Your existing grouped vehicles display using groupedVehicles -->
+	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
+		<!-- Your existing group display code -->
+	{/each}
+{:catch error}
+	<div class="error">
+		{error.message}
+	</div>
+{/await}
 
 <style>
 	.dots {

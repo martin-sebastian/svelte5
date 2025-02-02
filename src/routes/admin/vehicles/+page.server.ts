@@ -1,18 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { vehicle, vehicleImage, vehicleAttribute } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 
 export const load = (async ({ depends, setHeaders, parent }) => {
-	// Get parent data which includes verified user
 	const { user } = await parent();
 
-	// Log the user for debugging
-	console.log('User from parent:', user);
-
-	// Verify we have a user
 	if (!user) {
 		throw redirect(303, `/auth`);
 	}
@@ -23,78 +16,50 @@ export const load = (async ({ depends, setHeaders, parent }) => {
 
 	depends('vehicles:list');
 
-	try {
-		const vehicles = await db
-			.select({
-				id: vehicle.id,
-				stockNumber: vehicle.stockNumber,
-				vin: vehicle.vin,
-				year: vehicle.year,
-				manufacturer: vehicle.manufacturer,
-				type: vehicle.modelType,
-				style: vehicle.modelTypestyle,
-				trimName: vehicle.trimName,
-				trimColor: vehicle.trimColor,
-				usage: vehicle.usage,
-				title: vehicle.title,
-				description: vehicle.description,
-				price: vehicle.price,
-				color: vehicle.color,
-				condition: vehicle.condition,
-				metricType: vehicle.metricType,
-				metricValue: vehicle.metricValue,
-				status: vehicle.status,
-				primaryImage: sql<string | null>`(
-					SELECT image_url 
-					FROM ${vehicleImage} 
-					WHERE vehicle_id = ${vehicle.id} 
-					LIMIT 1
-				)`,
-				imageCount: sql<number>`(
-					SELECT COUNT(*)::integer
-					FROM ${vehicleImage}
-					WHERE vehicle_id = ${vehicle.id}
-				)`
-			})
-			.from(vehicle)
-			.leftJoin(vehicleImage, eq(vehicle.id, vehicleImage.vehicle_id))
-			.leftJoin(vehicleAttribute, eq(vehicle.id, vehicleAttribute.vehicle_id))
-			.groupBy(
-				vehicle.id,
-				vehicle.stockNumber,
-				vehicle.vin,
-				vehicle.year,
-				vehicle.manufacturer,
-				vehicle.modelType,
-				vehicle.modelTypestyle,
-				vehicle.trimName,
-				vehicle.trimColor,
-				vehicle.usage,
-				vehicle.title,
-				vehicle.description,
-				vehicle.price,
-				vehicle.color,
-				vehicle.condition,
-				vehicle.metricType,
-				vehicle.metricValue,
-				vehicle.status
-			);
+	// Get unique model_types
+	const modelTypes = await db.execute(sql`
+		SELECT DISTINCT model_type 
+		FROM vehicle 
+		WHERE model_type IS NOT NULL 
+		AND model_type != ''
+		ORDER BY model_type ASC
+	`);
 
-		return {
-			vehicles: vehicles.map((v) => ({
-				...v,
-				images: [],
-				primaryImage: v.primaryImage || null,
-				imageCount: v.imageCount || 0
-			})),
-			user,
-			revalidate: 60
-		};
-	} catch (error) {
-		console.error('Database error:', error);
-		return {
-			vehicles: [],
-			user
-		};
-	}
+	const vehiclesStream = new Promise(async (resolve) => {
+		const vehicles = await db.execute(sql`
+			SELECT 
+				v.*,
+				COALESCE(
+					(
+						SELECT json_agg(
+							json_build_object(
+								'url', vi.image_url,
+								'id', vi.id
+							)
+						)
+						FROM vehicle_image vi 
+						WHERE vi.vehicle_id = v.id
+					),
+					'[]'::json
+				) as images
+			FROM vehicle v
+			ORDER BY v.year DESC
+		`);
+
+		// Transform the data - just handle images
+		const processedVehicles = vehicles.map((vehicle) => ({
+			...vehicle,
+			images: vehicle.images || [],
+			primaryImage: vehicle.images?.[0]?.url || null
+		}));
+
+		resolve(processedVehicles);
+	});
+
+	return {
+		vehiclesPromise: vehiclesStream,
+		modelTypes,
+		user,
+		revalidate: 60
+	};
 }) satisfies PageServerLoad;

@@ -2,11 +2,13 @@
 	import { keyTagStore } from '$lib/stores/keyTagStore';
 	import { Card } from '$lib/components/ui/card';
 
-	$: currentTemplate = $keyTagStore.templates.find((t) => t.id === $keyTagStore.selectedTemplateId);
+	const currentTemplate = $derived(
+		$keyTagStore?.templates?.find((t) => t?.id === $keyTagStore?.selectedTemplateId)
+	);
 
 	function handleChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
-		keyTagStore.setSelectedTemplateId(target.value);
+		$keyTagStore.selectedTemplateId = target.value;
 	}
 </script>
 

@@ -21,7 +21,7 @@
 </script>
 
 <nav
-	class="fixed z-40 flex w-full justify-center border-b bg-background/50 py-1 shadow-sm backdrop-blur-sm print:hidden"
+	class="fixed z-40 flex w-full justify-center border-b bg-gray-900/75 py-1 shadow-sm backdrop-blur-lg print:hidden"
 >
 	<div class="flex items-center">
 		<a href="/" class="mx-4 p-1" aria-label="Home">
