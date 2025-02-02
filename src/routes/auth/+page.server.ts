@@ -4,14 +4,14 @@ import type { Actions, PageServerLoad } from './$types';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ url, locals: { user } }) => {
-	// If user is already logged in, redirect to the requested page or admin
+	// If user is already logged in, redirect to the requested page or root
 	if (user) {
-		const redirectTo = url.searchParams.get('redirectTo') || '/admin';
+		const redirectTo = url.searchParams.get('redirectTo') || '/';
 		throw redirect(303, redirectTo);
 	}
 
 	return {
-		redirectTo: url.searchParams.get('redirectTo') || '/admin'
+		redirectTo: url.searchParams.get('redirectTo') || '/'
 	};
 };
 
@@ -23,7 +23,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
-		const redirectTo = (formData.get('redirectTo') as string) || '/admin';
+		const redirectTo = (formData.get('redirectTo') as string) || '/';
 
 		console.log('Login attempt:', { email, redirectTo });
 

@@ -1,16 +1,27 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import type { Database } from './types/supabase';
 
-export const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-	cookieOptions: {
-		name: 'sb-auth-token',
-		maxAge: 60 * 60 * 24 * 7, // 1 week in seconds
-		domain: '',
-		path: '/',
-		sameSite: 'lax',
-		secure: process.env.NODE_ENV === 'production'
-	},
-	persistSession: true,
-	autoRefreshToken: true,
-	detectSessionInUrl: true
-});
+export const supabase = createBrowserClient<Database>(
+	PUBLIC_SUPABASE_URL,
+	PUBLIC_SUPABASE_ANON_KEY,
+	{
+		cookies: {
+			get(key) {
+				if (typeof document === 'undefined') return '';
+				return document.cookie
+					.split('; ')
+					.find((row) => row.startsWith(`${key}=`))
+					?.split('=')[1];
+			},
+			set(key, value, options) {
+				if (typeof document === 'undefined') return;
+				document.cookie = `${key}=${value}; Max-Age=${options.maxAge}; Path=${options.path}; SameSite=${options.sameSite}`;
+			},
+			remove(key, options) {
+				if (typeof document === 'undefined') return;
+				document.cookie = `${key}=; Max-Age=0; Path=${options.path}`;
+			}
+		}
+	}
+);

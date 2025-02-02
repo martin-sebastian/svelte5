@@ -1,59 +1,27 @@
-import { createServerClient } from '@supabase/ssr';
+import { createSupabaseServerClient } from '$lib/server/supabase';
 import { redirect, type Handle } from '@sveltejs/kit';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		cookies: {
-			get: (key) => event.cookies.get(key),
-			set: (key, value, options) => {
-				event.cookies.set(key, value, { ...options, path: '/' });
-			},
-			remove: (key, options) => {
-				event.cookies.delete(key, { ...options, path: '/' });
-			}
-		}
-	});
+	event.locals.supabase = createSupabaseServerClient({ cookies: event.cookies });
 
-	// First get the user securely
-	const {
-		data: { user }
-	} = await event.locals.supabase.auth.getUser();
-
-	// Set user in locals
-	event.locals.user = user;
-
-	// Update getSession to return the verified session
 	event.locals.getSession = async () => {
 		const {
-			data: { user: verifiedUser }
-		} = await event.locals.supabase.auth.getUser();
-		return verifiedUser ? { user: verifiedUser } : null;
+			data: { session }
+		} = await event.locals.supabase.auth.getSession();
+		return session;
 	};
 
-	// Handle auth protection for admin routes
-	if (event.url.pathname.startsWith('/admin')) {
-		if (!user) {
-			throw redirect(303, `/auth?redirectTo=${event.url.pathname}`);
+	// Protect routes except auth and root
+	if (!event.url.pathname.startsWith('/auth') && event.url.pathname !== '/') {
+		const session = await event.locals.getSession();
+		if (!session) {
+			throw redirect(303, '/');
 		}
 	}
 
-	// For /auth routes, redirect to admin if user is already authenticated
-	if (event.url.pathname === '/auth' && event.request.method === 'GET') {
-		if (user) {
-			// Simplified condition
-			const redirectTo = event.url.searchParams.get('redirectTo') || '/admin';
-			throw redirect(303, redirectTo);
-		}
-	}
-
-	const response = await resolve(event, {
+	return resolve(event, {
 		filterSerializedResponseHeaders(name) {
 			return name === 'content-range';
 		}
 	});
-
-	response.headers.set('Cache-Control', 'no-store'); // Essential to prevent caching issues.
-
-	return response;
 };

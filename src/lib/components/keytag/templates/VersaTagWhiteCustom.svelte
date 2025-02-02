@@ -26,7 +26,7 @@
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.01in] top-[0.994in] text-[10pt] font-bold">
+	<div class="absolute right-[0.01in] top-[0.994in] text-[30pt] font-bold">
 		{vehicle.year}
 	</div>
 

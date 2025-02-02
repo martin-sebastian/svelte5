@@ -10,7 +10,6 @@
 <div class="container mx-auto my-10 p-10">
 	<header class="my-8">
 		<h1 class="text-3xl font-bold">Admin Dashboard</h1>
-
 		<p class="text-gray-500">Manage your dealership tools and inventory</p>
 	</header>
 

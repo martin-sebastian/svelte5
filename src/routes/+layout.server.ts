@@ -4,11 +4,9 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ locals, url }) => {
 	const session = await locals.getSession();
 
-	// Protect all routes under /admin
-	if (url.pathname.startsWith('/admin')) {
-		if (!session) {
-			throw redirect(303, '/auth');
-		}
+	// If user is not authenticated, only allow access to root (login) and auth routes
+	if (!session && !url.pathname.startsWith('/auth') && url.pathname !== '/') {
+		throw redirect(303, '/');
 	}
 
 	return {

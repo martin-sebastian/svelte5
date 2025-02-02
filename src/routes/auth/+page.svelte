@@ -4,6 +4,11 @@
 	import { ShieldPlus, Loader2, User, Camera, Phone } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
+	import { supabase } from '$lib/supabaseClient';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
+	import { Mail } from 'lucide-svelte';
 
 	const { data } = $page;
 	let loading = $state(false);
@@ -35,6 +40,34 @@
 				goto(result.location);
 			}
 		};
+	}
+
+	let email = $state('');
+	let isLoading = $state(false);
+	let message = $state<string | null>(null);
+
+	async function handleLogin() {
+		try {
+			isLoading = true;
+			error = '';
+			message = null;
+
+			const { error: signInError } = await supabase.auth.signInWithOtp({
+				email,
+				options: {
+					emailRedirectTo: `${window.location.origin}/auth/callback`
+				}
+			});
+
+			if (signInError) throw signInError;
+
+			message = 'Check your email for the login link!';
+		} catch (e) {
+			console.error('Login error:', e);
+			error = e instanceof Error ? e.message : 'An error occurred during login';
+		} finally {
+			isLoading = false;
+		}
 	}
 </script>
 
@@ -168,41 +201,62 @@
 				</div>
 			{/if}
 
-			<form method="POST" action="?/login" use:enhance={handleSubmit} class="w-full space-y-4">
-				<input type="hidden" name="redirectTo" value={data.redirectTo} />
-				<div class="space-y-1">
-					<label class="sr-only" for="email"> Email </label>
-					<input
-						id="email"
-						name="email"
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
-						type="email"
-						placeholder="example@email.com"
-						required
-					/>
+			<div class="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
+				<div class="flex flex-col items-center justify-center text-center">
+					<h2 class="mt-6 text-3xl font-bold tracking-tight">Sign in to DealerOps</h2>
+					<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+						Enter your email to receive a magic link
+					</p>
 				</div>
-				<div class="space-y-1">
-					<label class="sr-only" for="password"> Password </label>
-					<input
-						id="password"
-						name="password"
-						class="w-full rounded-md border border-gray-600/25 bg-white/10 p-2 text-black"
-						type="password"
-						placeholder="********"
-						required
-					/>
-				</div>
-				<button
-					type="submit"
-					disabled={loading}
-					class="w-full rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-800 disabled:opacity-50"
-				>
-					{#if loading}
-						<Loader2 class="mr-2 inline h-4 w-4 animate-spin" />
+
+				<form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin}>
+					<div class="space-y-2">
+						<Label for="email">Email address</Label>
+						<div class="relative">
+							<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+								<Mail class="h-5 w-5 text-gray-400" />
+							</div>
+							<Input
+								id="email"
+								name="email"
+								type="email"
+								bind:value={email}
+								placeholder="name@company.com"
+								required
+								class="pl-10"
+								disabled={isLoading}
+							/>
+						</div>
+					</div>
+
+					{#if error}
+						<div
+							class="rounded-md bg-red-50 p-4 text-sm text-red-500 dark:bg-red-900/50 dark:text-red-400"
+						>
+							{error}
+						</div>
 					{/if}
-					Login
-				</button>
-			</form>
+
+					{#if message}
+						<div
+							class="rounded-md bg-green-50 p-4 text-sm text-green-500 dark:bg-green-900/50 dark:text-green-400"
+						>
+							{message}
+						</div>
+					{/if}
+
+					<Button type="submit" class="w-full" disabled={isLoading}>
+						{#if isLoading}
+							<div
+								class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+							></div>
+							Sending magic link...
+						{:else}
+							Send magic link
+						{/if}
+					</Button>
+				</form>
+			</div>
 			<p class="mt-6 text-center text-sm text-gray-500">
 				Don't have an account?
 				<a href="/auth/register" class="text-blue-500 hover:text-blue-600">Sign up</a>

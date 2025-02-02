@@ -59,6 +59,7 @@
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let selectedSort = $state<SortOption>('modelType');
 	let searchTerm = $state('');
+	let isLoading = $state(false);
 
 	// Load saved preferences
 	if (typeof window !== 'undefined') {
@@ -82,35 +83,10 @@
 		}
 	});
 
-	const CHUNK_SIZE = 10; // Number of cards to render at once
-	let displayedVehicles = $state<typeof data.vehicles>([]);
-	let isLoading = $state(true);
-
-	// Progressive loading
-	$effect(() => {
-		data.vehiclesPromise.then((vehicles) => {
-			let currentIndex = 0;
-
-			function addMoreVehicles() {
-				const chunk = vehicles.slice(currentIndex, currentIndex + CHUNK_SIZE);
-				displayedVehicles = [...displayedVehicles, ...chunk];
-				currentIndex += CHUNK_SIZE;
-
-				if (currentIndex < vehicles.length) {
-					setTimeout(addMoreVehicles, 50);
-				} else {
-					isLoading = false;
-				}
-			}
-
-			addMoreVehicles();
-		});
-	});
-
-	// Filter and group displayed vehicles instead of all vehicles
+	// Filter and group vehicles
 	const filteredVehicles = $derived(
-		displayedVehicles
-			? displayedVehicles.filter((vehicle: Vehicle) => {
+		data.vehicles
+			? data.vehicles.filter((vehicle: Vehicle) => {
 					if (!searchTerm) return true;
 					const searchLower = searchTerm.toLowerCase();
 					return (
@@ -134,7 +110,7 @@
 		}
 	>;
 
-	// Group vehicles using displayedVehicles
+	// Group vehicles using filteredVehicles
 	const groupedVehicles = $derived(
 		filteredVehicles.reduce((groups: GroupedVehicles, vehicle: Vehicle) => {
 			let key;
@@ -209,9 +185,9 @@
 
 <div class="my-2 w-full px-8 pt-10">
 	<!-- Loading indicator for remaining cards -->
-	{#if isLoading && displayedVehicles.length > 0}
+	{#if isLoading && data.vehicles.length > 0}
 		<div class="rounded-md bg-orange-400/50 py-4 text-center text-sm uppercase text-foreground">
-			Loading more inventory - {displayedVehicles.length} items loaded
+			Loading more inventory - {data.vehicles.length} items loaded
 		</div>
 	{/if}
 </div>

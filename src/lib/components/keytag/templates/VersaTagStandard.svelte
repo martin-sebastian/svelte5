@@ -76,7 +76,7 @@
 		color: #000000 !important;
 		overflow: hidden;
 		text-transform: uppercase;
-		text-align: right;
+		text-align: center;
 		/* Debug outline */
 		/* outline: 1px solid rgba(255, 0, 0, 0.2); */
 	}

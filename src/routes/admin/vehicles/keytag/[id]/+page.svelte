@@ -15,9 +15,7 @@
 
 	let scale = $state(2);
 
-	const selectedTemplate = $derived(
-		$keyTagStore?.templates?.find((t) => t.id === $keyTagStore?.selectedTemplateId)
-	);
+	const selectedTemplate = $derived($keyTagStore?.selectedTemplateId);
 
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));
 	const zoomOut = () => (scale = Math.max(scale - 0.1, 0.5));
@@ -33,17 +31,14 @@
 
 	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden p-4">
 		<div style:transform="scale({scale})" style:transform-origin="center">
-			<KeyTag let:children>
-				{@render children()}
-				{#if selectedTemplate?.id === 'versa-tag-standard-yellow'}
+			<KeyTag>
+				{#if selectedTemplate === 'versa-tag-standard-yellow'}
 					<VersaTagStandard {vehicle} />
-				{:else if selectedTemplate?.id === 'versa-tag-narrow-yellow'}
-					<VersaTagStandard {vehicle} />
-				{:else if selectedTemplate?.id === 'versa-tag-white'}
+				{:else if selectedTemplate === 'versa-tag-white'}
 					<VersaTagWhite {vehicle} />
-				{:else if selectedTemplate?.id === 'versa-tag-gray'}
+				{:else if selectedTemplate === 'versa-tag-gray'}
 					<VersaTagGray {vehicle} />
-				{:else if selectedTemplate?.id === 'standard-label'}
+				{:else if selectedTemplate === 'standard-label'}
 					<StandardLabel {vehicle} />
 				{/if}
 			</KeyTag>
