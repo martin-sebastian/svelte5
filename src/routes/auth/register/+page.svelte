@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { enhance } from '$app/forms';
-	import { Loader2, Mail, Lock, User, ArrowLeft } from 'lucide-svelte';
+	import { ShieldPlus, Loader2, Mail, Lock, User, ArrowLeft } from 'lucide-svelte';
 
 	const { data } = $page;
 	let loading = $state(false);
@@ -63,11 +63,18 @@
 			Back to Login
 		</a>
 
-		<User class="mb-2 h-10 w-10" />
+		<a href="/" aria-label="Home">
+			<div class="mb-10 flex flex-row items-center">
+				<ShieldPlus class="mx-1 h-12 w-12 text-gray-500" />
+				<div class="text-xl font-bold">
+					<span class="font-bold text-gray-500">DEALER</span><span class="font-black text-gray-500"
+						>OPS</span
+					>
+				</div>
+			</div>
+		</a>
 		<h1 class="mb-1 text-2xl font-bold">Create Account</h1>
-		<p class="mb-6 text-center text-sm text-gray-500">
-			Join us to access all features and manage your dealership tools.
-		</p>
+		<p class="mb-6 text-center text-sm text-gray-500">For dealerships users.</p>
 
 		{#if error}
 			<div class="mb-4 w-full rounded-md bg-red-500/10 p-3 text-red-500">

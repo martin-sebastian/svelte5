@@ -40,7 +40,7 @@
 
 <div class="flex h-screen w-full items-center justify-center">
 	<div
-		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md"
+		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md lg:w-1/2"
 	>
 		{#if data.user}
 			<div class="relative">
@@ -150,14 +150,17 @@
 			</form>
 		{:else}
 			<a href="/" aria-label="Home">
-				<div class="flex flex-row items-center">
-					<ShieldPlus class="mx-1 h-12 w-12" />
-					<div class="text-2xl font-bold">
-						<span class="font-bold">DEALER</span><span class="font-black">OPS</span>
+				<div class="mb-10 flex flex-row items-center">
+					<ShieldPlus class="mx-1 h-12 w-12 text-gray-500" />
+					<div class="text-xl font-bold">
+						<span class="font-bold text-gray-500">DEALER</span><span
+							class="font-black text-gray-500">OPS</span
+						>
 					</div>
 				</div>
 			</a>
-			<h1 class="my-2 pt-5 text-2xl font-bold">Sign In</h1>
+			<h1 class="mb-1 text-2xl font-bold">Dealership Sign In</h1>
+			<p class="mb-6 text-center text-sm text-gray-500">For dealerships users.</p>
 
 			{#if error}
 				<div class="mb-4 rounded-md bg-red-500/10 p-3 text-red-500">
@@ -168,7 +171,7 @@
 			<form method="POST" action="?/login" use:enhance={handleSubmit} class="w-full space-y-4">
 				<input type="hidden" name="redirectTo" value={data.redirectTo} />
 				<div class="space-y-1">
-					<label class="text-sm font-medium" for="email"> Email </label>
+					<label class="sr-only" for="email"> Email </label>
 					<input
 						id="email"
 						name="email"
@@ -179,7 +182,7 @@
 					/>
 				</div>
 				<div class="space-y-1">
-					<label class="text-sm font-medium" for="password"> Password </label>
+					<label class="sr-only" for="password"> Password </label>
 					<input
 						id="password"
 						name="password"
