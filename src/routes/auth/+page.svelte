@@ -40,7 +40,7 @@
 
 <div class="flex h-screen w-full items-center justify-center">
 	<div
-		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md lg:w-1/2"
+		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md sm:w-[350px] lg:w-1/2"
 	>
 		{#if data.user}
 			<div class="relative">
