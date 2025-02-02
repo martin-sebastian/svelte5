@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { ShieldCheck, Loader2, User, Camera, Phone } from 'lucide-svelte';
+	import { ShieldPlus, Loader2, User, Camera, Phone } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
 
@@ -149,8 +149,15 @@
 				</button>
 			</form>
 		{:else}
-			<ShieldCheck class="my-0 h-10 w-10" />
-			<h1 class="my-2 text-2xl font-bold">Sign In</h1>
+			<a href="/" aria-label="Home">
+				<div class="flex flex-row items-center">
+					<ShieldPlus class="mx-1 h-12 w-12" />
+					<div class="text-2xl font-bold">
+						<span class="font-bold">DEALER</span><span class="font-black">OPS</span>
+					</div>
+				</div>
+			</a>
+			<h1 class="my-2 pt-5 text-2xl font-bold">Sign In</h1>
 
 			{#if error}
 				<div class="mb-4 rounded-md bg-red-500/10 p-3 text-red-500">

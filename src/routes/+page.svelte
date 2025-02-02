@@ -2,22 +2,8 @@
 	import * as Carousel from '$lib/components/ui/carousel';
 	import { Button } from '$lib/components/ui/button';
 	import { page } from '$app/stores';
-	import {
-		DatabaseZap,
-		CircleGauge,
-		ImageOff,
-		Tags,
-		Tag,
-		Share,
-		Share2,
-		Settings,
-		KeySquare,
-		LayoutGrid,
-		List,
-		AlignLeft
-	} from 'lucide-svelte';
+	import { DatabaseZap, Tags, Share2, KeySquare } from 'lucide-svelte';
 	import { tweened } from 'svelte/motion';
-	import { cubicInOut } from 'svelte/easing';
 	const { data } = $page;
 
 	let message = 'Dealership Power Tools';
@@ -46,55 +32,30 @@
 </script>
 
 <main class="flex min-h-screen w-full flex-col items-center justify-start">
-	<div class="flex max-w-[1400px] flex-col items-center px-6 pt-24 text-center sm:px-8 sm:pt-40">
+	<div class="container flex flex-col items-center px-6 pt-24 text-center sm:px-8 sm:pt-40">
 		<!-- Title Section -->
 		<div class="flex flex-col items-center gap-6">
-			<h1 class="text-center">
-				<span
-					class="bg-gradient-to-r from-pink-500 via-gray-600 to-blue-800 bg-clip-text text-6xl font-extrabold text-transparent sm:text-7xl md:text-8xl"
-				>
+			<h1 class="bg-gradient-to-r from-pink-500 via-blue-800 to-gray-700 bg-clip-text text-center">
+				<span class="max-w-2xl text-6xl font-black text-transparent sm:text-7xl md:text-8xl">
 					{message}
 				</span>
-				<span class="mt-4 block text-3xl font-bold text-slate-500 sm:text-4xl md:text-5xl">
+				<span class="ml-2 text-5xl font-black text-gray-500/75 sm:text-6xl md:text-7xl">
 					{description}
 				</span>
 			</h1>
 
-			<p class="max-w-[600px] text-center text-base text-gray-500/75 sm:text-lg">
+			<p class="max-w-2xl text-center text-2xl text-gray-500/75 sm:text-lg md:text-2xl">
 				{subMessage}
 			</p>
 
 			<!-- Buttons section -->
 			<div class="mt-4 flex w-full max-w-[400px] items-center justify-center gap-4">
-				{#if data.session}
-					<Button
-						href="/admin"
-						class="flex-1 rounded-md bg-blue-500 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-blue-600 hover:shadow-lg"
-					>
-						Go to Dashboard
-					</Button>
-					<form action="/auth?/signout" method="POST" class="flex-1">
-						<Button
-							type="submit"
-							class="w-full rounded-md bg-gray-500 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-gray-600 hover:shadow-lg"
-						>
-							Sign Out
-						</Button>
-					</form>
-				{:else}
-					<Button
-						href="/auth/register"
-						class="flex-1 rounded-md border border-gray-400/50 bg-blue-600 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-blue-600/75 hover:shadow-lg"
-					>
-						Sign Up Now!
-					</Button>
-					<Button
-						href="/auth"
-						class="flex-1 rounded-md border border-gray-600/50 bg-gray-500/50 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-gray-600/75 hover:shadow-lg"
-					>
-						Login
-					</Button>
-				{/if}
+				<Button
+					href="/auth/register"
+					class="flex-1 rounded-md border border-gray-400/50 bg-blue-600 px-4 py-2 text-base font-semibold text-white transition-all hover:bg-blue-600/75 hover:shadow-lg"
+				>
+					Sign Up Now!
+				</Button>
 			</div>
 		</div>
 	</div>
@@ -181,10 +142,8 @@
 					<img src="/images/zoomed.png" alt="Zoomed In" class="w-full" />
 				</Carousel.Item>
 			</Carousel.Content>
-			<div class="hidden sm:block">
-				<Carousel.Previous />
-				<Carousel.Next />
-			</div>
+			<Carousel.Previous class="hidden sm:block" />
+			<Carousel.Next class="hidden sm:block" />
 		</Carousel.Root>
 	</div>
 </main>
