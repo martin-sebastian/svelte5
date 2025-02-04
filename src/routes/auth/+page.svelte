@@ -209,7 +209,7 @@
 					</p>
 				</div>
 
-				<form class="mt-8 space-y-6" on:submit|preventDefault={handleLogin}>
+				<form class="mt-8 space-y-6" onsubmit|preventDefault={handleLogin}>
 					<div class="space-y-2">
 						<Label for="email">Email address</Label>
 						<div class="relative">

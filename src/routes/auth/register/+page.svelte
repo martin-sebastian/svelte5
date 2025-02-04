@@ -53,7 +53,7 @@
 
 <div class="flex h-screen w-full items-center justify-center">
 	<div
-		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-gray-600/25 bg-gray-100/10 p-10 shadow-md sm:w-[350px] lg:w-1/2"
+		class="mx-auto flex max-w-md flex-col items-center justify-center rounded-xl border border-foreground/10 bg-background/75 p-10 shadow-md sm:w-[350px] lg:w-1/2"
 	>
 		<a
 			href="/auth"
@@ -63,17 +63,10 @@
 		</a>
 
 		<a href="/" aria-label="Home">
-			<div class="mb-10 flex flex-row items-center">
-				<ShieldPlus class="mx-1 h-12 w-12 text-gray-500" />
-				<div class="text-xl font-bold">
-					<span class="font-bold text-gray-500">DEALER</span><span class="font-black text-gray-500"
-						>OPS</span
-					>
-				</div>
-			</div>
+			<ShieldPlus class="mx-1 h-12 w-12 text-gray-500" />
 		</a>
-		<h1 class="mb-1 text-2xl font-bold">Create Account</h1>
-		<p class="mb-6 text-center text-sm text-gray-500">For dealerships users.</p>
+		<h1 class="mb-1 text-2xl font-bold">DealerOps</h1>
+		<p class="mb-6 text-center text-sm text-gray-500">Create an account to get started.</p>
 
 		{#if error}
 			<div class="mb-4 w-full rounded-md bg-red-500/10 p-3 text-red-500">

@@ -1,69 +1,9 @@
 <script lang="ts">
-	import { supabase } from '$lib/supabaseClient';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
-	import { ShieldPlus } from 'lucide-svelte';
-
-	let email = $state('');
-	let loading = $state(false);
-	let message = $state('');
-	let error = $state('');
-
-	async function handleLogin() {
-		try {
-			loading = true;
-			error = '';
-			message = '';
-
-			const { error: signInError } = await supabase.auth.signInWithOtp({
-				email,
-				options: {
-					emailRedirectTo: `${window.location.origin}/auth/callback`
-				}
-			});
-
-			if (signInError) throw signInError;
-
-			message = 'Check your email for the login link!';
-		} catch (e: any) {
-			error = e.message || 'An error occurred';
-		} finally {
-			loading = false;
-		}
-	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center">
-	<Card class="w-[350px]">
-		<CardHeader>
-			<div class="flex justify-center">
-				<ShieldPlus class="h-12 w-12" />
-			</div>
-			<CardTitle class="text-center text-2xl font-bold">Welcome Back</CardTitle>
-			<CardDescription class="text-center">
-				Enter your email to receive a magic link
-			</CardDescription>
-		</CardHeader>
-		<CardContent>
-			<form on:submit|preventDefault={handleLogin} class="space-y-4">
-				<Input type="email" placeholder="Email" bind:value={email} disabled={loading} required />
-				<Button type="submit" class="w-full" disabled={loading}>
-					{loading ? 'Sending Magic Link...' : 'Send Magic Link'}
-				</Button>
-				{#if message}
-					<p class="text-center text-sm text-green-600 dark:text-green-400">{message}</p>
-				{/if}
-				{#if error}
-					<p class="text-center text-sm text-red-600 dark:text-red-400">{error}</p>
-				{/if}
-			</form>
-		</CardContent>
-	</Card>
+<div class="flex h-screen w-full flex-row items-center justify-center gap-1">
+	<Button href="/auth/register">Sign Up</Button>
+	<Button href="/auth">Login</Button>
+	<Button href="/admin">Admin</Button>
 </div>

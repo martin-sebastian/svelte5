@@ -3,6 +3,8 @@ import { AuthApiError } from '@supabase/supabase-js';
 import type { Actions, PageServerLoad } from './$types';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
+const origin = import.meta.env.DEV ? 'http://localhost:5173' : 'https://dealerops.app';
+
 export const load: PageServerLoad = async ({ url, locals: { user } }) => {
 	// If user is already logged in, redirect to the requested page or root
 	if (user) {
@@ -27,9 +29,11 @@ export const actions: Actions = {
 
 		console.log('Login attempt:', { email, redirectTo });
 
-		const { data, error } = await supabase.auth.signInWithPassword({
+		const { data, error } = await supabase.auth.signInWithOtp({
 			email,
-			password
+			options: {
+				emailRedirectTo: `${origin}/admin`
+			}
 		});
 
 		if (error) {

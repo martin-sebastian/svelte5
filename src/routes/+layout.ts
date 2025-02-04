@@ -7,9 +7,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 	depends('supabase:auth');
 
 	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		global: {
-			fetch
-		},
+		global: { fetch },
 		cookies: {
 			get: (key) => {
 				if (browser) {
@@ -22,35 +20,16 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 			},
 			set: (key, value, options) => {
 				if (browser) {
-					let cookie = `${key}=${value}`;
-					if (options?.expires) {
-						cookie += `; expires=${options.expires.toUTCString()}`;
-					}
-					if (options?.path) {
-						cookie += `; path=${options.path}`;
-					}
-					if (options?.sameSite) {
-						cookie += `; samesite=${options.sameSite}`;
-					}
-					if (options?.secure) {
-						cookie += '; secure';
-					}
-					document.cookie = cookie;
+					document.cookie = `${key}=${value}; path=/; max-age=${60 * 60 * 24 * 7}`;
 				}
 			},
 			remove: (key, options) => {
 				if (browser) {
-					document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${
-						options?.path || '/'
-					}`;
+					document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 				}
 			}
 		}
 	});
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
-
-	return { supabase, session };
+	return { supabase };
 };
