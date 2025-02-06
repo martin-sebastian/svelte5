@@ -16,7 +16,7 @@ function convertBigIntToNumber(value: any): any {
 	return value;
 }
 
-export const load = async ({ url, parent }) => {
+export const load: PageServerLoad = async ({ url, parent }) => {
 	try {
 		// Auth check is handled by parent layout
 		await parent();
@@ -76,7 +76,7 @@ export const load = async ({ url, parent }) => {
 		const hasMore = offset + vehicles.length < totalCount;
 
 		return {
-			vehicles: vehicles.map(v => ({
+			vehicles: vehicles.map((v) => ({
 				...v,
 				primaryImage: v.primary_image || null
 			})),
@@ -97,4 +97,4 @@ export const load = async ({ url, parent }) => {
 		console.error('Error loading vehicles:', err);
 		throw error(500, 'Failed to load vehicles');
 	}
-} satisfies PageServerLoad;
+};
