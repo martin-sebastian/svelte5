@@ -2,53 +2,35 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals, url }) => {
-	// Public routes that don't need session checks
-	const isPublicRoute = url.pathname === '/' || url.pathname.startsWith('/auth');
+	// Define public routes
+	const publicRoutes = [
+		'/',
+		'/auth',
+		'/auth/login',
+		'/auth/register',
+		'/auth/callback',
+		'/auth/confirm-email'
+	];
+	const isPublicRoute = publicRoutes.includes(url.pathname);
 
-	let session = null;
-	let user = null;
+	// Get session first
+	const session = await locals.getSession();
 
-	try {
-		// Always get the session first
-		session = await locals.getSession();
+	// Only try to get user if we have a session
+	const user = session ? locals.user || (await locals.supabase.auth.getUser()).data.user : null;
 
-		// If we have a session, always get the verified user data
-		if (session) {
-			const {
-				data: { user: userData },
-				error: userError
-			} = await locals.supabase.auth.getUser();
-			if (userError) throw userError;
-			user = userData;
-		}
+	// Log for debugging (remove in production)
+	console.log('Auth State:', { isPublicRoute, hasSession: !!session, hasUser: !!user });
 
-		// For protected routes, redirect if no session or user
-		if (!isPublicRoute && (!session || !user)) {
-			throw redirect(303, '/');
-		}
-	} catch (error) {
-		// If it's a redirect, throw it
-		if (error instanceof Response) throw error;
-		// Otherwise, we'll return with no session/user
-		console.error('Auth error:', error);
-
-		// Clear session and user if there's an auth error
-		session = null;
-		user = null;
-
-		// Redirect to home if on protected route
-		if (!isPublicRoute) {
-			throw redirect(303, '/');
-		}
+	// Redirect unauthenticated users to login
+	if (!isPublicRoute && !session) {
+		throw redirect(303, '/auth/login');
 	}
 
-	return {
-		session,
-		user,
-		url: {
-			pathname: url.pathname,
-			search: url.search
-		},
-		cookies: locals.cookies
-	};
+	// Redirect authenticated users away from auth pages
+	if (url.pathname.startsWith('/auth') && session) {
+		throw redirect(303, '/admin');
+	}
+
+	return { session, user };
 };

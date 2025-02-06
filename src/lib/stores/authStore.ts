@@ -2,26 +2,39 @@ import { writable } from 'svelte/store';
 import { supabase } from '$lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 
-export const user = writable<User | null>(null);
-
-// Initialize the store
-supabase.auth.getUser().then(({ data: { user: userData }, error }) => {
-	if (!error) {
-		user.set(userData);
-	}
+// Store to track user and auth state
+export const authStore = writable<{ user: User | null; isAuthenticated: boolean }>({
+	user: null,
+	isAuthenticated: false
 });
 
-// Listen for auth changes
+// Function to check initial auth state
+async function checkAuth() {
+	const {
+		data: { user },
+		error
+	} = await supabase.auth.getUser();
+	if (!error) {
+		authStore.set({ user, isAuthenticated: !!user });
+	} else {
+		authStore.set({ user: null, isAuthenticated: false });
+	}
+}
+
+// Listen for auth state changes
 supabase.auth.onAuthStateChange(async (event) => {
 	if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
 		const {
-			data: { user: userData },
+			data: { user },
 			error
 		} = await supabase.auth.getUser();
 		if (!error) {
-			user.set(userData);
+			authStore.set({ user, isAuthenticated: true });
 		}
 	} else if (event === 'SIGNED_OUT') {
-		user.set(null);
+		authStore.set({ user: null, isAuthenticated: false });
 	}
 });
+
+// Run auth check on app start
+checkAuth();

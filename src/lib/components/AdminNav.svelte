@@ -1,15 +1,12 @@
 <script lang="ts">
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		ShieldPlus,
 		Gauge,
-		LayoutGrid,
 		Settings,
 		ScanBarcode,
-		Barcode,
-		QrCode,
-		ListCollapse,
-		List,
 		Sun,
 		Moon,
 		User,
@@ -33,7 +30,7 @@
 </script>
 
 <nav
-	class="fixed z-40 flex w-full justify-center border-b border-gray-600/25 bg-gray-900/75 py-1 shadow-md backdrop-blur-md print:hidden"
+	class="fixed flex w-full justify-center border-b border-background/25 bg-background/75 py-1 shadow-md backdrop-blur-md print:hidden"
 >
 	<div class="flex items-center">
 		<a href="/" class="mx-4 p-1" aria-label="Home">

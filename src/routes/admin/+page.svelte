@@ -2,27 +2,37 @@
 	import type { PageData } from './$types';
 	import { LayoutGrid, DatabaseZap, Tag, Tags, Image, User, CircleGauge } from 'lucide-svelte';
 
-	const data = $props<PageData>();
+	const data: PageData = $props();
 
-	console.log('Page component data:', data);
+	console.log('Raw data:', data);
+
+	// Add default values
+	const stats = {
+		totalVehicles: data?.data?.stats?.totalVehicles ?? 0,
+		totalNewVehicles: data?.data?.stats?.totalNewVehicles ?? 0,
+		totalUsedVehicles: data?.data?.stats?.totalUsedVehicles ?? 0
+	};
+
+	console.log('Processed stats:', stats);
 </script>
 
-<div class="container mx-auto my-10 pt-16">
+<div class="container mx-auto pt-16">
 	<header class="my-8">
 		<h1 class="text-3xl font-bold">Admin Dashboard</h1>
 		<p class="text-gray-500">Manage your dealership tools and inventory</p>
 	</header>
 
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-		<div
-			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+	<div class="my-5 grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+		<a
+			href="/admin/vehicles"
+			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
 		>
 			<CircleGauge class="h-8 w-8 text-blue-500" />
 			<div>
-				<h1 class="text-3xl font-bold">{data.data.stats.totalVehicles}</h1>
+				<h1 class="text-3xl font-bold">{stats.totalVehicles}</h1>
 				<p class="text-sm text-gray-500">Total Vehicles</p>
 			</div>
-		</div>
+		</a>
 
 		<a
 			href="/admin/vehicles"
@@ -30,8 +40,19 @@
 		>
 			<CircleGauge class="h-8 w-8 text-blue-500" />
 			<div>
-				<h2 class="text-xl font-bold">{data.data.stats.totalNewVehicles}</h2>
-				<p class="text-sm text-gray-500">New Veicles</p>
+				<h2 class="text-3xl font-bold">{stats.totalNewVehicles}</h2>
+				<p class="text-sm text-gray-500">New Vehicles</p>
+			</div>
+		</a>
+
+		<a
+			href="/admin/vehicles"
+			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+		>
+			<CircleGauge class="h-8 w-8 text-blue-500" />
+			<div>
+				<h2 class="text-3xl font-bold">{stats.totalUsedVehicles}</h2>
+				<p class="text-sm text-gray-500">Used Vehicles</p>
 			</div>
 		</a>
 		<a
@@ -40,18 +61,20 @@
 		>
 			<CircleGauge class="h-8 w-8 text-blue-500" />
 			<div>
-				<h2 class="text-xl font-bold">{data.data.stats.totalUsedVehicles}</h2>
-				<p class="text-sm text-gray-500">Used Veicles</p>
+				<h2 class="text-3xl font-bold">{stats.totalUsedVehicles}</h2>
+				<p class="text-sm text-gray-500">Used Vehicles</p>
 			</div>
 		</a>
+	</div>
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 		<a
-			href="/admin/vehicles"
+			href="/admin/profile"
 			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
 		>
 			<User class="h-8 w-8 text-blue-500" />
 			<div>
-				<h2 class="text-xl font-bold">Hello {data?.user?.email}</h2>
-				<p class="text-sm text-gray-500">Manage and view your vehicle listings</p>
+				<h2 class="text-xl font-bold">{data?.user?.email ?? 'User Profile'}</h2>
+				<p class="text-sm text-gray-500">Manage your account settings</p>
 			</div>
 		</a>
 

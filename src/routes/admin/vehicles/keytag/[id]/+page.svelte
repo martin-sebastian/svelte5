@@ -29,7 +29,7 @@
 		<TemplateSelector />
 	</div>
 
-	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden p-4">
+	<div class="dots flex h-screen w-full items-center justify-center overflow-hidden">
 		<div style:transform="scale({scale})" style:transform-origin="center">
 			<KeyTag>
 				{#if selectedTemplate === 'versa-tag-standard-yellow'}

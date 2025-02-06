@@ -4,12 +4,11 @@ import type { LayoutLoad } from './$types';
 import { browser } from '$app/environment';
 
 export const load: LayoutLoad = async ({ fetch, data, depends }) => {
-	depends('supabase:auth');
+	depends('supabase:auth'); // Ensures auth updates properly
 
 	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		global: {
-			fetch
-		},
+		global: { fetch },
+		auth: { persistSession: true, autoRefreshToken: true }, // ✅ Ensures session persists
 		cookies: {
 			get: (key) => {
 				if (browser) {
@@ -23,34 +22,39 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 			set: (key, value, options) => {
 				if (browser) {
 					let cookie = `${key}=${value}`;
-					if (options?.expires) {
-						cookie += `; expires=${options.expires.toUTCString()}`;
-					}
-					if (options?.path) {
-						cookie += `; path=${options.path}`;
-					}
-					if (options?.sameSite) {
-						cookie += `; samesite=${options.sameSite}`;
-					}
-					if (options?.secure) {
-						cookie += '; secure';
-					}
+					if (options?.expires) cookie += `; expires=${options.expires.toUTCString()}`;
+					if (options?.path) cookie += `; path=${options.path}`;
+					if (options?.sameSite) cookie += `; samesite=${options.sameSite}`;
+					if (options?.secure) cookie += '; secure';
 					document.cookie = cookie;
 				}
 			},
 			remove: (key, options) => {
 				if (browser) {
-					document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${
-						options?.path || '/'
-					}`;
+					document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${options?.path || '/'}`;
 				}
 			}
 		}
 	});
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+	// Fetch session data
+	const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+	console.log('Session Data:', sessionData, sessionError);
+	const session = sessionData?.session ?? null;
 
-	return { supabase, session };
+	// Fetch user if session exists
+	let user = null;
+	if (session) {
+		const { data: userData, error: userError } = await supabase.auth.getUser();
+		if (!userError) {
+			user = userData.user;
+		} else {
+			console.error('Error fetching user:', userError);
+		}
+	}
+
+	console.log('Final Session:', session);
+	console.log('Final User:', user);
+
+	return { supabase, session, user };
 };

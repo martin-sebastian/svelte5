@@ -1,9 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { Button } from '$lib/components/ui/button';
 	import {
-		CircleGauge,
-		ImageOff,
 		Tags,
 		Camera,
 		CameraOff,
@@ -193,9 +192,9 @@
 </div>
 <!-- FILTER,SEARCH and Sort Bar -->
 <div class="sticky top-14 z-50 my-0">
-	<div class="container mx-auto px-8">
+	<div class="container mx-auto px-0">
 		<div
-			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 shadow-lg backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
+			class="shadow-ms flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
 		>
 			<!-- Left section with dropdowns -->
 			<div class="ml-2 flex w-1/4 items-center gap-2">
@@ -283,7 +282,7 @@
 </div>
 
 <!-- Vehicle List -->
-<div class="container mx-auto px-8">
+<div class="container mx-auto px-1">
 	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
@@ -334,6 +333,23 @@
 									{/if}
 								</div>
 							</div>
+							<!-- Status indicators -->
+							<div class="z-[100] ml-3 mt-[5px] flex gap-1">
+								<div class="flex items-center p-1">
+									{#if vehicle.condition === 'Excellent'}
+										<CircleCheck class="h-4 w-4 text-green-700" />
+									{:else}
+										<Frown class="h-4 w-4 text-gray-400" />
+									{/if}
+								</div>
+								<div class="flex items-center p-1">
+									{#if vehicle.imageCount > 6}
+										<Camera class="h-4 w-4 text-yellow-400" />
+									{:else}
+										<CameraOff class="h-4 w-4 text-gray-600" />
+									{/if}
+								</div>
+							</div>
 
 							<!-- Content section -->
 							<div class="p-3">
@@ -359,58 +375,20 @@
 									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
 								</div>
 
-								<!-- Status indicators -->
-								<div class="mt-2 flex gap-1">
-									<div class="flex items-center rounded-md bg-gray-700/75 p-1">
-										{#if vehicle.condition === 'Excellent'}
-											<CircleCheck class="h-4 w-4 text-green-700" />
-										{:else}
-											<Frown class="h-4 w-4 text-gray-400" />
-										{/if}
-									</div>
-									<div class="flex items-center rounded-md bg-gray-700/75 p-1">
-										{#if vehicle.imageCount > 6}
-											<Camera class="h-4 w-4 text-yellow-400" />
-										{:else}
-											<CameraOff class="h-4 w-4 text-gray-600" />
-										{/if}
-									</div>
-								</div>
-
 								<!-- Action buttons -->
-								<div class="mt-2 flex flex-wrap gap-1">
-									<button
-										type="button"
-										onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
-										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
-										aria-label="View Key Tag"
-									>
+								<div class="mt-2 flex flex-wrap gap-0">
+									<Button variant="ghost" href="/admin/vehicles/keytag/{vehicle.id}">
 										<KeySquare class="h-4 w-4" />
-									</button>
-									<button
-										type="button"
-										onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
-										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
-										aria-label="View Hang Tag"
-									>
+									</Button>
+									<Button variant="ghost" href="/admin/vehicles/hangtag/{vehicle.id}">
 										<Tags class="h-4 w-4" />
-									</button>
-									<button
-										type="button"
-										onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
-										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
-										aria-label="Share Vehicle"
-									>
+									</Button>
+									<Button variant="ghost" href="/admin/vehicles/share/{vehicle.id}">
 										<Share2 class="h-4 w-4" />
-									</button>
-									<button
-										type="button"
-										onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
-										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
-										aria-label="Edit Vehicle Details"
-									>
+									</Button>
+									<Button variant="ghost" href="/admin/vehicles/vehicle/{vehicle.id}">
 										<Settings class="h-4 w-4" />
-									</button>
+									</Button>
 								</div>
 							</div>
 						</div>
