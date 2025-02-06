@@ -17,7 +17,8 @@
 		User,
 		Users,
 		DatabaseZap,
-		LogOut
+		LogOut,
+		ArrowDown
 	} from 'lucide-svelte';
 
 	let isLoading = $state(false);
@@ -100,10 +101,10 @@
 	<div class="min-h-screen bg-background">
 		{#if isAuthenticated}
 			<nav
-				class="fixed z-40 flex w-full justify-center border-b border-gray-500/25 bg-background/50 py-1 shadow-sm backdrop-blur-md print:hidden"
+				class="fixed z-40 flex w-full justify-between border-b border-background/25 bg-background/50 shadow-sm backdrop-blur-md print:hidden"
 			>
-				<div class="flex items-center">
-					<a href="/admin" class="mx-4 p-1" aria-label="Home">
+				<div class="flex flex-row items-center">
+					<a href="/admin" class="mx-4" aria-label="Home">
 						<div class="flex flex-row items-center">
 							<ShieldPlus class="h-8 w-8" />
 							<div class="hidden sm:flex">
@@ -111,14 +112,13 @@
 							</div>
 						</div>
 					</a>
-					<Button href="/admin" variant="outline" class="mx-1 p-3">
+					<Button href="/admin/" variant="outline" class="mx-1">
 						<Gauge /> <span class="hidden sm:block">Dashboard</span>
 					</Button>
-					<Button href="/admin/vehicles" variant="outline" class="mx-1 p-3">
+					<Button href="/admin/vehicles" variant="outline" class="mx-1">
 						<ScanBarcode /> <span class="hidden sm:block">Inventory</span>
 					</Button>
 				</div>
-				<div class="flex-grow justify-center gap-1 align-middle"></div>
 				<div class="flex flex-row items-center justify-end">
 					<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
 						<DatabaseZap class="h-4 w-4" /> <span class="text-sm">Sync</span>
@@ -148,7 +148,7 @@
 		{:else if typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')}
 			<div class="flex h-screen items-center justify-center">
 				<div class="text-center">
-					<p class="mb-4 text-lg">Please log in to access the admin area</p>
+					<p class="text-lg">Please log in to access the admin area</p>
 					<Button href="/" variant="outline">Go to Login</Button>
 				</div>
 			</div>
@@ -159,7 +159,7 @@
 {/if}
 
 {#if import.meta.env.DEV}
-	<div class="fixed bottom-0 left-0 right-0 bg-gray-900/90 py-2 text-xs text-white">
+	<div class="fixed bottom-0 bg-gray-900/90 py-2 text-xs text-white">
 		<div class="mx-4 flex items-center justify-between">
 			<button onclick={toggleExpand} class="flex items-center">
 				<span class="mr-4">
@@ -179,7 +179,10 @@
 			</div>
 		</div>
 		{#if isExpanded}
-			<div class="fixed bottom-0 left-0 right-0 h-1/2 overflow-y-auto bg-gray-800 p-4">
+			<div class="fixed bottom-0 h-1/2 overflow-y-auto bg-gray-800">
+				<button onclick={toggleExpand} class="flex items-center">
+					<ArrowDown class="mr-2 h-4 w-4" />
+				</button>
 				<h3 class="text-white">Additional Data</h3>
 				<pre class="text-white">
 					{JSON.stringify(data, null, 2)}

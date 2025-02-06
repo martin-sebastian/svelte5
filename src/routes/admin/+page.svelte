@@ -7,7 +7,7 @@
 	console.log('Page component data:', data);
 </script>
 
-<div class="container mx-auto my-10 p-10">
+<div class="container mx-auto my-10 pt-16">
 	<header class="my-8">
 		<h1 class="text-3xl font-bold">Admin Dashboard</h1>
 		<p class="text-gray-500">Manage your dealership tools and inventory</p>
@@ -108,5 +108,3 @@
 		</div>
 	</div>
 </div>
-
-<pre class="hidden">Debug: {JSON.stringify(data, null, 2)}</pre>
