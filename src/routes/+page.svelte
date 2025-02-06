@@ -16,16 +16,22 @@
 	let message = $state('');
 	let error = $state('');
 
-	async function handleLogin() {
+	async function handleLogin(e: Event) {
+		e.preventDefault();
 		try {
 			loading = true;
 			error = '';
 			message = '';
 
-			const { error: signInError } = await supabase.auth.signInWithOtp({
+			const { data, error: signInError } = await supabase.auth.signInWithOtp({
 				email,
 				options: {
-					emailRedirectTo: `${window.location.origin}/auth/callback`
+					emailRedirectTo: `${window.location.origin}/auth/callback`,
+					shouldCreateUser: true,
+					data: {
+						email,
+						timestamp: new Date().toISOString()
+					}
 				}
 			});
 
@@ -52,10 +58,17 @@
 			</CardDescription>
 		</CardHeader>
 		<CardContent>
-			<form on:submit|preventDefault={handleLogin} class="space-y-4">
+			<form onsubmit={handleLogin} class="space-y-4">
 				<Input type="email" placeholder="Email" bind:value={email} disabled={loading} required />
 				<Button type="submit" class="w-full" disabled={loading}>
-					{loading ? 'Sending Magic Link...' : 'Send Magic Link'}
+					{#if loading}
+						<div
+							class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"
+						></div>
+						Sending Magic Link...
+					{:else}
+						Send Magic Link
+					{/if}
 				</Button>
 				{#if message}
 					<p class="text-center text-sm text-green-600 dark:text-green-400">{message}</p>

@@ -9,19 +9,31 @@ export const supabase = createBrowserClient<Database>(
 		cookies: {
 			get(key) {
 				if (typeof document === 'undefined') return '';
-				return document.cookie
-					.split('; ')
-					.find((row) => row.startsWith(`${key}=`))
-					?.split('=')[1];
+				const cookie = document.cookie.split('; ').find((row) => row.startsWith(`${key}=`));
+				return cookie ? cookie.split('=')[1] : '';
 			},
 			set(key, value, options) {
 				if (typeof document === 'undefined') return;
-				document.cookie = `${key}=${value}; Max-Age=${options.maxAge}; Path=${options.path}; SameSite=${options.sameSite}`;
+				let cookie = `${key}=${value}`;
+				if (options.maxAge) {
+					cookie += `; Max-Age=${options.maxAge}`;
+				}
+				if (options.path) {
+					cookie += `; Path=${options.path}`;
+				}
+				cookie += '; SameSite=Lax; Secure';
+				document.cookie = cookie;
 			},
 			remove(key, options) {
 				if (typeof document === 'undefined') return;
-				document.cookie = `${key}=; Max-Age=0; Path=${options.path}`;
+				document.cookie = `${key}=; Max-Age=0; Path=${options?.path || '/'}`;
 			}
+		},
+		auth: {
+			flowType: 'pkce',
+			detectSessionInUrl: true,
+			persistSession: true,
+			autoRefreshToken: true
 		}
 	}
 );

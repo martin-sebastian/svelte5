@@ -1,12 +1,29 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { vehicle, vehicleImage } from '$lib/server/db/schema';
-import { desc, isNotNull, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
-export const load = (async ({ locals }) => {
-	const session = await locals.getSession();
+type VehicleRecord = {
+	id: string;
+	images: Array<{ id: string; image_url: string }>;
+	title?: string;
+	stock_number?: string;
+	vin?: string;
+	manufacturer?: string;
+	year?: number;
+	color?: string;
+	model_type?: string;
+	usage?: string;
+	price?: number;
+	status?: string;
+	last_modified?: string;
+};
 
+type ModelTypeRecord = {
+	model_type: string;
+};
+
+export const load = (async () => {
 	try {
 		// Get vehicles with their images using a raw query for better performance
 		const vehicles = await db.execute(sql`
@@ -36,16 +53,15 @@ export const load = (async ({ locals }) => {
 		`);
 
 		return {
-			vehicles: vehicles.map((v: any) => ({
+			vehicles: (vehicles as VehicleRecord[]).map((v) => ({
 				...v,
 				primaryImage: v.images?.[0]?.image_url || null,
 				images: v.images || []
 			})),
-			modelTypes: modelTypes.map((m: any) => ({ model_type: m.model_type })),
-			user: session?.user || null
+			modelTypes: (modelTypes as ModelTypeRecord[]).map((m) => ({ model_type: m.model_type }))
 		};
 	} catch (err) {
 		console.error('Error loading vehicles:', err);
-		throw error(500, 'Error loading vehicles');
+		throw error(500, 'Failed to load vehicles');
 	}
 }) satisfies PageServerLoad;

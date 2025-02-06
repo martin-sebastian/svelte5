@@ -3,37 +3,42 @@ import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 	const code = url.searchParams.get('code');
+	const next = url.searchParams.get('next') ?? '/admin';
 
 	if (!code) {
-		throw error(400, 'No code provided');
+		throw redirect(303, '/');
 	}
 
 	try {
-		const { data, error: err } = await supabase.auth.exchangeCodeForSession(code);
-
+		const { error: err } = await supabase.auth.exchangeCodeForSession(code);
 		if (err) {
 			console.error('Auth error:', err);
-			throw error(500, 'Failed to exchange code for session');
+			// Even if there's an error, if we have a session, continue to admin
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+			if (session) {
+				throw redirect(303, next);
+			}
+			throw error(500, 'Authentication failed');
 		}
 
-		if (!data.session) {
-			throw error(500, 'No session returned');
-		}
-
-		// Explicitly set the session
-		const { error: sessionError } = await supabase.auth.setSession({
-			access_token: data.session.access_token,
-			refresh_token: data.session.refresh_token
-		});
-
-		if (sessionError) {
-			console.error('Session error:', sessionError);
-			throw error(500, 'Failed to set session');
-		}
+		// Successful auth, redirect to admin
+		throw redirect(303, next);
 	} catch (e) {
-		console.error('Callback error:', e);
-		throw error(500, 'Internal server error during authentication');
-	}
+		if (e instanceof Response) {
+			throw e; // Rethrow redirect
+		}
 
-	throw redirect(303, '/');
+		// Check if we still have a valid session despite the error
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		if (session) {
+			throw redirect(303, next);
+		}
+
+		console.error('Callback error:', e);
+		throw redirect(303, '/');
+	}
 };

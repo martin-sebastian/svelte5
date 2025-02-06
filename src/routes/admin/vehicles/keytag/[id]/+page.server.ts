@@ -28,9 +28,7 @@ type VehicleData = {
 	images: VehicleImage[];
 };
 
-export const load = (async ({ params, locals }) => {
-	const session = await locals.getSession();
-
+export const load = (async ({ params }) => {
 	try {
 		// Get vehicle with its images using a raw query
 		const result = await db.execute(sql`
@@ -84,8 +82,7 @@ export const load = (async ({ params, locals }) => {
 		};
 
 		return {
-			vehicle,
-			user: session?.user || null
+			vehicle
 		};
 	} catch (err) {
 		console.error('Error loading vehicle:', err);

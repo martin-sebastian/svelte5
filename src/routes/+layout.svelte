@@ -20,21 +20,43 @@
 		LogOut
 	} from 'lucide-svelte';
 
-	let isLoading = $state(true);
+	let isLoading = $state(false);
 	let isAuthenticated = $state(false);
+	let userEmail = $state<string | null>(null);
+	let isExpanded = $state(false);
 
-	$effect(() => {
-		const { session } = data;
-		isAuthenticated = !!session;
-		isLoading = false;
-	});
-
-	// Listen for auth changes
+	// Initial auth check and setup
 	onMount(() => {
+		// Initial auth check
+		supabase.auth
+			.getUser()
+			.then(({ data: { user }, error }) => {
+				if (!error && user) {
+					isAuthenticated = true;
+					userEmail = user.email ?? null;
+				}
+			})
+			.catch((err) => {
+				console.error('Initial auth check failed:', err);
+			});
+
+		// Listen for auth changes
 		const {
 			data: { subscription }
-		} = supabase.auth.onAuthStateChange((_, newSession) => {
-			if (newSession?.expires_at !== data.session?.expires_at) {
+		} = supabase.auth.onAuthStateChange(async (event) => {
+			if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+				const {
+					data: { user },
+					error
+				} = await supabase.auth.getUser();
+				if (!error && user) {
+					isAuthenticated = true;
+					userEmail = user.email ?? null;
+				}
+				invalidate('supabase:auth');
+			} else if (event === 'SIGNED_OUT') {
+				isAuthenticated = false;
+				userEmail = null;
 				invalidate('supabase:auth');
 			}
 		});
@@ -44,12 +66,19 @@
 
 	async function handleLogout() {
 		try {
+			isLoading = true;
 			const { error } = await supabase.auth.signOut();
 			if (error) throw error;
 			await goto('/');
 		} catch (error) {
 			console.error('Logout error:', error);
+		} finally {
+			isLoading = false;
 		}
+	}
+
+	function toggleExpand() {
+		isExpanded = !isExpanded;
 	}
 
 	// Apply theme class to document
@@ -92,20 +121,20 @@
 				<div class="flex-grow justify-center gap-1 align-middle"></div>
 				<div class="flex flex-row items-center justify-end">
 					<Button href="/admin/sync" variant="outline" class="mx-1 my-1">
-						<DatabaseZap class="h-4 w-4" /> Sync
+						<DatabaseZap class="h-4 w-4" /> <span class="text-sm">Sync</span>
 					</Button>
 					<Button href="/admin/users" variant="outline" class="mx-1 my-1 ml-1">
 						<Users class="h-4 w-4" />
 						<span class="text-sm">Users</span>
 					</Button>
 					<Button href="/admin/settings" variant="outline" class="mx-1 my-1">
-						<Settings class="h-4 w-4" /> Settings
+						<Settings class="h-4 w-4" /> <span class="text-sm">Settings</span>
 					</Button>
 					<Button onclick={() => theme.toggle()} variant="outline" class="mx-1 my-1">
 						<Sun class="dark:hidden" />
 						<Moon class="hidden dark:block" />
 					</Button>
-					<Button variant="outline" class="mx-1 my-1">
+					<Button href="/admin/profile" variant="outline" class="mx-1 my-1">
 						<User class="h-4 w-4" />
 					</Button>
 					<Button onclick={handleLogout} variant="outline" class="my-1 ml-1 mr-4">
@@ -113,8 +142,15 @@
 					</Button>
 				</div>
 			</nav>
-			<div class="pt-16">
+			<div class="min-h-screen">
 				{@render children()}
+			</div>
+		{:else if typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')}
+			<div class="flex h-screen items-center justify-center">
+				<div class="text-center">
+					<p class="mb-4 text-lg">Please log in to access the admin area</p>
+					<Button href="/" variant="outline">Go to Login</Button>
+				</div>
 			</div>
 		{:else}
 			{@render children()}
@@ -122,15 +158,33 @@
 	</div>
 {/if}
 
-<style>
-	@media print {
-		main {
-			background-color: white !important;
-			background: none !important;
-		}
-	}
-
-	:global(html) {
-		@apply antialiased;
-	}
-</style>
+{#if import.meta.env.DEV}
+	<div class="fixed bottom-0 left-0 right-0 bg-gray-900/90 py-2 text-xs text-white">
+		<div class="mx-4 flex items-center justify-between">
+			<button onclick={toggleExpand} class="flex items-center">
+				<span class="mr-4">
+					Status:
+					{#if isAuthenticated}
+						<span class="text-green-400">Authenticated</span>
+					{:else}
+						<span class="text-red-400">Not Authenticated</span>
+					{/if}
+				</span>
+				<span>
+					Email: <span class="text-blue-400">{userEmail || 'None'}</span>
+				</span>
+			</button>
+			<div>
+				Session ID: {data.session?.access_token ? data.session.access_token.slice(-8) : 'None'}
+			</div>
+		</div>
+		{#if isExpanded}
+			<div class="fixed bottom-0 left-0 right-0 h-1/2 overflow-y-auto bg-gray-800 p-4">
+				<h3 class="text-white">Additional Data</h3>
+				<pre class="text-white">
+					{JSON.stringify(data, null, 2)}
+				</pre>
+			</div>
+		{/if}
+	</div>
+{/if}

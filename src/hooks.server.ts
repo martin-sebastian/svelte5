@@ -1,7 +1,13 @@
+import { sequence } from '@sveltejs/kit/hooks';
+import * as Sentry from '@sentry/sveltekit';
 import { createSupabaseServerClient } from '$lib/server/supabase';
 import { redirect, type Handle } from '@sveltejs/kit';
 
-export const handle: Handle = async ({ event, resolve }) => {
+Sentry.init({
+	dsn: 'https://2ced5718d6fa4a68233c4ebe7198eb5f@o4507048264925184.ingest.us.sentry.io/4508769684160512'
+});
+
+export const handle: Handle = sequence(Sentry.sentryHandle(), async ({ event, resolve }) => {
 	event.locals.supabase = createSupabaseServerClient({ cookies: event.cookies });
 
 	event.locals.getSession = async () => {
@@ -24,4 +30,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return name === 'content-range';
 		}
 	});
-};
+});
+export const handleError = Sentry.handleErrorWithSentry();
