@@ -13,7 +13,7 @@
 		<p class="text-gray-500">Manage your dealership tools and inventory</p>
 	</header>
 
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+	<div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
 		<div
 			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
 		>
@@ -30,7 +30,7 @@
 		>
 			<CircleGauge class="h-8 w-8 text-blue-500" />
 			<div>
-				<h2 class="text-xl font-bold">{data.data.stats.totalNewVehicles}</h2>
+				<h2 class="text-3xl font-bold">{data.data.stats.totalNewVehicles}</h2>
 				<p class="text-sm text-gray-500">New Veicles</p>
 			</div>
 		</a>
@@ -40,10 +40,22 @@
 		>
 			<CircleGauge class="h-8 w-8 text-blue-500" />
 			<div>
-				<h2 class="text-xl font-bold">{data.data.stats.totalUsedVehicles}</h2>
+				<h2 class="text-3xl font-bold">{data.data.stats.totalUsedVehicles}</h2>
 				<p class="text-sm text-gray-500">Used Veicles</p>
 			</div>
 		</a>
+		<a
+			href="/admin/vehicles"
+			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
+		>
+			<CircleGauge class="h-8 w-8 text-blue-500" />
+			<div>
+				<h2 class="text-3xl font-bold">{data.data.stats.totalSoldVehicles}</h2>
+				<p class="text-sm text-gray-500">Sold Veicles</p>
+			</div>
+		</a>
+	</div>
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 		<a
 			href="/admin/vehicles"
 			class="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900"

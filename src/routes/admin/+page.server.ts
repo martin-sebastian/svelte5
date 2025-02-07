@@ -17,13 +17,19 @@ export const load = (async () => {
 		.from(vehicle)
 		.where(sql`usage = 'Used'`);
 
+	const totalSoldVehicles = await db
+		.select({ count: count() })
+		.from(vehicle)
+		.where(sql`status = 'Sold'`);
+
 	console.log('Server load function - total vehicles:', totalVehicles[0].count);
 
 	return {
 		stats: {
 			totalVehicles: totalVehicles[0].count,
 			totalNewVehicles: totalNewVehicles[0].count,
-			totalUsedVehicles: totalUsedVehicles[0].count
+			totalUsedVehicles: totalUsedVehicles[0].count,
+			totalSoldVehicles: totalSoldVehicles[0].count
 		}
 	};
 }) satisfies PageServerLoad;
