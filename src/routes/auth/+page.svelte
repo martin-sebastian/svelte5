@@ -41,7 +41,7 @@
 	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center">
+<div class="login-page flex min-h-screen items-center justify-center">
 	<Card class="w-[350px]">
 		<CardHeader>
 			<div class="flex justify-center">
@@ -73,3 +73,13 @@
 		</CardContent>
 	</Card>
 </div>
+
+<style>
+	.login-page {
+		background-image: url('/road.jpg');
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+	}
+</style>

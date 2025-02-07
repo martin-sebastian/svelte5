@@ -17,6 +17,7 @@
 	} from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
+	import { vehiclesCache } from '$lib/stores/vehiclesCache';
 
 	const { data } = $props<{ data: PageData }>();
 	const { user, vehicles, modelTypes } = $derived(data);
@@ -181,6 +182,19 @@
 		groupExpanded[groupName] = !groupExpanded[groupName];
 		console.log('New state:', groupExpanded[groupName]);
 	}
+
+	// Function to handle navigation to vehicles page
+	async function navigateToVehicles() {
+		const cachedData = vehiclesCache.getCached();
+		if (cachedData) {
+			// Use cached data immediately
+			vehiclesCache.set(cachedData);
+		}
+		await goto('/admin/vehicles');
+	}
+
+	// After successful vehicle update/create/delete
+	vehiclesCache.invalidate();
 </script>
 
 <div class="my-2 w-full px-8 pt-10">

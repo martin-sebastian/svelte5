@@ -30,7 +30,7 @@
 
 	$effect(() => {
 		if (browser && vehicle) {
-			const url = `${window.location.origin}/vehicles/share/${vehicle.id}`;
+			const url = vehicle.link;
 			const options: QRCodeToDataURLOptions = {
 				width: 200,
 				margin: 1,

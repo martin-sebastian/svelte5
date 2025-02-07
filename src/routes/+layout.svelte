@@ -19,6 +19,16 @@
 		User,
 		LogOut
 	} from 'lucide-svelte';
+	import { vehiclesCache } from '$lib/stores/vehiclesCache';
+
+	async function navigateToVehicles() {
+		const cachedData = vehiclesCache.getCached();
+		if (cachedData) {
+			// Use cached data immediately
+			vehiclesCache.set(cachedData);
+		}
+		await goto('/admin/vehicles');
+	}
 
 	let isLoading = $state(true);
 	let isAuthenticated = $state(false);
@@ -58,19 +68,19 @@
 		}
 	});
 
-	function handleInventoryClick(e: MouseEvent) {
-		if ($navigating) {
-			e.preventDefault();
-			return;
-		}
-		const target = e.currentTarget as HTMLButtonElement;
-		target.classList.add('opacity-50');
-		target.disabled = true;
-		setTimeout(() => {
-			target.classList.remove('opacity-50');
-			target.disabled = false;
-		}, 2000);
-	}
+	// function handleInventoryClick(e: MouseEvent) {
+	// 	if ($navigating) {
+	// 		e.preventDefault();
+	// 		return;
+	// 	}
+	// 	const target = e.currentTarget as HTMLButtonElement;
+	// 	target.classList.add('opacity-50');
+	// 	target.disabled = true;
+	// 	setTimeout(() => {
+	// 		target.classList.remove('opacity-50');
+	// 		target.disabled = false;
+	// 	}, 2000);
+	// }
 </script>
 
 {#if isLoading}
@@ -102,7 +112,7 @@
 						variant="outline"
 						class="mx-1 p-3"
 						data-sveltekit-preload-data="off"
-						onclick={handleInventoryClick}
+						onclick={navigateToVehicles}
 					>
 						<ScanBarcode />
 						<span class="hidden sm:block">

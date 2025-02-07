@@ -2,10 +2,20 @@ import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 import { sql } from 'drizzle-orm';
-export const load = (async ({ locals }) => {
+
+// Cache duration in milliseconds (e.g., 1 minute)
+const CACHE_DURATION = 60 * 1000;
+
+export const load = (async ({ locals, setHeaders }) => {
 	const session = await locals.getSession();
 
 	try {
+		// Set cache headers
+		setHeaders({
+			'Cache-Control': `max-age=${CACHE_DURATION / 1000}`,
+			'Surrogate-Control': `max-age=${CACHE_DURATION / 1000}`
+		});
+
 		// Get vehicles with their images using a raw query for better performance
 		const vehicles = await db.execute(sql`
 			SELECT 
@@ -40,7 +50,8 @@ export const load = (async ({ locals }) => {
 				images: v.images || []
 			})),
 			modelTypes: modelTypes.map((m: any) => ({ model_type: m.model_type })),
-			user: session?.user || null
+			user: session?.user || null,
+			timestamp: Date.now() // Add timestamp for cache invalidation
 		};
 	} catch (err) {
 		console.error('Error loading vehicles:', err);
