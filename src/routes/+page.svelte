@@ -1,69 +1,40 @@
 <script lang="ts">
-	import { supabase } from '$lib/supabaseClient';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
-	import { ShieldPlus } from 'lucide-svelte';
-
-	let email = $state('');
-	let loading = $state(false);
-	let message = $state('');
-	let error = $state('');
-
-	async function handleLogin() {
-		try {
-			loading = true;
-			error = '';
-			message = '';
-
-			const { error: signInError } = await supabase.auth.signInWithOtp({
-				email,
-				options: {
-					emailRedirectTo: `${window.location.origin}/auth/callback`
-				}
-			});
-
-			if (signInError) throw signInError;
-
-			message = 'Check your email for the login link!';
-		} catch (e: any) {
-			error = e.message || 'An error occurred';
-		} finally {
-			loading = false;
-		}
-	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center">
-	<Card class="w-[350px]">
-		<CardHeader>
-			<div class="flex justify-center">
-				<ShieldPlus class="h-12 w-12" />
-			</div>
-			<CardTitle class="text-center text-2xl font-bold">Welcome Back</CardTitle>
-			<CardDescription class="text-center">
-				Enter your email to receive a magic link
-			</CardDescription>
-		</CardHeader>
-		<CardContent>
-			<form on:submit|preventDefault={handleLogin} class="space-y-4">
-				<Input type="email" placeholder="Email" bind:value={email} disabled={loading} required />
-				<Button type="submit" class="w-full" disabled={loading}>
-					{loading ? 'Sending Magic Link...' : 'Send Magic Link'}
-				</Button>
-				{#if message}
-					<p class="text-center text-sm text-green-600 dark:text-green-400">{message}</p>
-				{/if}
-				{#if error}
-					<p class="text-center text-sm text-red-600 dark:text-red-400">{error}</p>
-				{/if}
-			</form>
-		</CardContent>
-	</Card>
+<div class="home-page flex min-h-screen flex-col items-center justify-center">
+	<div class="rounded-xl bg-white/25 p-10 shadow-lg backdrop-blur-sm">
+		<div class="mt-8 flex flex-row items-center justify-center">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="48"
+				height="48"
+				fill="currentColor"
+				class="bi bi-shield-shaded"
+				viewBox="0 0 16 16"
+			>
+				<path
+					fill-rule="evenodd"
+					d="M8 14.933a1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"
+				/>
+			</svg>
+		</div>
+		<h2 class="text-center text-4xl font-bold">Dealer Ops</h2>
+		<div class="text-center">
+			<p class="mb-8 text-lg">
+				DEALERSHIP <span class="font-black">POWER TOOLS</span>
+			</p>
+			<Button href="/auth" size="lg">Sign In to Dashboard</Button>
+		</div>
+	</div>
 </div>
+
+<style>
+	.home-page {
+		background-image: url('/road.jpg');
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-attachment: fixed;
+	}
+</style>

@@ -58,7 +58,7 @@
 	};
 </script>
 
-<div class="vehicle-detail container my-10 py-5">
+<div class="vehicle-detail container my-10 pt-16">
 	{#if vehicle}
 		<h1 class="mb-2 w-full text-start text-4xl font-bold">{vehicle.title}</h1>
 		<h5 class="mb-2 w-full text-start text-xl font-semibold">

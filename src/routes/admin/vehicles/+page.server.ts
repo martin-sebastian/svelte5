@@ -1,9 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { vehicle, vehicleImage } from '$lib/server/db/schema';
-import { desc, isNotNull, sql } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
-
+import { sql } from 'drizzle-orm';
 export const load = (async ({ locals }) => {
 	const session = await locals.getSession();
 

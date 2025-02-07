@@ -19,17 +19,34 @@ export type KeyTagTemplate = {
 
 const defaultTemplates: KeyTagTemplate[] = [
 	{
+		id: 'standard-label',
+		name: 'Standard White Label',
+		description: 'Standard thermal white label for Zebra printers',
+		width: '1.25in',
+		height: '2.25in',
+		orientation: 'portrait',
+		backgroundColor: '#ffffff',
+		border: '1px solid #000000',
+		borderWidth: '0.01in',
+		printableArea: {
+			width: '1.25in',
+			height: '2.25in',
+			marginTop: '0in',
+			marginLeft: '0in'
+		}
+	},
+	{
 		id: 'versa-tag-standard-yellow',
 		name: 'Versa-Tag Standard Yellow',
 		description: 'Standard yellow self-laminating key tag',
 		width: '3in',
 		height: '3in',
-		orientation: 'landscape',
+		orientation: 'portrait',
 		backgroundImage: '/images/versa-tag-3x3-yellow.png',
 		backgroundColor: '#ffeb3b',
 		printableArea: {
-			width: '3in',
-			height: '3in',
+			width: '2.0in',
+			height: '2.5in',
 			marginTop: '0in',
 			marginLeft: '0in'
 		}
@@ -40,7 +57,7 @@ const defaultTemplates: KeyTagTemplate[] = [
 		description: 'Standard white self-laminating key tag',
 		width: '3in',
 		height: '3in',
-		orientation: 'landscape',
+		orientation: 'portrait',
 		backgroundImage: '/images/versa-tag-3x3-white.png',
 		backgroundColor: '#ffffff',
 		printableArea: {
@@ -56,27 +73,12 @@ const defaultTemplates: KeyTagTemplate[] = [
 		description: 'Standard gray self-laminating key tag',
 		width: '3in',
 		height: '3in',
-		orientation: 'landscape',
+		orientation: 'portrait',
 		backgroundImage: '/images/versa-tag-3x3-gray.png',
 		backgroundColor: '#9e9e9e',
 		printableArea: {
 			width: '3in',
 			height: '3in',
-			marginTop: '0in',
-			marginLeft: '0in'
-		}
-	},
-	{
-		id: 'standard-label',
-		name: 'Standard Thermal White Label',
-		description: 'Standard thermal white label for Zebra printers',
-		width: '1.25in',
-		height: '2.25in',
-		orientation: 'portrait',
-		backgroundColor: '#ffffff',
-		printableArea: {
-			width: '1.25in',
-			height: '2.25in',
 			marginTop: '0in',
 			marginLeft: '0in'
 		}
@@ -105,7 +107,7 @@ const createKeyTagStore = () => {
 		showBarcode: true,
 		fontSize: 12,
 		templates: defaultTemplates,
-		selectedTemplateId: 'versa-tag-standard-yellow'
+		selectedTemplateId: 'standard-label'
 	};
 
 	const { subscribe, set, update } = writable<KeyTagSettings>(defaultSettings);

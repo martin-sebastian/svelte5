@@ -5,7 +5,7 @@
 	const { vehicle } = $props<{ vehicle: Vehicle }>();
 </script>
 
-<div class="versa-tag-standard">
+<div class="standard-label">
 	<!-- NEW checkbox -->
 	<div class="flex flex-row items-center justify-center text-center text-[12pt] font-black">
 		{#if vehicle.usage?.toLowerCase() === 'new'}
@@ -83,15 +83,16 @@
 
 <style>
 	/* Template-specific styles */
-	:global(.versa-tag-standard) {
+	:global(.standard-label) {
 		position: relative;
 		width: 1.25in;
 		height: 3in;
 		color: #000000 !important;
+		background: #ffffff !important;
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: center;
-		border-radius: 0.01in;
+		border-radius: 5px;
 		background-color: auto;
 		border: 1px solid #000000;
 		/* Debug outline */
@@ -100,17 +101,17 @@
 
 	/* Print-specific styles */
 	@media print {
-		:global(.versa-tag-standard) {
+		:global(.standard-label) {
 			/* Ensure black text in print */
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 1.25in !important;
-			height: 2.25in !important;
+			width: 1.5in !important;
+			height: 3in !important;
 		}
 
 		/* Ensure icons and boxes print correctly */
-		:global(.versa-tag-standard svg) {
+		:global(.standard-label svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #ffffff !important;

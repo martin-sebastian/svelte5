@@ -6,7 +6,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 
 	// If user is not authenticated, only allow access to root (login) and auth routes
 	if (!session && !url.pathname.startsWith('/auth') && url.pathname !== '/') {
-		throw redirect(303, '/');
+		throw redirect(303, '/auth');
 	}
 
 	return {

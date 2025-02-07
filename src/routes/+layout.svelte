@@ -1,22 +1,22 @@
 <script lang="ts">
 	const { children, data } = $props();
 	import '../app.css';
+	import { navigating } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { invalidate } from '$app/navigation';
 	import { supabase } from '$lib/supabaseClient';
-	import { onMount } from 'svelte';
-	import { Button } from '$lib/components/ui/button';
 	import { theme } from '$lib/stores/themeStore';
+	import { ShieldPlus } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
 	import {
-		ShieldPlus,
 		Gauge,
-		Settings,
 		ScanBarcode,
+		DatabaseZap,
+		Users,
+		Settings,
 		Sun,
 		Moon,
 		User,
-		Users,
-		DatabaseZap,
 		LogOut
 	} from 'lucide-svelte';
 
@@ -30,13 +30,11 @@
 	});
 
 	// Listen for auth changes
-	onMount(() => {
+	$effect(() => {
 		const {
 			data: { subscription }
-		} = supabase.auth.onAuthStateChange((_, newSession) => {
-			if (newSession?.expires_at !== data.session?.expires_at) {
-				invalidate('supabase:auth');
-			}
+		} = supabase.auth.onAuthStateChange(() => {
+			invalidate('supabase:auth');
 		});
 
 		return () => subscription.unsubscribe();
@@ -46,7 +44,7 @@
 		try {
 			const { error } = await supabase.auth.signOut();
 			if (error) throw error;
-			await goto('/');
+			await goto('/auth');
 		} catch (error) {
 			console.error('Logout error:', error);
 		}
@@ -59,6 +57,20 @@
 			document.documentElement.classList.add($theme);
 		}
 	});
+
+	function handleInventoryClick(e: MouseEvent) {
+		if ($navigating) {
+			e.preventDefault();
+			return;
+		}
+		const target = e.currentTarget as HTMLButtonElement;
+		target.classList.add('opacity-50');
+		target.disabled = true;
+		setTimeout(() => {
+			target.classList.remove('opacity-50');
+			target.disabled = false;
+		}, 2000);
+	}
 </script>
 
 {#if isLoading}
@@ -68,13 +80,13 @@
 		></div>
 	</div>
 {:else}
-	<div class="min-h-screen bg-background">
+	<div class="min-h-screen w-full bg-background text-foreground">
 		{#if isAuthenticated}
 			<nav
-				class="fixed z-40 flex w-full justify-center border-b border-gray-500/25 bg-background/50 py-1 shadow-sm backdrop-blur-md print:hidden"
+				class="fixed z-40 flex w-full justify-center border-b border-gray-400/25 bg-background/90 py-2 shadow-sm backdrop-blur-md print:hidden"
 			>
 				<div class="flex items-center">
-					<a href="/admin" class="mx-4 p-1" aria-label="Home">
+					<a href="/" class="mx-4 p-1" aria-label="Home">
 						<div class="flex flex-row items-center">
 							<ShieldPlus class="h-8 w-8" />
 							<div class="hidden sm:flex">
@@ -85,8 +97,17 @@
 					<Button href="/admin" variant="outline" class="mx-1 p-3">
 						<Gauge /> <span class="hidden sm:block">Dashboard</span>
 					</Button>
-					<Button href="/admin/vehicles" variant="outline" class="mx-1 p-3">
-						<ScanBarcode /> <span class="hidden sm:block">Inventory</span>
+					<Button
+						href="/admin/vehicles"
+						variant="outline"
+						class="mx-1 p-3"
+						data-sveltekit-preload-data="off"
+						onclick={handleInventoryClick}
+					>
+						<ScanBarcode />
+						<span class="hidden sm:block">
+							{#if $navigating}Loading...{:else}Inventory{/if}
+						</span>
 					</Button>
 				</div>
 				<div class="flex-grow justify-center gap-1 align-middle"></div>
@@ -113,24 +134,11 @@
 					</Button>
 				</div>
 			</nav>
-			<div class="pt-16">
+			<main class="">
 				{@render children()}
-			</div>
+			</main>
 		{:else}
 			{@render children()}
 		{/if}
 	</div>
 {/if}
-
-<style>
-	@media print {
-		main {
-			background-color: white !important;
-			background: none !important;
-		}
-	}
-
-	:global(html) {
-		@apply antialiased;
-	}
-</style>

@@ -44,7 +44,7 @@
 		model_type: string | null;
 	};
 
-	type SortOption = 'modelType' | 'year' | 'manufacturer' | 'usage';
+	type SortOption = 'modelType' | 'year' | 'manufacturer' | 'usage' | '';
 
 	// Sorting options
 	const sortOptions = [
@@ -191,11 +191,12 @@
 		</div>
 	{/if}
 </div>
+
 <!-- FILTER,SEARCH and Sort Bar -->
-<div class="sticky top-14 z-50 my-0">
+<div class="fixed top-16 z-50 mx-auto w-full">
 	<div class="container mx-auto px-8">
 		<div
-			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-gray-100/90 shadow-lg backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
+			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-background/90 shadow-sm backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
 		>
 			<!-- Left section with dropdowns -->
 			<div class="ml-2 flex w-1/4 items-center gap-2">
@@ -216,7 +217,7 @@
 								window.scrollTo({ top: y, behavior: 'smooth' });
 							}
 						}}
-						class="w-full rounded-full border border-gray-400/75 bg-gray-100/75 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
+						class="w-full rounded-full border border-gray-400/75 bg-gray-100/25 px-3 py-0.5 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
 					>
 						<option value="">Jump to...</option>
 						{#each data.modelTypes as { model_type }}
@@ -235,9 +236,9 @@
 						placeholder="Filter..."
 						class="w-full rounded-full border border-gray-400/25 bg-background px-3 py-1 pr-20 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 					/>
-					<div class="absolute right-2 top-1/2 -translate-y-1/2">
+					<div class="absolute right-2 top-1/2 flex -translate-y-1/2 flex-row items-center gap-2">
 						<span
-							class="my-2 rounded-full bg-gray-200 px-1 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+							class="my-2.5 rounded-full bg-gray-200 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300"
 						>
 							{filteredVehicles?.length || 0}/{data?.vehicles?.length || 0}
 						</span>
@@ -283,26 +284,27 @@
 </div>
 
 <!-- Vehicle List -->
-<div class="container mx-auto px-8">
+<div class="container mx-auto mt-16 px-8">
 	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
+		{@const typedGroup = group as { items: Vehicle[]; total: number; expanded: boolean }}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
 				<h2 id={`${groupName}`} class="mb-1 mt-5 line-clamp-1 pb-1 font-semibold">
 					{groupName}
 				</h2>
-				{#if selectedSort !== '' && group.items.length > 6}
+				{#if selectedSort !== '' && typedGroup.items.length > 6}
 					<button
 						onclick={() => toggleGroup(groupName)}
 						class="text-sm text-blue-500 hover:text-blue-700"
 					>
-						{groupExpanded[groupName] ? 'Show Less' : `Show All (${group.items.length})`}
+						{groupExpanded[groupName] ? 'Show Less' : `Show All (${typedGroup.items.length})`}
 					</button>
 				{/if}
 			</div>
 
 			{#if viewMode === 'grid'}
 				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-					{#each group.items.slice(0, selectedSort !== '' && !groupExpanded[groupName] ? 6 : undefined) as vehicle (vehicle.id)}
+					{#each typedGroup.items.slice(0, selectedSort !== '' && !groupExpanded[groupName] ? 6 : undefined) as vehicle (vehicle.id)}
 						<div
 							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
 						>
@@ -335,46 +337,43 @@
 								</div>
 							</div>
 
+							<!-- Status indicators -->
+							<div class="mt-2 flex gap-1">
+								<div class="ml-2 flex items-center rounded-md bg-gray-100/10 p-1">
+									{#if vehicle.condition === 'Excellent'}
+										<CircleCheck class="h-4 w-4 text-green-700" />
+									{:else}
+										<Frown class="h-4 w-4 text-gray-400" />
+									{/if}
+								</div>
+								<div class="flex items-center rounded-md bg-gray-100/10 p-1">
+									{#if vehicle.imageCount > 6}
+										<Camera class="h-4 w-4 text-yellow-400" />
+									{:else}
+										<CameraOff class="h-4 w-4 text-gray-600" />
+									{/if}
+								</div>
+							</div>
+
 							<!-- Content section -->
 							<div class="p-3">
 								<!-- Title and basic info -->
 								<h3 class="line-clamp-2 text-sm font-semibold">{vehicle.title || 'No Title'}</h3>
 								<div class="mt-1 flex flex-col gap-0.5">
 									<p class="text-xs text-gray-500">
-										{vehicle.color ? `• ${vehicle.color}` : ''}
+										{vehicle.color || ''}
 									</p>
 									<p class="text-xs text-gray-500">
 										Stock #{vehicle.stockNumber || 'N/A'}
 									</p>
 									<p class="text-xs text-gray-500">
-										VIN: {vehicle.vin ? vehicle.vin.slice(-6) : 'N/A'}
-									</p>
-									<p class="text-xs text-gray-500">
-										{vehicle.manufacturer || ''}
+										VIN: {vehicle.vin || ''}
 									</p>
 								</div>
 
 								<!-- Price -->
 								<div class="mt-2 text-lg font-bold text-green-600">
 									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
-								</div>
-
-								<!-- Status indicators -->
-								<div class="mt-2 flex gap-1">
-									<div class="flex items-center rounded-md bg-gray-700/75 p-1">
-										{#if vehicle.condition === 'Excellent'}
-											<CircleCheck class="h-4 w-4 text-green-700" />
-										{:else}
-											<Frown class="h-4 w-4 text-gray-400" />
-										{/if}
-									</div>
-									<div class="flex items-center rounded-md bg-gray-700/75 p-1">
-										{#if vehicle.imageCount > 6}
-											<Camera class="h-4 w-4 text-yellow-400" />
-										{:else}
-											<CameraOff class="h-4 w-4 text-gray-600" />
-										{/if}
-									</div>
 								</div>
 
 								<!-- Action buttons -->
@@ -418,19 +417,19 @@
 				</div>
 			{:else}
 				<!-- List View -->
-				<div class="flex flex-col gap-2">
-					{#each group.items.slice(0, selectedSort === '' ? undefined : group.expanded ? undefined : 8) as vehicle (vehicle.id)}
+				<div class="flex flex-col gap-1">
+					{#each typedGroup.items.slice(0, selectedSort === '' ? undefined : typedGroup.expanded ? undefined : 8) as vehicle (vehicle.id)}
 						<div
-							class="grid grid-cols-[96px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-100/50 p-2 shadow-md dark:bg-gray-800/50"
+							class="grid grid-cols-[110px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-200/50 p-2 hover:shadow-md dark:bg-gray-800/50"
 						>
 							<!-- Column 1: Image -->
 							<div class="relative flex-shrink-0">
-								<div class="relative pb-[50%]">
+								<div class="relative pb-[45%]">
 									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
 										<img
 											src={vehicle.primaryImage}
 											alt={vehicle.title}
-											class="absolute inset-0 h-full w-full object-cover"
+											class="absolute inset-0 h-full w-full rounded-md object-cover"
 											data-vehicle-id={vehicle.id}
 											style={imageError[vehicle.id] ? 'display: none;' : ''}
 										/>
@@ -439,14 +438,14 @@
 											style={imageError[vehicle.id] ? 'display: flex;' : 'display: none;'}
 											transition:fade
 										>
-											<CameraOff class="h-12 w-12 text-gray-400" />
+											<CameraOff class="h-10 w-10 text-gray-400" />
 										</div>
 									{:else}
 										<div
-											class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800"
+											class="absolute inset-0 flex items-center justify-center bg-gray-100/10 dark:bg-gray-800"
 											transition:fade
 										>
-											<CameraOff class="h-12 w-12 text-gray-400" />
+											<CameraOff class="h-10 w-10 text-gray-400" />
 										</div>
 									{/if}
 								</div>
@@ -456,27 +455,29 @@
 							<div class="flex flex-col">
 								<div class="text-lg font-semibold">{vehicle.title}</div>
 								<div class="text-sm text-gray-500">
-									Stock # {vehicle.stockNumber} | {vehicle.color} | VIN: {vehicle.vin}
+									Stock #
+									{vehicle.stockNumber || 'N/A'} | {vehicle.color || 'N/A'} | VIN: {vehicle.vin ||
+										'N/A'}
 								</div>
 							</div>
 
 							<!-- Column 3: Price (fixed width) -->
-							<div class="mx-8 flex items-center justify-end border-r-[5px] border-green-800">
-								<h3 class="p-4 text-lg font-bold text-gray-100">
+							<div class="mx-2 flex items-center justify-end border-r-[5px] border-green-800">
+								<h3 class="p-2 text-lg font-bold">
 									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
 								</h3>
 							</div>
 
 							<!-- Column 4: Action Buttons -->
-							<div class="flex items-center gap-1">
-								<div class="flex items-center rounded-md bg-gray-700/75 px-2 py-1.5">
+							<div class="flex items-center gap-2">
+								<div class="flex items-center rounded-md py-1.5">
 									{#if vehicle.condition === 'Excellent'}
 										<CircleCheck class="h-7 w-7 text-green-700" />
 									{:else}
 										<Frown class="h-7 w-7 text-gray-400" />
 									{/if}
 								</div>
-								<div class="mr-4 flex items-center rounded-md bg-gray-700/75 px-2 py-1.5">
+								<div class="mr-4 flex items-center rounded-md py-1.5">
 									{#if vehicle.imageCount > 6}
 										<Camera class="h-7 w-7 text-yellow-400" />
 									{:else}

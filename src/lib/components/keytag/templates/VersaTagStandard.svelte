@@ -69,11 +69,12 @@
 
 <style>
 	/* Template-specific styles */
-	:global(.versa-tag-standard) {
+	:global(.versa-tag-yellow-standard) {
 		position: relative;
 		width: 1.22in;
 		height: 3in;
 		color: #000000 !important;
+		background: #ffeb3b !important;
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: center;
@@ -83,7 +84,7 @@
 
 	/* Print-specific styles */
 	@media print {
-		:global(.versa-tag-standard) {
+		:global(.versa-tag-yellow-standard) {
 			/* Ensure black text in print */
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
@@ -93,7 +94,7 @@
 		}
 
 		/* Ensure icons and boxes print correctly */
-		:global(.versa-tag-standard svg) {
+		:global(.versa-tag-yellow-standard svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #000000 !important;
