@@ -26,27 +26,27 @@
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.01in] top-[0.994in] text-[30pt] font-bold">
+	<div class="absolute right-[0.0in] top-[0.994in] text-[30pt] font-bold">
 		{vehicle.year}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute right-[0.01in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute right-[0.0in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.manufacturer}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.4in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.0in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.modelName}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="absolute left-[0.39in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.0in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.modelType}
 	</div>
 
 	<!-- Color -->
-	<div class="absolute right-[0.01in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute right-[0.0in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
 		{vehicle.color}
 	</div>
 
@@ -61,7 +61,7 @@
 
 	<!-- VIN -->
 	<div
-		class="absolute bottom-[0.4in] left-[0.01in] line-clamp-2 w-[1.22in] text-center text-[8pt] leading-none"
+		class="absolute bottom-[0.0in] left-[0.01in] line-clamp-2 w-[1.22in] text-center text-[8pt] leading-none"
 	>
 		VIN{vehicle.vin}
 	</div>

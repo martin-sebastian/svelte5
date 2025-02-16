@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
+	import { CircleGauge, Check } from 'lucide-svelte';
 
 	const { vehicle } = $props<{ vehicle: Vehicle }>();
 </script>
@@ -114,7 +114,7 @@
 		:global(.standard-label svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
-			fill: #ffffff !important;
+			fill: #000000 !important;
 		}
 	}
 </style>

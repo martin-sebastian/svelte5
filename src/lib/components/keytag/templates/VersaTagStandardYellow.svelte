@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check } from 'lucide-svelte';
+	import { CircleGauge, Check } from 'lucide-svelte';
 
 	const { vehicle } = $props<{ vehicle: Vehicle }>();
 </script>
 
-<div class="versa-tag-narrow">
+<div class="versa-tag-standard-yellow">
 	<!-- NEW checkbox -->
 	<div class="absolute left-[0.09in] top-[0.26in]">
 		{#if vehicle.usage?.toLowerCase() === 'new'}
@@ -26,7 +26,7 @@
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.01in] top-[0.994in] text-[10pt] font-bold">
+	<div class="absolute left-[0.01in] top-[0.994in] text-[10pt] font-bold">
 		{vehicle.year}
 	</div>
 
@@ -69,27 +69,32 @@
 
 <style>
 	/* Template-specific styles */
-	:global(.versa-tag-narrow) {
+	:global(.versa-tag-standard-yellow) {
 		position: relative;
 		width: 1.22in;
 		height: 3in;
 		color: #000000 !important;
+		background: #ffeb3b !important;
 		overflow: hidden;
 		text-transform: uppercase;
-		text-align: right;
+		text-align: center;
+		/* Debug outline */
+		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
 
 	/* Print-specific styles */
 	@media print {
-		:global(.versa-tag-narrow) {
+		:global(.versa-tag-standard-yellow) {
+			/* Ensure black text in print */
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 1.22in !important;
+			width: 3in !important;
 			height: 3in !important;
 		}
 
-		:global(.versa-tag-narrow svg) {
+		/* Ensure icons and boxes print correctly */
+		:global(.versa-tag-standard-yellow svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #000000 !important;

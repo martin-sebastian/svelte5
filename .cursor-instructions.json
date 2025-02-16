@@ -1,0 +1,55 @@
+{
+	"projectName": "DealerOps Vehicle Management",
+	"framework": {
+		"name": "Svelte",
+		"version": "5.0",
+		"meta": {
+			"metaFramework": "SvelteKit",
+			"features": ["runes", "state management", "derived values"]
+		}
+	},
+	"ui": {
+		"framework": "shadcn-svelte",
+		"version": "next",
+		"components": ["Avatar", "Button", "DropdownMenu"]
+	},
+	"structure": {
+		"src/lib": {
+			"config": "Configuration files including Supabase client and theme",
+			"server": {
+				"db": "Database connection and schema using Drizzle ORM"
+			},
+			"types": "TypeScript type definitions for vehicles and database",
+			"utils": "Utility functions"
+		}
+	},
+	"database": {
+		"type": "PostgreSQL (Supabase)",
+		"orm": "Drizzle",
+		"tables": ["vehicle", "vehicle_image", "vehicle_attribute"]
+	},
+	"authentication": {
+		"provider": "Supabase Auth",
+		"features": ["email/password", "social providers", "session management"]
+	},
+	"styling": {
+		"framework": "Tailwind CSS",
+		"components": "shadcn-svelte"
+	},
+	"conventions": {
+		"state": "Use $state rune instead of writable stores",
+		"props": "Use $props rune for component props",
+		"derived": "Use $derived rune for computed values",
+		"effects": "Use $effect rune for side effects"
+	},
+	"database_schema": {
+		"tool": "Drizzle ORM",
+		"migrations": true,
+		"type_safety": true
+	},
+	"auth_implementation": {
+		"protected_routes": "/admin/*",
+		"session_handling": "server-side",
+		"redirect_unauthorized": "/login"
+	}
+}

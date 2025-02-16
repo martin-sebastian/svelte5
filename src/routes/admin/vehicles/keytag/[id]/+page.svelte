@@ -13,7 +13,7 @@
 	const { data } = $props<{ data: PageData }>();
 	const { vehicle } = $derived(data);
 
-	let scale = $state(2);
+	let scale = $state(1.2);
 
 	const selectedTemplate = $derived($keyTagStore?.selectedTemplateId);
 
@@ -24,8 +24,17 @@
 </script>
 
 {#if vehicle}
+	<!-- Close button in top left -->
+	<button
+		onclick={handleClose}
+		class="fixed left-5 top-20 rounded-full bg-gray-200 p-2 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+		aria-label="Close and return to vehicles"
+	>
+		<X class="h-6 w-6" />
+	</button>
+
 	<!-- Template selector in top right -->
-	<div class="fixed right-8 top-20 z-10 w-64 print:hidden">
+	<div class="fixed right-5 top-20 z-10 w-64 print:hidden">
 		<TemplateSelector />
 	</div>
 

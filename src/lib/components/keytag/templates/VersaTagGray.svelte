@@ -7,14 +7,14 @@
 
 <div class="versa-tag-gray">
 	<!-- NEW checkbox -->
-	<div class="absolute left-[0.09in] top-[0.26in]">
+	<div class="absolute left-[0.09in] top-[0.26in] flex">
 		{#if vehicle.usage?.toLowerCase() === 'new'}
-			<Check class="h-5 w-5" />
+			<Check class="h-5 w-5" /> {vehicle.usage}
 		{/if}
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="absolute right-[0.09in] top-[0.26in]">
+	<div class="absolute right-[0.09in] top-[0.27in]">
 		{#if vehicle.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" />
 		{/if}
@@ -22,21 +22,21 @@
 
 	<!-- Stock Number -->
 	<div class="absolute left-[0.11in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none">
-		#{vehicle.stockNumber}
+		{vehicle.stockNumber}
 	</div>
 
 	<!-- Year -->
-	<div class="absolute left-[0.11in] top-[0.994in] text-[10pt] font-bold">
+	<div class="absolute left-[0.11in] top-[0.96in] text-[14pt] font-bold">
 		{vehicle.year}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute left-[0.11in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.292in] line-clamp-2 text-[10pt] font-bold leading-none">
 		{vehicle.manufacturer}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.11in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.539in] line-clamp-2 text-[11pt] font-bold leading-none">
 		{vehicle.modelName}
 	</div>
 
@@ -52,7 +52,7 @@
 
 	<!-- Metrics -->
 	<div
-		class="absolute left-[0.11in] top-[2.25in] flex items-center gap-[0.05in] text-[8pt] font-bold"
+		class="absolute left-[0.11in] top-[2.25in] flex items-center gap-[0.05in] text-[10pt] font-bold"
 	>
 		<CircleGauge class="h-[0.15in] w-[0.15in]" />
 		{vehicle.metricValue?.toString() || ''}
@@ -60,7 +60,7 @@
 	</div>
 
 	<!-- VIN -->
-	<div class="absolute bottom-[0.4in] left-[0.11in] line-clamp-2 text-[8pt] leading-none">
+	<div class="absolute left-[0.4in] top-[2.5in] line-clamp-2 text-[10pt] leading-none">
 		{vehicle.vin}
 	</div>
 </div>
@@ -69,9 +69,11 @@
 	/* Template-specific styles */
 	:global(.versa-tag-gray) {
 		position: relative;
-		width: 3in;
-		height: 3in;
+		top: 0.18in;
+		width: 1.29in;
+		height: 2.64in;
 		color: #000000 !important;
+		background: #c9c9c9 !important;
 		overflow: hidden;
 		text-transform: uppercase;
 	}

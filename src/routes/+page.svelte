@@ -24,7 +24,7 @@
 			<p class="mb-8 text-lg">
 				DEALERSHIP <span class="font-black">POWER TOOLS</span>
 			</p>
-			<Button href="/auth" size="lg">Sign In to Dashboard</Button>
+			<Button href="/admin" size="lg">Goto Dashboard</Button>
 		</div>
 	</div>
 </div>

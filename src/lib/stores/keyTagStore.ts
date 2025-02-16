@@ -9,7 +9,12 @@ export type KeyTagTemplate = {
 	orientation: 'portrait' | 'landscape';
 	backgroundImage?: string;
 	backgroundColor?: string;
+	borderWidth?: string;
+	borderColor?: string;
+	color?: string;
 	printableArea: {
+		borderWidth?: string;
+		borderColor?: string;
 		width: string;
 		height: string;
 		marginTop: string;
@@ -26,9 +31,11 @@ const defaultTemplates: KeyTagTemplate[] = [
 		height: '2.25in',
 		orientation: 'portrait',
 		backgroundColor: '#ffffff',
-		border: '1px solid #000000',
 		borderWidth: '0.01in',
+		borderColor: '#000000',
 		printableArea: {
+			borderWidth: '0.01in',
+			borderColor: '#FF0000',
 			width: '1.25in',
 			height: '2.25in',
 			marginTop: '0in',
@@ -44,15 +51,19 @@ const defaultTemplates: KeyTagTemplate[] = [
 		orientation: 'portrait',
 		backgroundImage: '/images/versa-tag-3x3-yellow.png',
 		backgroundColor: '#ffeb3b',
+		borderWidth: '0.01in',
+		borderColor: '#000000',
 		printableArea: {
-			width: '2.0in',
+			borderWidth: '0.01in',
+			borderColor: '#000000',
+			width: '1.5in',
 			height: '2.5in',
 			marginTop: '0in',
 			marginLeft: '0in'
 		}
 	},
 	{
-		id: 'versa-tag-white',
+		id: 'versa-tag-standard-white',
 		name: 'Versa-Tag Standard White',
 		description: 'Standard white self-laminating key tag',
 		width: '3in',
@@ -68,7 +79,7 @@ const defaultTemplates: KeyTagTemplate[] = [
 		}
 	},
 	{
-		id: 'versa-tag-gray',
+		id: 'versa-tag-standard-gray',
 		name: 'Versa-Tag Standard Gray',
 		description: 'Standard gray self-laminating key tag',
 		width: '3in',

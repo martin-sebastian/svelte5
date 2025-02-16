@@ -1,23 +1,81 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
+	import { keyTagStore, type KeyTagTemplate } from '$lib/stores/keyTagStore';
 	import { CircleGauge, Car, Check } from 'lucide-svelte';
 
 	const { vehicle } = $props<{ vehicle: Vehicle }>();
+	const template = $derived(
+		$keyTagStore.templates[
+			'versa-tag-white' as keyof typeof $keyTagStore.templates
+		] as KeyTagTemplate
+	);
 </script>
 
-<div class="versa-tag-white">
-	<!-- NEW checkbox -->
-	<div class="absolute left-[0.09in] top-[0.26in]">
-		{#if vehicle.usage?.toLowerCase() === 'new'}
-			<Check class="h-5 w-5" />
-		{/if}
+<div
+	class="relative"
+	style:width={template.width}
+	style:height={template.height}
+	style:background-color={template.backgroundColor}
+	style:border-width={template.borderWidth}
+	style:border-color={template.borderColor}
+	style:border-style="solid"
+>
+	<!-- Printable Area Container -->
+	<div
+		class="absolute overflow-hidden"
+		style:width={template.printableArea.width}
+		style:height={template.printableArea.height}
+		style:margin-top={template.printableArea.marginTop}
+		style:margin-left={template.printableArea.marginLeft}
+		style:border-width={template.printableArea.borderWidth}
+		style:border-color={template.printableArea.borderColor}
+		style:border-style="solid"
+	>
+		<!-- Content with automatic truncation -->
+		<div class="flex h-full flex-col p-1">
+			<div class="text-center text-xs font-bold uppercase">
+				<div class="truncate">{vehicle.year} {vehicle.manufacturer}</div>
+				<div class="truncate">{vehicle.title}</div>
+			</div>
+			<div class="mt-1 text-center text-[8pt]">
+				<div class="truncate">Stock: {vehicle.stockNumber || 'N/A'}</div>
+				<div class="truncate">VIN: {vehicle.vin || 'N/A'}</div>
+			</div>
+		</div>
 	</div>
 
-	<!-- USED checkbox -->
-	<div class="absolute right-[0.09in] top-[0.26in]">
-		{#if vehicle.usage?.toLowerCase() === 'used'}
-			<Check class="h-5 w-5" />
-		{/if}
+	<!-- Checkboxes -->
+	<div class="absolute left-[0.09in] top-[0.26in]">
+		<div class="flex items-center gap-1">
+			<div class="h-3 w-3 rounded-sm border border-black bg-white">
+				{#if vehicle.usage?.toLowerCase() === 'new'}
+					<Check class="h-3 w-3" />
+				{/if}
+			</div>
+			<span class="text-[6pt]">NEW</span>
+		</div>
+	</div>
+
+	<div class="absolute left-[0.09in] top-[0.38in]">
+		<div class="flex items-center gap-1">
+			<div class="h-3 w-3 rounded-sm border border-black bg-white">
+				{#if vehicle.usage?.toLowerCase() === 'used'}
+					<Check class="h-3 w-3" />
+				{/if}
+			</div>
+			<span class="text-[6pt]">USED</span>
+		</div>
+	</div>
+
+	<div class="absolute left-[0.09in] top-[0.50in]">
+		<div class="flex items-center gap-1">
+			<div class="h-3 w-3 rounded-sm border border-black bg-white">
+				{#if vehicle.condition?.toLowerCase() === 'certified'}
+					<Check class="h-3 w-3" />
+				{/if}
+			</div>
+			<span class="text-[6pt]">CERTIFIED</span>
+		</div>
 	</div>
 
 	<!-- Stock Number -->
@@ -82,7 +140,7 @@
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 3in !important;
+			width: 24in !important;
 			height: 3in !important;
 		}
 

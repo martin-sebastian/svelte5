@@ -1,30 +1,5 @@
-import { pgTable, text, integer, uuid, timestamp } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { users as authUsers } from '$lib/server/db/supabase-types';
-
-export const users = pgTable('users', {
-	id: uuid('id').primaryKey().defaultRandom(),
-	email: text('email').notNull(),
-	created_at: timestamp('created_at').defaultNow()
-	// ... other user fields
-});
-
-export const user = pgTable('user', {
-	id: text('id').primaryKey(),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull(),
-	firstName: text('first_name'),
-	lastName: text('last_name'),
-	age: text('age')
-});
-
-export const session = pgTable('session', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id),
-	expiresAt: text('expires_at').notNull()
-});
+import { pgTable, text, integer, timestamp } from 'drizzle-orm/pg-core';
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
@@ -89,20 +64,6 @@ export const vehicleAttributeRelations = relations(vehicleAttribute, ({ one }) =
 	})
 }));
 
-export const profile = pgTable('profile', {
-	// Correct table name
-	id: uuid('id')
-		.primaryKey()
-		.references(() => authUsers.id)
-		.notNull(), // Foreign key to auth.users.id
-	name: text('name'),
-	phone: text('phone'),
-	email: text('email')
-});
-
-export type Session = typeof session.$inferSelect;
-export type User = typeof user.$inferSelect;
 export type Vehicle = typeof vehicle.$inferSelect;
 export type VehicleImage = typeof vehicleImage.$inferSelect;
 export type VehicleAttribute = typeof vehicleAttribute.$inferSelect;
-export type Profile = typeof profile.$inferSelect; // Type for the profiles table

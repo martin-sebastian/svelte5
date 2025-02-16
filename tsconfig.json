@@ -10,11 +10,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"lib": ["ES2020", "DOM", "DOM.Iterable"],
-		"types": ["svelte"],
-		"paths": {
-			"$lib": ["./src/lib"],
-			"$lib/*": ["./src/lib/*"]
-		}
+		"types": ["svelte"]
 	}
 	// Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
 	// except $lib which is handled by https://svelte.dev/docs/kit/configuration#files

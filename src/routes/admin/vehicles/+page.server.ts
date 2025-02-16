@@ -6,9 +6,7 @@ import { sql } from 'drizzle-orm';
 // Cache duration in milliseconds (e.g., 1 minute)
 const CACHE_DURATION = 60 * 1000;
 
-export const load = (async ({ locals, setHeaders }) => {
-	const session = await locals.getSession();
-
+export const load = (async ({ setHeaders }) => {
 	try {
 		// Set cache headers
 		setHeaders({
@@ -50,7 +48,6 @@ export const load = (async ({ locals, setHeaders }) => {
 				images: v.images || []
 			})),
 			modelTypes: modelTypes.map((m: any) => ({ model_type: m.model_type })),
-			user: session?.user || null,
 			timestamp: Date.now() // Add timestamp for cache invalidation
 		};
 	} catch (err) {

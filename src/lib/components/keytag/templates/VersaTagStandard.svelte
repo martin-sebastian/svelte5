@@ -69,7 +69,7 @@
 
 <style>
 	/* Template-specific styles */
-	:global(.versa-tag-yellow-standard) {
+	:global(.versa-tag-standard-yellow) {
 		position: relative;
 		width: 1.22in;
 		height: 3in;
@@ -78,23 +78,24 @@
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: center;
+		color: #000000 !important;
 		/* Debug outline */
-		/* outline: 1px solid rgba(255, 0, 0, 0.2); */
+		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
 
 	/* Print-specific styles */
 	@media print {
-		:global(.versa-tag-yellow-standard) {
+		:global(.versa-tag-standard-yellow) {
 			/* Ensure black text in print */
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 3in !important;
+			width: 1.5in !important;
 			height: 3in !important;
 		}
 
 		/* Ensure icons and boxes print correctly */
-		:global(.versa-tag-yellow-standard svg) {
+		:global(.versa-tag-standard-yellow svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #000000 !important;

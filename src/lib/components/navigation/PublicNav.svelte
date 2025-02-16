@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { ShieldPlus, Sun, Moon, User, UserPlus } from 'lucide-svelte';
-	import { theme } from '$lib/theme';
+	import { theme } from '$lib/config/theme';
 </script>
 
 <nav

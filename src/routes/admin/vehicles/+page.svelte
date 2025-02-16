@@ -20,7 +20,7 @@
 	import { vehiclesCache } from '$lib/stores/vehiclesCache';
 
 	const { data } = $props<{ data: PageData }>();
-	const { user, vehicles, modelTypes } = $derived(data);
+	const { vehicles, modelTypes } = $derived(data);
 
 	// Add type definition for vehicle
 	type Vehicle = {
@@ -195,6 +195,19 @@
 
 	// After successful vehicle update/create/delete
 	vehiclesCache.invalidate();
+
+	// Add these derived values for different group options
+	const uniqueYears = $derived(
+		[...new Set(data.vehicles.map((v) => v.year))].filter(Boolean).sort((a, b) => b - a)
+	);
+
+	const uniqueMakes = $derived(
+		[...new Set(data.vehicles.map((v) => v.manufacturer))].filter(Boolean).sort()
+	);
+
+	const uniqueUsages = $derived(
+		[...new Set(data.vehicles.map((v) => v.usage))].filter(Boolean).sort()
+	);
 </script>
 
 <div class="my-2 w-full px-8 pt-10">
@@ -207,7 +220,7 @@
 </div>
 
 <!-- FILTER,SEARCH and Sort Bar -->
-<div class="fixed top-16 z-50 mx-auto w-full">
+<div class="fixed top-12 z-50 mx-auto w-full">
 	<div class="container mx-auto px-8">
 		<div
 			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-background/90 shadow-sm backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
@@ -231,12 +244,26 @@
 								window.scrollTo({ top: y, behavior: 'smooth' });
 							}
 						}}
-						class="w-full rounded-full border border-gray-400/75 bg-gray-100/25 px-3 py-0.5 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
+						class="w-full rounded-full border border-gray-400/25 bg-gray-100/25 px-3 py-0.5 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
 					>
 						<option value="">Jump to...</option>
-						{#each data.modelTypes as { model_type }}
-							<option value={model_type}>{model_type}</option>
-						{/each}
+						{#if selectedSort === 'modelType'}
+							{#each data.modelTypes as { model_type }}
+								<option value={model_type}>{model_type}</option>
+							{/each}
+						{:else if selectedSort === 'year'}
+							{#each uniqueYears as year}
+								<option value={year}>{year}</option>
+							{/each}
+						{:else if selectedSort === 'manufacturer'}
+							{#each uniqueMakes as make}
+								<option value={make}>{make}</option>
+							{/each}
+						{:else if selectedSort === 'usage'}
+							{#each uniqueUsages as usage}
+								<option value={usage}>{usage}</option>
+							{/each}
+						{/if}
 					</select>
 				</div>
 			</div>
@@ -266,7 +293,7 @@
 				<select
 					id="sort"
 					bind:value={selectedSort}
-					class="w-32 rounded-full border border-gray-400/50 bg-gray-100/50 px-3 py-0 shadow-sm focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
+					class="w-32 rounded-full border border-gray-400/25 bg-gray-100/50 px-3 py-0 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/50 dark:border-gray-700/50 dark:bg-gray-800/50"
 				>
 					{#each sortOptions as option}
 						<option value={option.value}>{option.label}</option>
@@ -320,7 +347,7 @@
 				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
 					{#each typedGroup.items.slice(0, selectedSort !== '' && !groupExpanded[groupName] ? 6 : undefined) as vehicle (vehicle.id)}
 						<div
-							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
+							class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-sm hover:shadow-md dark:bg-gray-800/50"
 						>
 							<!-- Image section -->
 							<div class="relative">
@@ -595,6 +622,7 @@
 		{error.message}
 	</div>
 {/await}
+<div class="my-10 py-10">...</div>
 
 <style>
 	.dots {
