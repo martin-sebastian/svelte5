@@ -1,9 +1,12 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
+	import { vehiclesCache } from '$lib/stores/vehiclesCache';
+	import { page } from '$app/stores';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import { KeyTag, KeyTagTemplateSelector } from '$lib/components/keytag';
 	import {
-		CircleGauge,
-		ImageOff,
 		Tags,
 		Camera,
 		CameraOff,
@@ -15,9 +18,31 @@
 		AlignLeft,
 		CircleCheck
 	} from 'lucide-svelte';
-	import { page } from '$app/stores';
-	import { fade } from 'svelte/transition';
-	import { vehiclesCache } from '$lib/stores/vehiclesCache';
+
+	let isDrawerOpen = $state(false);
+	let selectedVehicleId = $state<string | null>(null);
+
+	// Extract vehicle ID and drawer state from URL
+	const vehicleId = $derived($page.params.id || null);
+
+	// Automatically open drawer when URL matches /vehicles/keytag/[id]?drawer=true
+	$effect(() => {
+		if (vehicleId && isDrawerOpen) {
+			selectedVehicleId = vehicleId;
+		} else {
+			// Close drawer if URL doesn't match
+			isDrawerOpen = false;
+			selectedVehicleId = null;
+		}
+	});
+
+	// Add a cleanup effect for browser navigation
+	$effect(() => {
+		if (!$page.url.pathname.includes('/vehicles')) {
+			isDrawerOpen = false;
+			selectedVehicleId = null;
+		}
+	});
 
 	const { data } = $props<{ data: PageData }>();
 	const { vehicles, modelTypes } = $derived(data);
@@ -198,32 +223,35 @@
 
 	// Add these derived values for different group options
 	const uniqueYears = $derived(
-		[...new Set(data.vehicles.map((v) => v.year))].filter(Boolean).sort((a, b) => b - a)
+		[...new Set(data.vehicles.map((v: Vehicle) => v.year))].filter(Boolean).sort((a, b) => b - a)
 	);
 
 	const uniqueMakes = $derived(
-		[...new Set(data.vehicles.map((v) => v.manufacturer))].filter(Boolean).sort()
+		[...new Set(data.vehicles.map((v: Vehicle) => v.manufacturer))].filter(Boolean).sort()
 	);
 
 	const uniqueUsages = $derived(
-		[...new Set(data.vehicles.map((v) => v.usage))].filter(Boolean).sort()
+		[...new Set(data.vehicles.map((v: Vehicle) => v.usage))].filter(Boolean).sort()
 	);
+
+	// Add these at the top of your script
+	const viewType = $derived($page.url.searchParams.get('view'));
+	const viewId = $derived($page.url.searchParams.get('id'));
+
+	// Add this effect to handle drawer state
+	$effect(() => {
+		if (viewType === 'keytag' && viewId) {
+			isDrawerOpen = true;
+			selectedVehicleId = viewId;
+		}
+	});
 </script>
 
-<div class="my-2 w-full px-8 pt-10">
-	<!-- Loading indicator for remaining cards -->
-	{#if isLoading && data.vehicles.length > 0}
-		<div class="rounded-md bg-orange-400/50 py-4 text-center text-sm uppercase text-foreground">
-			Loading more inventory - {data.vehicles.length} items loaded
-		</div>
-	{/if}
-</div>
-
 <!-- FILTER,SEARCH and Sort Bar -->
-<div class="fixed top-12 z-50 mx-auto w-full">
+<div class="fixed top-12 z-50 my-1 w-full">
 	<div class="container mx-auto px-8">
 		<div
-			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-background/90 shadow-sm backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
+			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-background/90 shadow-sm backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
 		>
 			<!-- Left section with dropdowns -->
 			<div class="ml-2 flex w-1/4 items-center gap-2">
@@ -325,7 +353,7 @@
 </div>
 
 <!-- Vehicle List -->
-<div class="container mx-auto mt-16 px-8">
+<div class="container mx-auto px-8 pt-[100px]">
 	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
 		{@const typedGroup = group as { items: Vehicle[]; total: number; expanded: boolean }}
 		<div class="mb-0">
@@ -336,7 +364,7 @@
 				{#if selectedSort !== '' && typedGroup.items.length > 6}
 					<button
 						onclick={() => toggleGroup(groupName)}
-						class="text-sm text-blue-500 hover:text-blue-700"
+						class="rounded-md border border-gray-500/50 bg-blue-400/50 px-4 py-1 text-xs text-gray-100/50 hover:text-blue-700 dark:bg-slate-600/50"
 					>
 						{groupExpanded[groupName] ? 'Show Less' : `Show All (${typedGroup.items.length})`}
 					</button>
@@ -419,6 +447,7 @@
 
 								<!-- Action buttons -->
 								<div class="mt-2 flex flex-wrap gap-1">
+									<!-- Original full page key tag button -->
 									<button
 										type="button"
 										onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
@@ -427,6 +456,20 @@
 									>
 										<KeySquare class="h-4 w-4" />
 									</button>
+
+									<!-- New drawer quick view button -->
+									<button
+										type="button"
+										onclick={(e) => {
+											e.preventDefault();
+											goto(`/admin/vehicles?view=keytag&id=${vehicle.id}`, { replaceState: true });
+										}}
+										class="rounded-md bg-blue-500 p-1.5 text-white hover:bg-blue-600"
+										aria-label="Quick View Key Tag"
+									>
+										<KeySquare class="h-4 w-4" />
+									</button>
+
 									<button
 										type="button"
 										onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
@@ -527,9 +570,12 @@
 								</div>
 								<button
 									type="button"
-									onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
-									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-									aria-label="View Key Tag"
+									onclick={(e) => {
+										e.preventDefault();
+										goto(`/admin/vehicles?view=keytag&id=${vehicle.id}`, { replaceState: true });
+									}}
+									class="flex items-center rounded-md bg-blue-500 p-2 text-sm text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+									aria-label="Quick View Key Tag"
 								>
 									<KeySquare class="h-6 w-6" />
 								</button>
@@ -623,6 +669,31 @@
 	</div>
 {/await}
 <div class="my-10 py-10">...</div>
+
+<!-- ShadCN Drawer for Key Tag -->
+{#if isDrawerOpen}
+	<Drawer.Root
+		open={isDrawerOpen}
+		onOpenChange={(open) => {
+			if (!open) {
+				isDrawerOpen = false;
+				selectedVehicleId = null;
+				goto('/admin/vehicles', { replaceState: true });
+			}
+		}}
+	>
+		<Drawer.Portal>
+			<Drawer.Content class="fixed bottom-0 left-0 right-0 mt-24 h-[90%] rounded-t-[10px]">
+				<div class="h-full bg-background p-4">
+					<Drawer.Close class="absolute right-4 top-4">×</Drawer.Close>
+					{#if selectedVehicleId}
+						<KeyTag vehicleId={selectedVehicleId} />
+					{/if}
+				</div>
+			</Drawer.Content>
+		</Drawer.Portal>
+	</Drawer.Root>
+{/if}
 
 <style>
 	.dots {

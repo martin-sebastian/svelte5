@@ -5,7 +5,13 @@
 		"version": "5.0",
 		"meta": {
 			"metaFramework": "SvelteKit",
-			"features": ["runes", "state management", "derived values"]
+			"features": ["runes"]
+		}
+	},
+	"preferences": {
+		"svelte": {
+			"mode": "runes",
+			"typescript": true
 		}
 	},
 	"ui": {

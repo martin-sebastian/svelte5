@@ -9,6 +9,7 @@
 	import VersaTagGray from '$lib/components/keytag/templates/VersaTagGray.svelte';
 	import StandardLabel from '$lib/components/keytag/templates/StandardLabel.svelte';
 	import { Printer, X, ZoomIn, ZoomOut } from 'lucide-svelte';
+	import { page } from '$app/stores';
 
 	const { data } = $props<{ data: PageData }>();
 	const { vehicle } = $derived(data);
@@ -17,10 +18,21 @@
 
 	const selectedTemplate = $derived($keyTagStore?.selectedTemplateId);
 
+	const vehicleId = $page.params.id;
+	const isDrawer = $page.url.searchParams.has('drawer'); // Check if opened as drawer
+
 	const zoomIn = () => (scale = Math.min(scale + 0.1, 3));
 	const zoomOut = () => (scale = Math.max(scale - 0.1, 0.5));
 	const handlePrint = () => window.print();
-	const handleClose = () => goto('/admin/vehicles');
+
+	function handleClose() {
+		if (isDrawer) {
+			// Let drawer handle closing
+			return;
+		}
+		// Normal page navigation
+		goto('/admin/vehicles');
+	}
 </script>
 
 {#if vehicle}

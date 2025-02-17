@@ -3,7 +3,7 @@
 </script>
 
 <div class="home-page flex min-h-screen flex-col items-center justify-center">
-	<div class="rounded-xl bg-white/25 p-10 shadow-lg backdrop-blur-sm">
+	<div class="rounded-xl bg-white/25 p-28 shadow-lg backdrop-blur-md">
 		<div class="mt-8 flex flex-row items-center justify-center">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +21,7 @@
 		</div>
 		<h2 class="text-center text-4xl font-bold">Dealer Ops</h2>
 		<div class="text-center">
-			<p class="mb-8 text-lg">
+			<p class="mb-8 text-lg italic">
 				DEALERSHIP <span class="font-black">POWER TOOLS</span>
 			</p>
 			<Button href="/admin" size="lg">Goto Dashboard</Button>

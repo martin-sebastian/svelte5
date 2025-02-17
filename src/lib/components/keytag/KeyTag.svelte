@@ -1,33 +1,87 @@
 <script lang="ts">
-	import { keyTagStore } from '$lib/stores/keyTagStore';
+	import { keyTagState, setTemplate, setZoom, loadVehicleData } from './keyTagState';
+	import { TemplateSelector, templates } from './index';
+	import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-svelte';
+	import type { TemplateId } from './types';
 
-	const selectedTemplate = $derived(
-		$keyTagStore?.templates?.find((t) => t?.id === $keyTagStore?.selectedTemplateId) ?? null
-	);
+	const { vehicleId } = $props<{ vehicleId: string }>();
 
-	const { children } = $props();
+	// Reactive state
+	const zoom = $derived($keyTagState.zoom);
+	const selectedTemplate = $derived($keyTagState.selectedTemplateId as TemplateId);
+
+	// Set default template if none selected
+	$effect(() => {
+		if (!selectedTemplate) {
+			setTemplate('standard');
+		}
+	});
+
+	// Zoom controls
+	function handleZoomIn() {
+		setZoom(zoom + 0.1);
+	}
+
+	function handleZoomOut() {
+		setZoom(zoom - 0.1);
+	}
+
+	function handleResetZoom() {
+		setZoom(1);
+	}
+
+	$effect(() => {
+		if (vehicleId) {
+			loadVehicleData(vehicleId);
+		}
+	});
+
+	const isLoading = $derived($keyTagState.isLoading);
 </script>
 
-<div
-	class="key-tag"
-	style:width={selectedTemplate?.width}
-	style:height={selectedTemplate?.height}
-	style:background-image={selectedTemplate?.backgroundImage
-		? `url('${selectedTemplate.backgroundImage}')`
-		: 'none'}
-	style:background-color={selectedTemplate?.backgroundColor}
-	style:background-size="contain"
-	style:background-repeat="no-repeat"
-	style:background-position="center"
->
+<div class="flex flex-col gap-4">
+	<!-- Template Selector -->
+	<TemplateSelector />
+
+	<!-- Zoom Controls -->
+	<div class="flex items-center gap-2">
+		<button
+			class="rounded-full p-2 hover:bg-gray-100"
+			onclick={handleZoomOut}
+			aria-label="Zoom Out"
+		>
+			<ZoomOut class="h-4 w-4" />
+		</button>
+		<button class="rounded-full p-2 hover:bg-gray-100" onclick={handleZoomIn} aria-label="Zoom In">
+			<ZoomIn class="h-4 w-4" />
+		</button>
+		<button
+			class="rounded-full p-2 hover:bg-gray-100"
+			onclick={handleResetZoom}
+			aria-label="Reset Zoom"
+		>
+			<RotateCcw class="h-4 w-4" />
+		</button>
+		<span class="text-sm text-gray-500">{Math.round(zoom * 100)}%</span>
+	</div>
+
+	<!-- Key Tag Preview -->
 	<div
-		class="printable-area"
-		style:width={selectedTemplate?.printableArea?.width}
-		style:height={selectedTemplate?.printableArea?.height}
-		style:margin-top={selectedTemplate?.printableArea?.marginTop}
-		style:margin-left={selectedTemplate?.printableArea?.marginLeft}
+		class="relative overflow-hidden rounded border"
+		style:transform="scale({zoom})"
+		style:transform-origin="top left"
 	>
-		{@render children()}
+		{#if isLoading}
+			<div class="flex h-full items-center justify-center p-4">
+				<div
+					class="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"
+				></div>
+			</div>
+		{:else if selectedTemplate}
+			{#key selectedTemplate}
+				{templates[selectedTemplate]({ vehicleId })}
+			{/key}
+		{/if}
 	</div>
 </div>
 

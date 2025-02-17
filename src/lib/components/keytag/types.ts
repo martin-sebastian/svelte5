@@ -1,0 +1,1 @@
+export type TemplateId = 'standard' | 'gray' | 'standard_white' | 'standard_yellow' | 'white' | 'white_custom'; 
