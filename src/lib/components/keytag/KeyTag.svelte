@@ -1,14 +1,21 @@
 <script lang="ts">
-	import { keyTagState, setTemplate, setZoom, loadVehicleData } from './keyTagState';
+	import { keyTagState, setTemplate, setZoom } from './keyTagState';
 	import { TemplateSelector, templates } from './index';
 	import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-svelte';
 	import type { TemplateId } from './types';
+	import { vehicleData } from '$lib/stores/keyTagState';
+	import { goto } from '$app/navigation';
 
 	const { vehicleId } = $props<{ vehicleId: string }>();
-
-	// Reactive state
-	const zoom = $derived($keyTagState.zoom);
+	const vehicle = $derived($vehicleData);
 	const selectedTemplate = $derived($keyTagState.selectedTemplateId as TemplateId);
+
+	// Debug logs
+	$effect(() => {
+		console.log('KeyTag Component - vehicleId:', vehicleId);
+		console.log('KeyTag Component - vehicle data:', vehicle);
+		console.log('KeyTag Component - selected template:', selectedTemplate);
+	});
 
 	// Set default template if none selected
 	$effect(() => {
@@ -16,6 +23,9 @@
 			setTemplate('standard');
 		}
 	});
+
+	// Reactive state
+	const zoom = $derived($keyTagState.zoom);
 
 	// Zoom controls
 	function handleZoomIn() {
@@ -30,10 +40,21 @@
 		setZoom(1);
 	}
 
+	// Load vehicle data when ID changes
 	$effect(() => {
 		if (vehicleId) {
-			loadVehicleData(vehicleId);
+			goto(`/admin/vehicles/keytag/${vehicleId}`).then(({ data }) => {
+				if (data?.vehicle) {
+					setVehicleData(data.vehicle);
+				}
+			});
 		}
+	});
+
+	$effect(() => {
+		console.log('Vehicle:', $vehicleData);
+		console.log('Selected Template:', selectedTemplate);
+		console.log('Is Loading:', isLoading);
 	});
 
 	const isLoading = $derived($keyTagState.isLoading);
@@ -71,19 +92,24 @@
 		style:transform="scale({zoom})"
 		style:transform-origin="top left"
 	>
-		{#if isLoading}
+		{#if vehicle && selectedTemplate}
+			{#if selectedTemplate && templates[selectedTemplate]}
+				{templates[selectedTemplate]}
+			{/if}
+		{:else}
 			<div class="flex h-full items-center justify-center p-4">
-				<div
-					class="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"
-				></div>
+				<p>Loading vehicle data...</p>
 			</div>
-		{:else if selectedTemplate}
-			{#key selectedTemplate}
-				{templates[selectedTemplate]({ vehicleId })}
-			{/key}
 		{/if}
 	</div>
 </div>
+
+{#if vehicle}
+	<div class="flex flex-col gap-4">
+		<h1>{vehicle.title}</h1>
+		<p>{vehicle.description}</p>
+	</div>
+{/if}
 
 <style>
 	.key-tag {

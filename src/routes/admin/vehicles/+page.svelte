@@ -5,7 +5,7 @@
 	import { vehiclesCache } from '$lib/stores/vehiclesCache';
 	import { page } from '$app/stores';
 	import * as Drawer from '$lib/components/ui/drawer';
-	import { KeyTag, KeyTagTemplateSelector } from '$lib/components/keytag';
+	import { KeyTag } from '$lib/components/keytag';
 	import {
 		Tags,
 		Camera,
@@ -18,8 +18,13 @@
 		AlignLeft,
 		CircleCheck
 	} from 'lucide-svelte';
+	import { setVehicleData } from '$lib/stores/keyTagState';
+	import {
+		keyTagDrawerState,
+		openKeyTagDrawer,
+		closeKeyTagDrawer
+	} from '$lib/stores/keyTagDrawerState';
 
-	let isDrawerOpen = $state(false);
 	let selectedVehicleId = $state<string | null>(null);
 
 	// Extract vehicle ID and drawer state from URL
@@ -31,7 +36,6 @@
 			selectedVehicleId = vehicleId;
 		} else {
 			// Close drawer if URL doesn't match
-			isDrawerOpen = false;
 			selectedVehicleId = null;
 		}
 	});
@@ -39,7 +43,6 @@
 	// Add a cleanup effect for browser navigation
 	$effect(() => {
 		if (!$page.url.pathname.includes('/vehicles')) {
-			isDrawerOpen = false;
 			selectedVehicleId = null;
 		}
 	});
@@ -241,10 +244,21 @@
 	// Add this effect to handle drawer state
 	$effect(() => {
 		if (viewType === 'keytag' && viewId) {
-			isDrawerOpen = true;
 			selectedVehicleId = viewId;
 		}
 	});
+
+	// When drawer opens with vehicle ID
+	async function handleKeyTagOpen(vehicleId: string) {
+		// This will use your existing Drizzle query in +page.server.ts
+		const { data } = await goto(`/admin/vehicles/keytag/${vehicleId}`);
+		setVehicleData(data.vehicle);
+	}
+
+	// Access state directly
+	const isDrawerOpen = $derived(keyTagDrawerState.isOpen);
+	const drawerVehicleId = $derived(keyTagDrawerState.vehicleId);
+	const vehicle = $derived(keyTagState.vehicle);
 </script>
 
 <!-- FILTER,SEARCH and Sort Bar -->
@@ -370,7 +384,7 @@
 					</button>
 				{/if}
 			</div>
-
+			<!-- GRID VIEW -->
 			{#if viewMode === 'grid'}
 				<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
 					{#each typedGroup.items.slice(0, selectedSort !== '' && !groupExpanded[groupName] ? 6 : undefined) as vehicle (vehicle.id)}
@@ -460,10 +474,7 @@
 									<!-- New drawer quick view button -->
 									<button
 										type="button"
-										onclick={(e) => {
-											e.preventDefault();
-											goto(`/admin/vehicles?view=keytag&id=${vehicle.id}`, { replaceState: true });
-										}}
+										onclick={() => openKeyTagDrawer(vehicle.id)}
 										class="rounded-md bg-blue-500 p-1.5 text-white hover:bg-blue-600"
 										aria-label="Quick View Key Tag"
 									>
@@ -486,123 +497,7 @@
 									>
 										<Share2 class="h-4 w-4" />
 									</button>
-									<button
-										type="button"
-										onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
-										class="rounded-md bg-gray-800 p-1.5 text-white hover:bg-gray-600"
-										aria-label="Edit Vehicle Details"
-									>
-										<Settings class="h-4 w-4" />
-									</button>
 								</div>
-							</div>
-						</div>
-					{/each}
-				</div>
-			{:else}
-				<!-- List View -->
-				<div class="flex flex-col gap-1">
-					{#each typedGroup.items.slice(0, selectedSort === '' ? undefined : typedGroup.expanded ? undefined : 8) as vehicle (vehicle.id)}
-						<div
-							class="grid grid-cols-[110px_1fr_200px_auto] gap-4 overflow-hidden rounded bg-gray-200/50 p-2 hover:shadow-md dark:bg-gray-800/50"
-						>
-							<!-- Column 1: Image -->
-							<div class="relative flex-shrink-0">
-								<div class="relative pb-[45%]">
-									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
-										<img
-											src={vehicle.primaryImage}
-											alt={vehicle.title}
-											class="absolute inset-0 h-full w-full rounded-md object-cover"
-											data-vehicle-id={vehicle.id}
-											style={imageError[vehicle.id] ? 'display: none;' : ''}
-										/>
-										<div
-											class="absolute inset-0 items-center justify-center bg-gray-100 dark:bg-gray-800"
-											style={imageError[vehicle.id] ? 'display: flex;' : 'display: none;'}
-											transition:fade
-										>
-											<CameraOff class="h-10 w-10 text-gray-400" />
-										</div>
-									{:else}
-										<div
-											class="absolute inset-0 flex items-center justify-center bg-gray-100/10 dark:bg-gray-800"
-											transition:fade
-										>
-											<CameraOff class="h-10 w-10 text-gray-400" />
-										</div>
-									{/if}
-								</div>
-							</div>
-
-							<!-- Column 2: Title and Details -->
-							<div class="flex flex-col">
-								<div class="text-lg font-semibold">{vehicle.title}</div>
-								<div class="text-sm text-gray-500">
-									Stock #
-									{vehicle.stockNumber || 'N/A'} | {vehicle.color || 'N/A'} | VIN: {vehicle.vin ||
-										'N/A'}
-								</div>
-							</div>
-
-							<!-- Column 3: Price (fixed width) -->
-							<div class="mx-2 flex items-center justify-end border-r-[5px] border-green-800">
-								<h3 class="p-2 text-lg font-bold">
-									{vehicle.price ? formatPrice(vehicle.price) : 'N/A'}
-								</h3>
-							</div>
-
-							<!-- Column 4: Action Buttons -->
-							<div class="flex items-center gap-2">
-								<div class="flex items-center rounded-md py-1.5">
-									{#if vehicle.condition === 'Excellent'}
-										<CircleCheck class="h-7 w-7 text-green-700" />
-									{:else}
-										<Frown class="h-7 w-7 text-gray-400" />
-									{/if}
-								</div>
-								<div class="mr-4 flex items-center rounded-md py-1.5">
-									{#if vehicle.imageCount > 6}
-										<Camera class="h-7 w-7 text-yellow-400" />
-									{:else}
-										<CameraOff class="h-7 w-7 text-gray-600" />
-									{/if}
-								</div>
-								<button
-									type="button"
-									onclick={(e) => {
-										e.preventDefault();
-										goto(`/admin/vehicles?view=keytag&id=${vehicle.id}`, { replaceState: true });
-									}}
-									class="flex items-center rounded-md bg-blue-500 p-2 text-sm text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-									aria-label="Quick View Key Tag"
-								>
-									<KeySquare class="h-6 w-6" />
-								</button>
-								<button
-									type="button"
-									onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
-									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-									aria-label="View Hang Tag"
-								>
-									<Tags class="h-6 w-6" />
-								</button>
-								<button
-									type="button"
-									onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
-									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-									aria-label="Share Vehicle"
-								>
-									<Share2 class="h-6 w-6" />
-								</button>
-								<button
-									type="button"
-									onclick={() => goto(`/admin/vehicles/vehicle/${vehicle.id}`)}
-									class="flex items-center rounded-md bg-gray-800 p-2 text-sm text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500/50"
-									aria-label="Edit Vehicle Details"
-								>
-									<Settings class="h-6 w-6" />
-								</button>
 							</div>
 						</div>
 					{/each}
@@ -611,97 +506,3 @@
 		</div>
 	{/each}
 </div>
-
-<!-- Loading indicator -->
-{#await data.vehiclesPromise}
-	<div class="loading-skeleton container mx-auto my-4 px-8">
-		<div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-			{#each Array(16) as _}
-				<div
-					class="block w-full overflow-hidden rounded-lg border border-gray-400/25 bg-gray-100/50 shadow-md dark:bg-gray-800/50"
-				>
-					<!-- Image section with correct aspect ratio -->
-					<div class="relative w-full animate-pulse bg-gray-200 pb-[66.25%]"></div>
-
-					<!-- Content section -->
-					<div class="flex flex-col space-y-3 p-4">
-						<!-- Title placeholder -->
-						<div class="h-12">
-							<div class="mb-2 h-4 animate-pulse rounded bg-gray-200"></div>
-							<div class="h-4 w-2/3 animate-pulse rounded bg-gray-200"></div>
-						</div>
-
-						<!-- Price placeholder -->
-						<div class="h-8 w-1/2 animate-pulse rounded bg-gray-200"></div>
-
-						<!-- Usage badges placeholder -->
-						<div class="flex gap-1">
-							<div class="h-8 w-24 animate-pulse rounded bg-gray-200"></div>
-							<div class="h-8 w-16 animate-pulse rounded bg-gray-200"></div>
-						</div>
-
-						<!-- Details placeholder -->
-						<div class="space-y-2">
-							<div class="h-4 w-1/3 animate-pulse rounded bg-gray-200"></div>
-							<div class="h-4 w-2/3 animate-pulse rounded bg-gray-200"></div>
-							<div class="h-4 w-1/2 animate-pulse rounded bg-gray-200"></div>
-						</div>
-
-						<!-- Buttons placeholder -->
-						<div class="mt-auto flex gap-1 pt-3">
-							{#each Array(4) as _}
-								<div class="h-10 w-10 animate-pulse rounded-md bg-gray-200"></div>
-							{/each}
-						</div>
-					</div>
-				</div>
-			{/each}
-		</div>
-	</div>
-{:then _}
-	<!-- Your existing grouped vehicles display using groupedVehicles -->
-	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
-		<!-- Your existing group display code -->
-	{/each}
-{:catch error}
-	<div class="error">
-		{error.message}
-	</div>
-{/await}
-<div class="my-10 py-10">...</div>
-
-<!-- ShadCN Drawer for Key Tag -->
-{#if isDrawerOpen}
-	<Drawer.Root
-		open={isDrawerOpen}
-		onOpenChange={(open) => {
-			if (!open) {
-				isDrawerOpen = false;
-				selectedVehicleId = null;
-				goto('/admin/vehicles', { replaceState: true });
-			}
-		}}
-	>
-		<Drawer.Portal>
-			<Drawer.Content class="fixed bottom-0 left-0 right-0 mt-24 h-[90%] rounded-t-[10px]">
-				<div class="h-full bg-background p-4">
-					<Drawer.Close class="absolute right-4 top-4">×</Drawer.Close>
-					{#if selectedVehicleId}
-						<KeyTag vehicleId={selectedVehicleId} />
-					{/if}
-				</div>
-			</Drawer.Content>
-		</Drawer.Portal>
-	</Drawer.Root>
-{/if}
-
-<style>
-	.dots {
-		background-image: radial-gradient(
-			circle at center,
-			rgba(120, 120, 120, 0.2) 1px,
-			transparent 1px
-		);
-		background-size: 10px 10px;
-	}
-</style>
