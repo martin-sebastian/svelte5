@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { pgTable, text, integer, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer, timestamp, numeric } from 'drizzle-orm/pg-core';
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
@@ -8,7 +8,7 @@ export const vehicle = pgTable('vehicle', {
 	title: text('title').notNull(),
 	link: text('link'),
 	description: text('description'),
-	price: integer('price'),
+	price: numeric('price', { precision: 10, scale: 2 }),
 	priceType: text('price_type'),
 	stockNumber: text('stock_number'),
 	vin: text('vin'),

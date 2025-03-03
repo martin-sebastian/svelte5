@@ -2,7 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 </script>
 
-<div class="home-page flex min-h-screen flex-col items-center justify-center">
+<div class="home-page flex min-h-screen w-full flex-col items-center justify-center">
 	<div class="rounded-xl bg-white/25 p-28 shadow-lg backdrop-blur-md">
 		<div class="mt-8 flex flex-row items-center justify-center">
 			<svg

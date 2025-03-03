@@ -4,76 +4,42 @@
 	import { fade } from 'svelte/transition';
 	import { vehiclesCache } from '$lib/stores/vehiclesCache';
 	import { page } from '$app/stores';
-	import * as Drawer from '$lib/components/ui/drawer';
-	import { KeyTag } from '$lib/components/keytag';
 	import {
 		Tags,
 		Camera,
 		CameraOff,
 		Frown,
 		Share2,
-		Settings,
 		KeySquare,
 		LayoutGrid,
 		AlignLeft,
 		CircleCheck
 	} from 'lucide-svelte';
-	import { setVehicleData } from '$lib/stores/keyTagState';
-	import {
-		keyTagDrawerState,
-		openKeyTagDrawer,
-		closeKeyTagDrawer
-	} from '$lib/stores/keyTagDrawerState';
+	import type { Vehicle } from '$lib/types/vehicle';
 
-	let selectedVehicleId = $state<string | null>(null);
-
-	// Extract vehicle ID and drawer state from URL
-	const vehicleId = $derived($page.params.id || null);
-
-	// Automatically open drawer when URL matches /vehicles/keytag/[id]?drawer=true
-	$effect(() => {
-		if (vehicleId && isDrawerOpen) {
-			selectedVehicleId = vehicleId;
-		} else {
-			// Close drawer if URL doesn't match
-			selectedVehicleId = null;
-		}
-	});
-
-	// Add a cleanup effect for browser navigation
-	$effect(() => {
-		if (!$page.url.pathname.includes('/vehicles')) {
-			selectedVehicleId = null;
-		}
-	});
+	// Type definitions for data structure returned from the server
+	interface VehicleFromServer {
+		id: string;
+		title: string;
+		stock_number: string | null;
+		vin: string | null;
+		manufacturer: string | null;
+		year: number | null;
+		color: string | null;
+		model_type: string | null;
+		usage: string | null;
+		price: string | null;
+		metric_value: number | null;
+		metric_type: string | null;
+		status: 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
+		condition: string | null;
+		primaryImage: string | null;
+		imageCount: number;
+		images: Array<{ id: string; image_url: string }>;
+	}
 
 	const { data } = $props<{ data: PageData }>();
 	const { vehicles, modelTypes } = $derived(data);
-
-	// Add type definition for vehicle
-	type Vehicle = {
-		images: any;
-		primaryImage: string | null;
-		id: string;
-		stockNumber: string | null;
-		vin: string | null;
-		year: number | null;
-		manufacturer: string | null;
-		type: string | null;
-		style: string | null;
-		title: string | null;
-		color: string | null;
-		usage: string | null;
-		price: number | null;
-		metricValue: string | null;
-		metricType: string | null;
-		status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
-		imageCount: number;
-		condition: string | null;
-		model_type: string | null;
-	};
-
-	type SortOption = 'modelType' | 'year' | 'manufacturer' | 'usage' | '';
 
 	// Sorting options
 	const sortOptions = [
@@ -89,6 +55,8 @@
 	let selectedSort = $state<SortOption>('modelType');
 	let searchTerm = $state('');
 	let isLoading = $state(false);
+
+	type SortOption = 'modelType' | 'year' | 'manufacturer' | 'usage' | '';
 
 	// Load saved preferences
 	if (typeof window !== 'undefined') {
@@ -112,14 +80,26 @@
 		}
 	});
 
+	// Format price helper
+	function formatPrice(price: string | number | null) {
+		if (!price) return 'N/A';
+		const actualPrice = typeof price === 'string' ? parseFloat(price) / 100 : price / 100;
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(actualPrice);
+	}
+
 	// Filter and group vehicles
 	const filteredVehicles = $derived(
 		data.vehicles
-			? data.vehicles.filter((vehicle: Vehicle) => {
+			? data.vehicles.filter((vehicle: VehicleFromServer) => {
 					if (!searchTerm) return true;
 					const searchLower = searchTerm.toLowerCase();
 					return (
-						vehicle.stockNumber?.toLowerCase().includes(searchLower) ||
+						vehicle.stock_number?.toLowerCase().includes(searchLower) ||
 						vehicle.title?.toLowerCase().includes(searchLower) ||
 						vehicle.year?.toString().includes(searchLower) ||
 						vehicle.manufacturer?.toLowerCase().includes(searchLower) ||
@@ -133,7 +113,7 @@
 	type GroupedVehicles = Record<
 		string,
 		{
-			items: Vehicle[];
+			items: VehicleFromServer[];
 			total: number;
 			expanded: boolean;
 		}
@@ -141,7 +121,7 @@
 
 	// Group vehicles using filteredVehicles
 	const groupedVehicles = $derived(
-		filteredVehicles.reduce((groups: GroupedVehicles, vehicle: Vehicle) => {
+		filteredVehicles.reduce((groups: GroupedVehicles, vehicle: VehicleFromServer) => {
 			let key;
 			switch (selectedSort) {
 				case 'modelType':
@@ -175,29 +155,29 @@
 		}, {} as GroupedVehicles)
 	);
 
-	// Format price helper
-	function formatPrice(price: number | null) {
-		if (!price) return 'N/A';
-		const actualPrice = price / 100;
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: 'USD',
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		}).format(actualPrice);
-	}
-
 	let imageError = $state<Record<string, boolean>>({});
 
+	// Reset image errors when data changes
 	$effect(() => {
-		const images = document.querySelectorAll('img');
+		if (data?.vehicles) {
+			imageError = {}; // Reset errors when data changes
+		}
+	});
+
+	// Improved image error handling approach
+	function handleImageError(vehicleId: string, url: string) {
+		console.error('Image failed to load:', url, 'for vehicle:', vehicleId);
+		imageError[vehicleId] = true;
+	}
+
+	$effect(() => {
+		const images = document.querySelectorAll('img[data-vehicle-id]');
 		images.forEach((img) => {
-			img.onerror = () => {
-				const vehicleId = img.dataset.vehicleId;
-				if (vehicleId) {
-					imageError[vehicleId] = true;
-				}
-			};
+			const vehicleId = (img as HTMLImageElement).dataset.vehicleId;
+			if (vehicleId) {
+				(img as HTMLImageElement).onerror = () =>
+					handleImageError(vehicleId, (img as HTMLImageElement).src);
+			}
 		});
 	});
 
@@ -224,45 +204,47 @@
 	// After successful vehicle update/create/delete
 	vehiclesCache.invalidate();
 
-	// Add these derived values for different group options
-	const uniqueYears = $derived(
-		[...new Set(data.vehicles.map((v: Vehicle) => v.year))].filter(Boolean).sort((a, b) => b - a)
-	);
-
-	const uniqueMakes = $derived(
-		[...new Set(data.vehicles.map((v: Vehicle) => v.manufacturer))].filter(Boolean).sort()
-	);
-
-	const uniqueUsages = $derived(
-		[...new Set(data.vehicles.map((v: Vehicle) => v.usage))].filter(Boolean).sort()
-	);
-
-	// Add these at the top of your script
-	const viewType = $derived($page.url.searchParams.get('view'));
-	const viewId = $derived($page.url.searchParams.get('id'));
-
-	// Add this effect to handle drawer state
+	// Debug images
 	$effect(() => {
-		if (viewType === 'keytag' && viewId) {
-			selectedVehicleId = viewId;
+		if (data?.vehicles) {
+			console.log('Sample vehicle data:', data.vehicles[0]);
+			console.log('Primary image sample:', data.vehicles[0]?.primaryImage);
+			console.log(
+				'Images available:',
+				data.vehicles.filter((v: VehicleFromServer) => v.primaryImage).length,
+				'out of',
+				data.vehicles.length
+			);
 		}
 	});
 
-	// When drawer opens with vehicle ID
-	async function handleKeyTagOpen(vehicleId: string) {
-		// This will use your existing Drizzle query in +page.server.ts
-		const { data } = await goto(`/admin/vehicles/keytag/${vehicleId}`);
-		setVehicleData(data.vehicle);
-	}
+	// Using static variables for the filter lists to avoid typing issues
+	let uniqueYears = $state<number[]>([]);
+	let uniqueMakes = $state<string[]>([]);
+	let uniqueUsages = $state<string[]>([]);
 
-	// Access state directly
-	const isDrawerOpen = $derived(keyTagDrawerState.isOpen);
-	const drawerVehicleId = $derived(keyTagDrawerState.vehicleId);
-	const vehicle = $derived(keyTagState.vehicle);
+	// Populate the filter lists when the data changes
+	$effect(() => {
+		if (data?.vehicles) {
+			uniqueYears = Array.from(
+				new Set(data.vehicles.map((v: VehicleFromServer) => v.year).filter(Boolean) as number[])
+			).sort((a, b) => b - a);
+
+			uniqueMakes = Array.from(
+				new Set(
+					data.vehicles.map((v: VehicleFromServer) => v.manufacturer).filter(Boolean) as string[]
+				)
+			).sort();
+
+			uniqueUsages = Array.from(
+				new Set(data.vehicles.map((v: VehicleFromServer) => v.usage).filter(Boolean) as string[])
+			).sort();
+		}
+	});
 </script>
 
 <!-- FILTER,SEARCH and Sort Bar -->
-<div class="fixed top-12 z-50 my-1 w-full">
+<div class="fixed left-6 top-2 z-50 my-1 w-full">
 	<div class="container mx-auto px-8">
 		<div
 			class="flex h-12 w-full flex-row items-center justify-between gap-2 rounded-md border border-gray-200/90 bg-background/90 shadow-sm backdrop-blur-lg dark:border-gray-800/90 dark:bg-gray-900/90 print:hidden"
@@ -290,8 +272,8 @@
 					>
 						<option value="">Jump to...</option>
 						{#if selectedSort === 'modelType'}
-							{#each data.modelTypes as { model_type }}
-								<option value={model_type}>{model_type}</option>
+							{#each data.modelTypes as modelType}
+								<option value={modelType.model_type}>{modelType.model_type}</option>
 							{/each}
 						{:else if selectedSort === 'year'}
 							{#each uniqueYears as year}
@@ -369,7 +351,7 @@
 <!-- Vehicle List -->
 <div class="container mx-auto px-8 pt-[100px]">
 	{#each Object.entries(groupedVehicles) as [groupName, group] (groupName)}
-		{@const typedGroup = group as { items: Vehicle[]; total: number; expanded: boolean }}
+		{@const typedGroup = group as { items: VehicleFromServer[]; total: number; expanded: boolean }}
 		<div class="mb-0">
 			<div class="flex items-center justify-between">
 				<h2 id={`${groupName}`} class="mb-1 mt-5 line-clamp-1 pb-1 font-semibold">
@@ -394,27 +376,24 @@
 							<!-- Image section -->
 							<div class="relative">
 								<div class="relative pb-[66.25%]">
-									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image'}
+									{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image' && !vehicle.primaryImage.includes('undefined') && !imageError[vehicle.id]}
 										<img
 											src={vehicle.primaryImage}
-											alt={vehicle.title}
+											alt={vehicle.title || 'Vehicle Image'}
 											class="absolute inset-0 h-full w-full object-cover"
 											data-vehicle-id={vehicle.id}
-											style={imageError[vehicle.id] ? 'display: none;' : ''}
+											onerror={() => handleImageError(vehicle.id, vehicle.primaryImage || '')}
 										/>
-										<div
-											class="absolute inset-0 items-center justify-center bg-gray-100 dark:bg-gray-800"
-											style={imageError[vehicle.id] ? 'display: flex;' : 'display: none;'}
-											transition:fade
-										>
-											<CameraOff class="h-12 w-12 text-gray-400" />
-										</div>
 									{:else}
 										<div
 											class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800"
-											transition:fade
 										>
 											<CameraOff class="h-12 w-12 text-gray-400" />
+											{#if vehicle.primaryImage && vehicle.primaryImage !== 'https:Stock Image' && imageError[vehicle.id]}
+												<div class="absolute bottom-1 left-1 text-[10px] text-gray-400">
+													Failed to load: {vehicle.primaryImage.substring(0, 20)}...
+												</div>
+											{/if}
 										</div>
 									{/if}
 								</div>
@@ -447,7 +426,7 @@
 										{vehicle.color || ''}
 									</p>
 									<p class="text-xs text-gray-500">
-										Stock #{vehicle.stockNumber || 'N/A'}
+										Stock #{vehicle.stock_number || 'N/A'}
 									</p>
 									<p class="text-xs text-gray-500">
 										VIN: {vehicle.vin || ''}
@@ -461,7 +440,7 @@
 
 								<!-- Action buttons -->
 								<div class="mt-2 flex flex-wrap gap-1">
-									<!-- Original full page key tag button -->
+									<!-- Key Tag button -->
 									<button
 										type="button"
 										onclick={() => goto(`/admin/vehicles/keytag/${vehicle.id}`)}
@@ -471,16 +450,7 @@
 										<KeySquare class="h-4 w-4" />
 									</button>
 
-									<!-- New drawer quick view button -->
-									<button
-										type="button"
-										onclick={() => openKeyTagDrawer(vehicle.id)}
-										class="rounded-md bg-blue-500 p-1.5 text-white hover:bg-blue-600"
-										aria-label="Quick View Key Tag"
-									>
-										<KeySquare class="h-4 w-4" />
-									</button>
-
+									<!-- Hang Tag button -->
 									<button
 										type="button"
 										onclick={() => goto(`/admin/vehicles/hangtag/${vehicle.id}`)}
@@ -489,6 +459,8 @@
 									>
 										<Tags class="h-4 w-4" />
 									</button>
+
+									<!-- Share button -->
 									<button
 										type="button"
 										onclick={() => goto(`/admin/vehicles/share/${vehicle.id}`)}
