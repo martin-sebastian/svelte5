@@ -4,18 +4,55 @@
 	import { templates } from './index';
 	import type { TemplateId } from './types';
 
-	// Define a type for template metadata
-	type TemplateComponent = {
-		name?: string;
-		width?: string;
-		height?: string;
-		orientation?: string;
-		description?: string;
+	// Define template metadata directly
+	const templateMetadata = {
+		standard: {
+			name: 'Standard Label',
+			width: '1.25in',
+			height: '3in',
+			orientation: 'Portrait',
+			description: 'Standard key tag label with basic vehicle information'
+		},
+		gray: {
+			name: 'Versa Tag Gray',
+			width: '1.22in',
+			height: '3in',
+			orientation: 'Portrait',
+			description: 'Gray Versa Tag for a professional look'
+		},
+		standard_white: {
+			name: 'Versa Tag Standard',
+			width: '1.22in',
+			height: '3in',
+			orientation: 'Portrait',
+			description: 'Standard Versa Tag with white background'
+		},
+		standard_yellow: {
+			name: 'Versa Tag Yellow',
+			width: '1.22in',
+			height: '3in',
+			orientation: 'Portrait',
+			description: 'Yellow Versa Tag for high visibility'
+		},
+		white: {
+			name: 'Versa Tag White',
+			width: '1.22in',
+			height: '3in',
+			orientation: 'Portrait',
+			description: 'White Versa Tag with clean design'
+		},
+		white_custom: {
+			name: 'Versa Tag White Custom',
+			width: '1.22in',
+			height: '3in',
+			orientation: 'Portrait',
+			description: 'Customized white Versa Tag with additional fields'
+		}
 	};
 
-	// Get the current template based on the selected template ID
-	$: currentTemplate = $selectedTemplateId
-		? (templates[$selectedTemplateId as keyof typeof templates] as unknown as TemplateComponent)
+	// Get the current template metadata based on the selected template ID
+	$: currentTemplateMetadata = $selectedTemplateId
+		? templateMetadata[$selectedTemplateId as keyof typeof templateMetadata]
 		: null;
 
 	function handleChange(event: Event) {
@@ -35,16 +72,19 @@
 		>
 			{#each Object.entries(templates) as [id, template]}
 				<option value={id}>
-					{(template as unknown as TemplateComponent).name || id}
+					{templateMetadata[id as keyof typeof templateMetadata]?.name || id}
 				</option>
 			{/each}
 		</select>
 
-		{#if currentTemplate}
+		{#if currentTemplateMetadata}
 			<div class="text-sm text-gray-500">
-				<p>Size: {currentTemplate.width || 'Standard'} × {currentTemplate.height || 'Standard'}</p>
-				<p>Orientation: {currentTemplate.orientation || 'Portrait'}</p>
-				<p class="text-xs">{currentTemplate.description || 'No description available'}</p>
+				<p>
+					Size: {currentTemplateMetadata.width || 'Standard'} × {currentTemplateMetadata.height ||
+						'Standard'}
+				</p>
+				<p>Orientation: {currentTemplateMetadata.orientation || 'Portrait'}</p>
+				<p class="text-xs">{currentTemplateMetadata.description || 'No description available'}</p>
 			</div>
 		{/if}
 	</div>

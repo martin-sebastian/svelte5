@@ -2,6 +2,7 @@
 	import type { Vehicle } from '$lib/types/vehicle';
 	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
 	import { vehicle } from '$lib/stores/keyTagState.svelte';
+	import { versaTagWhite } from '../assets';
 
 	// Add metadata for the template selector
 	export const name = 'Versa Tag White';
@@ -80,11 +81,14 @@
 		width: 1.22in;
 		height: 3in;
 		color: #000000 !important;
-		background: #ffffff !important;
+		background-color: #ffffff !important;
+		background-image: url('{versaTagWhite}') !important;
+		background-size: cover !important;
+		background-position: center !important;
+		background-repeat: no-repeat !important;
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: center;
-		color: #000000 !important;
 		/* Debug outline */
 		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
@@ -98,6 +102,7 @@
 			print-color-adjust: exact;
 			width: 1.5in !important;
 			height: 3in !important;
+			background-image: url('{versaTagWhite}') !important;
 		}
 
 		/* Ensure icons and boxes print correctly */

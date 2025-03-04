@@ -2,6 +2,7 @@
 	import type { Vehicle } from '$lib/types/vehicle';
 	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
 	import { vehicle } from '$lib/stores/keyTagState.svelte';
+	import { versaTagGray } from '../assets';
 
 	// Add metadata for the template selector
 	export const name = 'Versa Tag Gray';
@@ -75,25 +76,34 @@
 	/* Template-specific styles */
 	:global(.versa-tag-gray) {
 		position: relative;
-		top: 0.18in;
-		width: 1.29in;
-		height: 2.64in;
+		width: 1.22in;
+		height: 3in;
 		color: #000000 !important;
-		background: #c9c9c9 !important;
+		background-color: #e0e0e0 !important;
+		background-image: url('{versaTagGray}') !important;
+		background-size: cover !important;
+		background-position: center !important;
+		background-repeat: no-repeat !important;
 		overflow: hidden;
 		text-transform: uppercase;
+		text-align: center;
+		/* Debug outline */
+		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
 
 	/* Print-specific styles */
 	@media print {
 		:global(.versa-tag-gray) {
+			/* Ensure black text in print */
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 3in !important;
+			width: 1.5in !important;
 			height: 3in !important;
+			background-image: url('{versaTagGray}') !important;
 		}
 
+		/* Ensure icons and boxes print correctly */
 		:global(.versa-tag-gray svg) {
 			color: #000000 !important;
 			stroke: #000000 !important;

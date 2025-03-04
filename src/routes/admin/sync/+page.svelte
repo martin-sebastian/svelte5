@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 
 	// Replace $props with standard Svelte props
-	export let data: PageServerData;
+	// export let data: PageServerData;
 
 	// Replace $state with writable stores
 	const isLoading = writable(false);

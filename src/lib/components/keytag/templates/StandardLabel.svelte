@@ -94,15 +94,13 @@
 		width: 1.25in;
 		height: 3in;
 		color: #000000 !important;
-		background: #ffffff !important;
+		background-color: #ffffff !important;
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: center;
-		border-radius: 5px;
-		background-color: auto;
 		border: 1px solid #000000;
 		/* Debug outline */
-		/* outline: 1px solid rgba(255, 0, 0, 0.2); */
+		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
 
 	/* Print-specific styles */
@@ -114,6 +112,7 @@
 			print-color-adjust: exact;
 			width: 1.5in !important;
 			height: 3in !important;
+			border: 1px solid #000000 !important;
 		}
 
 		/* Ensure icons and boxes print correctly */
