@@ -3,6 +3,26 @@ import { pgTable, text, integer, timestamp, numeric } from 'drizzle-orm/pg-core'
 
 export type VehicleStatus = 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
 
+export const customer = pgTable('customer', {
+	id: text('id').primaryKey(),
+	customerNumber: text('customer_number'),
+	title: text('title'),
+	description: text('description'),
+	modified: text('modified'),
+	address1: text('address1'),
+	address2: text('address2'),
+	address3: text('address3'),
+	country: text('country'),
+	state: text('state'),
+	city: text('city'),
+	zip: text('zip'),
+	phone: text('phone'),
+	email: text('email'),
+	companyUrl: text('company_url'),
+	companyLogo: text('company_logo'),
+	lastUpdated: timestamp('last_updated').defaultNow()
+});
+
 export const vehicle = pgTable('vehicle', {
 	id: text('id').primaryKey(),
 	title: text('title').notNull(),
@@ -67,3 +87,4 @@ export const vehicleAttributeRelations = relations(vehicleAttribute, ({ one }) =
 export type Vehicle = typeof vehicle.$inferSelect;
 export type VehicleImage = typeof vehicleImage.$inferSelect;
 export type VehicleAttribute = typeof vehicleAttribute.$inferSelect;
+export type Customer = typeof customer.$inferSelect;

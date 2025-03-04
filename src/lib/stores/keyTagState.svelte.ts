@@ -1,40 +1,54 @@
-import type { Vehicle } from '$lib/types';
+import { writable } from 'svelte/store';
 
-// Pure Svelte 5 state
-export const keyTagState = {
-    vehicle: $state<Vehicle | null>(null),
-    selectedTemplateId: $state('standard'),
-    zoom: $state(1),
-    isLoading: $state(false)
-};
+// Define the Vehicle interface directly in this file
+interface Vehicle {
+    id: string;
+    title?: string;
+    manufacturer?: string;
+    year?: number;
+    vin?: string;
+    stockNumber?: string;
+    price?: string | number;
+    images?: { id: string; image_url: string; }[];
+    // Add other properties as needed
+}
 
-// Direct state mutations
-export function setVehicleData(vehicle: Vehicle) {
-    keyTagState.vehicle = vehicle;
+// Export the type for use in other files
+export type { Vehicle };
+
+// Use standard Svelte stores instead of runes
+export const vehicle = writable<Vehicle | null>(null);
+export const selectedTemplateId = writable('standard');
+export const zoom = writable(1);
+export const isLoading = writable(false);
+
+// Helper functions to update stores
+export function setVehicleData(vehicleData: Vehicle) {
+    vehicle.set(vehicleData);
 }
 
 export function setTemplate(templateId: string) {
-    keyTagState.selectedTemplateId = templateId;
+    selectedTemplateId.set(templateId);
 }
 
 export function setZoom(newZoom: number) {
-    keyTagState.zoom = Math.max(0.5, Math.min(2, newZoom));
+    zoom.update(z => Math.max(0.5, Math.min(2, newZoom)));
 }
 
 export function setLoading(loading: boolean) {
-    keyTagState.isLoading = loading;
+    isLoading.set(loading);
 }
 
 // Async data loading
 export async function loadVehicleData(id: string) {
-    keyTagState.isLoading = true;
+    isLoading.set(true);
     try {
         const response = await fetch(`/admin/vehicles/keytag/${id}`);
         const data = await response.json();
-        keyTagState.vehicle = data.vehicle;
+        vehicle.set(data.vehicle);
     } catch (error) {
         console.error('Failed to load vehicle:', error);
     } finally {
-        keyTagState.isLoading = false;
+        isLoading.set(false);
     }
-} 
+}

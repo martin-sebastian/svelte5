@@ -1,63 +1,55 @@
 <script lang="ts">
-	import { keyTagState, setTemplate, setZoom } from './keyTagState';
+	import {
+		vehicle,
+		selectedTemplateId,
+		zoom,
+		isLoading,
+		setTemplate,
+		setZoom
+	} from '$lib/stores/keyTagState.svelte';
 	import { TemplateSelector, templates } from './index';
 	import { ZoomIn, ZoomOut, RotateCcw } from 'lucide-svelte';
 	import type { TemplateId } from './types';
-	import { vehicleData } from '$lib/stores/keyTagState';
 	import { goto } from '$app/navigation';
 
-	const { vehicleId } = $props<{ vehicleId: string }>();
-	const vehicle = $derived($vehicleData);
-	const selectedTemplate = $derived($keyTagState.selectedTemplateId as TemplateId);
+	export let vehicleId: string;
 
 	// Debug logs
-	$effect(() => {
+	$: {
 		console.log('KeyTag Component - vehicleId:', vehicleId);
-		console.log('KeyTag Component - vehicle data:', vehicle);
-		console.log('KeyTag Component - selected template:', selectedTemplate);
-	});
+		console.log('KeyTag Component - vehicle data:', $vehicle);
+		console.log('KeyTag Component - selected template:', $selectedTemplateId);
+	}
 
 	// Set default template if none selected
-	$effect(() => {
-		if (!selectedTemplate) {
-			setTemplate('standard');
-		}
-	});
-
-	// Reactive state
-	const zoom = $derived($keyTagState.zoom);
+	$: if (!$selectedTemplateId) {
+		setTemplate('standard');
+	}
 
 	// Zoom controls
 	function handleZoomIn() {
-		setZoom(zoom + 0.1);
+		setZoom($zoom + 0.1);
 	}
 
 	function handleZoomOut() {
-		setZoom(zoom - 0.1);
+		setZoom($zoom - 0.1);
 	}
 
 	function handleResetZoom() {
 		setZoom(1);
 	}
 
-	// Load vehicle data when ID changes
-	$effect(() => {
-		if (vehicleId) {
-			goto(`/admin/vehicles/keytag/${vehicleId}`).then(({ data }) => {
-				if (data?.vehicle) {
-					setVehicleData(data.vehicle);
-				}
-			});
-		}
-	});
+	// Debug logs
+	$: {
+		console.log('Vehicle:', $vehicle);
+		console.log('Selected Template:', $selectedTemplateId);
+		console.log('Is Loading:', $isLoading);
+	}
 
-	$effect(() => {
-		console.log('Vehicle:', $vehicleData);
-		console.log('Selected Template:', selectedTemplate);
-		console.log('Is Loading:', isLoading);
-	});
-
-	const isLoading = $derived($keyTagState.isLoading);
+	// Type assertion for templates
+	$: currentTemplate = $selectedTemplateId
+		? templates[$selectedTemplateId as keyof typeof templates]
+		: null;
 </script>
 
 <div class="flex flex-col gap-4">
@@ -68,33 +60,32 @@
 	<div class="flex items-center gap-2">
 		<button
 			class="rounded-full p-2 hover:bg-gray-100"
-			onclick={handleZoomOut}
+			on:click={handleZoomOut}
 			aria-label="Zoom Out"
 		>
 			<ZoomOut class="h-4 w-4" />
 		</button>
-		<button class="rounded-full p-2 hover:bg-gray-100" onclick={handleZoomIn} aria-label="Zoom In">
+		<button class="rounded-full p-2 hover:bg-gray-100" on:click={handleZoomIn} aria-label="Zoom In">
 			<ZoomIn class="h-4 w-4" />
 		</button>
 		<button
 			class="rounded-full p-2 hover:bg-gray-100"
-			onclick={handleResetZoom}
+			on:click={handleResetZoom}
 			aria-label="Reset Zoom"
 		>
 			<RotateCcw class="h-4 w-4" />
 		</button>
-		<span class="text-sm text-gray-500">{Math.round(zoom * 100)}%</span>
+		<span class="text-sm text-gray-500">{Math.round($zoom * 100)}%</span>
 	</div>
 
 	<!-- Key Tag Preview -->
 	<div
 		class="relative overflow-hidden rounded border"
-		style:transform="scale({zoom})"
-		style:transform-origin="top left"
+		style="transform: scale({$zoom}); transform-origin: top left;"
 	>
-		{#if vehicle && selectedTemplate}
-			{#if selectedTemplate && templates[selectedTemplate]}
-				{templates[selectedTemplate]}
+		{#if $vehicle && $selectedTemplateId}
+			{#if $selectedTemplateId && currentTemplate}
+				<svelte:component this={currentTemplate} />
 			{/if}
 		{:else}
 			<div class="flex h-full items-center justify-center p-4">
@@ -104,10 +95,12 @@
 	</div>
 </div>
 
-{#if vehicle}
+{#if $vehicle}
 	<div class="flex flex-col gap-4">
-		<h1>{vehicle.title}</h1>
-		<p>{vehicle.description}</p>
+		<h1>{$vehicle.title || ''}</h1>
+		{#if ($vehicle as any).description}
+			<p>{($vehicle as any).description}</p>
+		{/if}
 	</div>
 {/if}
 

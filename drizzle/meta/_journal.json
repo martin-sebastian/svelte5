@@ -15,6 +15,13 @@
       "when": 1740983321582,
       "tag": "0001_careful_centennial",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741054845495,
+      "tag": "0002_parched_colossus",
+      "breakpoints": true
     }
   ]
 }

@@ -1,11 +1,12 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { invalidate } from '$app/navigation';
+import type { Vehicle } from '$lib/types/vehicle';
 
 const CACHE_DURATION = 60 * 1000; // 1 minute
 
 function createVehiclesCache() {
-	const { subscribe, set, update } = writable<any>(null);
+	const { subscribe, set, update } = writable<Record<string, Vehicle> | null>(null);
 
 	return {
 		subscribe,
@@ -39,3 +40,6 @@ function createVehiclesCache() {
 }
 
 export const vehiclesCache = createVehiclesCache();
+
+// Remove duplicate store declarations and helper functions
+// They're already defined in keyTagState.svelte.ts

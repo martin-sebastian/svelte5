@@ -1,15 +1,14 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
 	import { CircleGauge, Check } from 'lucide-svelte';
-
-	const { vehicle } = $props<{ vehicle: Vehicle }>();
+	import { vehicle } from '$lib/stores/keyTagState.svelte';
 </script>
 
 <div class="standard-label">
 	<!-- NEW checkbox -->
 	<div class="flex flex-row items-center justify-center text-center text-[12pt] font-black">
-		{#if vehicle.usage?.toLowerCase() === 'new'}
-			<Check class="ml-[-0.25in] h-5 w-5" /> {vehicle.usage}
+		{#if $vehicle?.usage?.toLowerCase() === 'new'}
+			<Check class="ml-[-0.25in] h-5 w-5" /> {$vehicle.usage}
 		{/if}
 	</div>
 
@@ -17,8 +16,8 @@
 	<div
 		class="flex flex-row items-center justify-center border-b text-center text-[12pt] font-black"
 	>
-		{#if vehicle.usage?.toLowerCase() === 'used'}
-			<Check class="h-5 w-5" /> {vehicle.usage}
+		{#if $vehicle?.usage?.toLowerCase() === 'used'}
+			<Check class="h-5 w-5" /> {$vehicle.usage}
 		{/if}
 	</div>
 
@@ -26,42 +25,42 @@
 	<div
 		class="my-1 flex flex-row items-center justify-center border-b text-center text-[11pt] font-black leading-none"
 	>
-		#{vehicle.stockNumber}
+		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
 	<div
 		class="my-0 mt-[-2px] flex flex-row items-center justify-center border-b pb-0 text-center text-[18pt] font-black leading-none"
 	>
-		{vehicle.year}
+		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
 	<div
 		class="my-1 flex flex-row items-center justify-center border-b text-center text-[8pt] font-black leading-none"
 	>
-		{vehicle.manufacturer}
+		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
 	<div
 		class="my-1 flex flex-row items-center justify-center border-b text-center text-[8pt] font-black leading-none"
 	>
-		{vehicle.modelName}
+		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
 	<div
 		class="my-1 flex flex-row items-center justify-center border-b pb-1 text-center text-[8pt] font-black leading-none"
 	>
-		{vehicle.modelType}
+		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
 	<div
 		class="mt-[-2px] flex flex-row items-center justify-center border-b text-center text-[10pt] font-black leading-none"
 	>
-		{vehicle.color}
+		{$vehicle?.color || ''}
 	</div>
 
 	<!-- Metrics -->
@@ -69,15 +68,15 @@
 		class="my-1 flex flex-row items-center justify-center border-b text-center text-[10pt] font-black leading-none"
 	>
 		<CircleGauge class="mr-1 h-[0.15in] w-[0.15in]" />
-		{vehicle.metricValue?.toString() || ''}
-		{vehicle.metricType}
+		{$vehicle?.metricValue?.toString() || ''}
+		{$vehicle?.metricType || ''}
 	</div>
 
 	<!-- VIN -->
 	<div
 		class="my-1 flex flex-row items-center justify-center text-center text-[8pt] font-light leading-none"
 	>
-		{vehicle.vin}
+		{$vehicle?.vin || ''}
 	</div>
 </div>
 

@@ -12,9 +12,9 @@ const connectionString = POSTGRES_URL + '?sslmode=require&pool=true';
 
 // Configure postgres client with proper settings
 const client = postgres(connectionString, {
-	max: 1,
-	idle_timeout: 20,
-	connect_timeout: 10,
+	max: 10,
+	idle_timeout: 60,
+	connect_timeout: 30,
 	ssl: {
 		rejectUnauthorized: false // Required for Supabase
 	}

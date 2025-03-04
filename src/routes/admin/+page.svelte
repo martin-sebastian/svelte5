@@ -5,7 +5,8 @@
 	import { tweened } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	const data = $props<PageData>();
+	// Replace $props rune with standard Svelte props
+	export let data: PageData;
 
 	console.log('Page component data:', data);
 
@@ -20,10 +21,10 @@
 
 	onMount(() => {
 		// Start the animation when component mounts
-		totalVehicles.set(data.data.stats.totalVehicles);
-		totalNewVehicles.set(data.data.stats.totalNewVehicles);
-		totalUsedVehicles.set(data.data.stats.totalUsedVehicles);
-		totalSoldVehicles.set(data.data.stats.totalSoldVehicles);
+		totalVehicles.set(data.stats.totalVehicles);
+		totalNewVehicles.set(data.stats.totalNewVehicles);
+		totalUsedVehicles.set(data.stats.totalUsedVehicles);
+		totalSoldVehicles.set(data.stats.totalSoldVehicles);
 	});
 </script>
 
