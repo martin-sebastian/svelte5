@@ -10,9 +10,12 @@
 	export const height = '3in';
 	export const orientation = 'Portrait';
 	export const description = 'Yellow Versa Tag for high visibility';
+
+	// Use the variable in a way that the linter can detect
+	const backgroundStyle = `background-image: url('${versaTagStandardYellow}') !important;`;
 </script>
 
-<div class="versa-tag-standard-yellow">
+<div class="versa-tag-standard-yellow" style={backgroundStyle}>
 	<!-- NEW checkbox -->
 	<div class="absolute left-[0.09in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
@@ -82,7 +85,6 @@
 		height: 3in;
 		color: #000000 !important;
 		background-color: #ffeb3b !important;
-		background-image: url('{versaTagStandardYellow}') !important;
 		background-size: cover !important;
 		background-position: center !important;
 		background-repeat: no-repeat !important;
