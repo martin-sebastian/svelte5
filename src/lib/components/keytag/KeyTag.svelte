@@ -60,17 +60,17 @@
 	<div class="flex items-center gap-2">
 		<button
 			class="rounded-full p-2 hover:bg-gray-100"
-			on:click={handleZoomOut}
+			onclick={handleZoomOut}
 			aria-label="Zoom Out"
 		>
 			<ZoomOut class="h-4 w-4" />
 		</button>
-		<button class="rounded-full p-2 hover:bg-gray-100" on:click={handleZoomIn} aria-label="Zoom In">
+		<button class="rounded-full p-2 hover:bg-gray-100" onclick={handleZoomIn} aria-label="Zoom In">
 			<ZoomIn class="h-4 w-4" />
 		</button>
 		<button
 			class="rounded-full p-2 hover:bg-gray-100"
-			on:click={handleResetZoom}
+			onclick={handleResetZoom}
 			aria-label="Reset Zoom"
 		>
 			<RotateCcw class="h-4 w-4" />

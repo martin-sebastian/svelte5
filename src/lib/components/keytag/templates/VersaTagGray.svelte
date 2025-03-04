@@ -1,7 +1,14 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check } from 'lucide-svelte';
+	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
 	import { vehicle } from '$lib/stores/keyTagState.svelte';
+
+	// Add metadata for the template selector
+	export const name = 'Versa Tag Gray';
+	export const width = '1.22in';
+	export const height = '3in';
+	export const orientation = 'Portrait';
+	export const description = 'Gray Versa Tag for a professional look';
 </script>
 
 <div class="versa-tag-gray">

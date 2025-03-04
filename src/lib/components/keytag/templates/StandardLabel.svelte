@@ -2,6 +2,13 @@
 	import type { Vehicle } from '$lib/types/vehicle';
 	import { CircleGauge, Check } from 'lucide-svelte';
 	import { vehicle } from '$lib/stores/keyTagState.svelte';
+
+	// Add metadata for the template selector
+	export const name = 'Standard Label';
+	export const width = '1.25in';
+	export const height = '3in';
+	export const orientation = 'Portrait';
+	export const description = 'Standard key tag label with basic vehicle information';
 </script>
 
 <div class="standard-label">
