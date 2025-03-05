@@ -28,7 +28,7 @@
 	</div>
 
 	<!-- Stock Number -->
-	<div class="absolute left-[0.11in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none">
+	<div class="absolute left-[0.0in] top-[0.61in] text-[11pt] font-bold">
 		{$vehicle?.stockNumber || ''}
 	</div>
 
@@ -38,22 +38,22 @@
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute left-[0.11in] top-[1.292in] line-clamp-2 text-[10pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.292in] text-[10pt] font-bold">
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.11in] top-[1.539in] line-clamp-2 text-[11pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.539in] text-[11pt] font-bold">
 		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="absolute left-[0.11in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[1.788in] text-[8pt] font-bold">
 		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
-	<div class="absolute left-[0.11in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[2.035in] text-[8pt] font-bold">
 		{$vehicle?.color || ''}
 	</div>
 
@@ -67,7 +67,7 @@
 	</div>
 
 	<!-- VIN -->
-	<div class="absolute left-[0.4in] top-[2.5in] line-clamp-2 text-[10pt] leading-none">
+	<div class="absolute left-[0.4in] top-[2.5in] text-[10pt]">
 		{$vehicle?.vin || ''}
 	</div>
 </div>

@@ -52,10 +52,9 @@
 		: null;
 </script>
 
+<!-- Template Selector -->
+<TemplateSelector />
 <div class="dots h-screen w-full">
-	<!-- Template Selector -->
-	<TemplateSelector />
-
 	<div class="bg-yellow">
 		<!-- Key Tag Preview -->
 		<div
