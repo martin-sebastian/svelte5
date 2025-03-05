@@ -52,59 +52,56 @@
 		: null;
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="dots h-screen w-full">
 	<!-- Template Selector -->
 	<TemplateSelector />
 
-	<!-- Zoom Controls -->
-	<div class="flex items-center gap-2">
-		<button
-			class="rounded-full p-2 hover:bg-gray-100"
-			onclick={handleZoomOut}
-			aria-label="Zoom Out"
+	<div class="bg-yellow">
+		<!-- Key Tag Preview -->
+		<div
+			class="relative overflow-hidden rounded border"
+			style="transform: scale({$zoom}); transform-origin: top left;"
 		>
-			<ZoomOut class="h-4 w-4" />
-		</button>
-		<button class="rounded-full p-2 hover:bg-gray-100" onclick={handleZoomIn} aria-label="Zoom In">
-			<ZoomIn class="h-4 w-4" />
-		</button>
-		<button
-			class="rounded-full p-2 hover:bg-gray-100"
-			onclick={handleResetZoom}
-			aria-label="Reset Zoom"
-		>
-			<RotateCcw class="h-4 w-4" />
-		</button>
-		<span class="text-sm text-gray-500">{Math.round($zoom * 100)}%</span>
-	</div>
-
-	<!-- Key Tag Preview -->
-	<div
-		class="relative overflow-hidden rounded border"
-		style="transform: scale({$zoom}); transform-origin: top left;"
-	>
-		{#if $vehicle && $selectedTemplateId}
-			{#if $selectedTemplateId && currentTemplate}
-				<svelte:component this={currentTemplate} />
+			{#if $vehicle && $selectedTemplateId}
+				{#if $selectedTemplateId && currentTemplate}
+					<svelte:component this={currentTemplate} />
+				{/if}
+			{:else}
+				<div class="flex h-full flex-row items-center justify-start p-4">
+					<p>Loading vehicle data...</p>
+				</div>
 			{/if}
-		{:else}
-			<div class="flex h-full items-center justify-center p-4">
-				<p>Loading vehicle data...</p>
-			</div>
-		{/if}
+		</div>
 	</div>
 </div>
 
-{#if $vehicle}
-	<div class="flex flex-col gap-4">
-		<h1>{$vehicle.title || ''}</h1>
-		{#if ($vehicle as any).description}
-			<p>{($vehicle as any).description}</p>
-		{/if}
-	</div>
-{/if}
+<!-- Zoom Controls -->
+<div class="fixed bottom-0 right-0 m-10">
+	<button class="rounded-full p-2 hover:bg-gray-100" onclick={handleZoomOut} aria-label="Zoom Out">
+		<ZoomOut class="h-4 w-4" />
+	</button>
+	<button class="rounded-full p-2 hover:bg-gray-100" onclick={handleZoomIn} aria-label="Zoom In">
+		<ZoomIn class="h-4 w-4" />
+	</button>
+	<button
+		class="rounded-full p-2 hover:bg-gray-100"
+		onclick={handleResetZoom}
+		aria-label="Reset Zoom"
+	>
+		<RotateCcw class="h-4 w-4" />
+	</button>
+	<span class="text-sm text-gray-500">{Math.round($zoom * 100)}%</span>
+</div>
 
 <style>
+	.dots {
+		background-image: radial-gradient(
+			circle at center,
+			rgba(120, 120, 120, 0.2) 1px,
+			transparent 1px
+		);
+		background-size: 10px 10px;
+	}
 	.key-tag {
 		position: relative;
 		overflow: hidden;

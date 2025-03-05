@@ -11,7 +11,7 @@
 	export const description = 'Standard key tag label with basic vehicle information';
 </script>
 
-<div class="standard-label">
+<div class="standard-label mx-auto">
 	<!-- NEW checkbox -->
 	<div class="flex flex-row items-center justify-center text-center text-[12pt] font-black">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
@@ -21,7 +21,7 @@
 
 	<!-- USED checkbox -->
 	<div
-		class="flex flex-row items-center justify-center border-b text-center text-[12pt] font-black"
+		class="m-5 flex flex-row items-center justify-center border-b text-center text-[12pt] font-black"
 	>
 		{#if $vehicle?.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" /> {$vehicle.usage}
@@ -90,17 +90,16 @@
 <style>
 	/* Template-specific styles */
 	:global(.standard-label) {
-		position: relative;
 		width: 1.25in;
-		height: 3in;
+		height: 2.75in;
 		color: #000000 !important;
 		background-color: #ffffff !important;
 		overflow: hidden;
 		text-transform: uppercase;
 		text-align: center;
-		border: 1px solid #000000;
+		border: 1px solid #fff;
 		/* Debug outline */
-		outline: 1px solid rgba(255, 0, 0, 0.2);
+		outline: 1px solid rgba(255, 255, 255, 0.9);
 	}
 
 	/* Print-specific styles */

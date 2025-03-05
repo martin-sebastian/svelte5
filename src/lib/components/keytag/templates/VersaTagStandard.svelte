@@ -1,8 +1,26 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
 	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
-	import { vehicle } from '$lib/stores/keyTagState.svelte';
+	import { vehicle as vehicleStore } from '$lib/stores/keyTagState.svelte';
 	import { versaTagStandard } from '../assets';
+
+	// Use type assertion to avoid TypeScript errors
+	const vehicle = vehicleStore as unknown as import('svelte/store').Readable<{
+		usage?: string;
+		stockNumber?: string;
+		year?: number | string;
+		manufacturer?: string;
+		modelName?: string;
+		modelType?: string;
+		color?: string;
+		metricValue?: number | string;
+		metricType?: string;
+		vin?: string;
+		[key: string]: any;
+	}>;
+
+	// Create background style variables
+	const backgroundImageStyle = `background-image: url('${versaTagStandard}') !important;`;
 
 	// Add metadata for the template selector
 	export const name = 'Versa Tag Standard';
@@ -12,7 +30,7 @@
 	export const description = 'Standard Versa Tag with white background';
 </script>
 
-<div class="versa-tag-standard">
+<div class="versa-tag-standard" style={backgroundImageStyle}>
 	<!-- NEW checkbox -->
 	<div class="absolute left-[0.09in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
@@ -28,32 +46,32 @@
 	</div>
 
 	<!-- Stock Number -->
-	<div class="absolute left-[0.11in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none">
+	<div class="absolute left-[0.11in] top-[0.61in] line-clamp-2 text-[11pt] font-bold">
 		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.01in] top-[0.994in] text-[10pt] font-bold">
+	<div class="absolute right-[0.0in] top-[0.994in] text-[10pt]">
 		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute right-[0.01in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute right-[0.01in] top-[1.292in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.4in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.4in] top-[1.539in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="absolute left-[0.39in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute left-[0.39in] top-[1.788in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
-	<div class="absolute right-[0.01in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="absolute right-[0.0in] top-[2.035in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.color || ''}
 	</div>
 
@@ -67,9 +85,7 @@
 	</div>
 
 	<!-- VIN -->
-	<div
-		class="absolute bottom-[0.4in] left-[0.01in] line-clamp-2 w-[1.22in] text-center text-[8pt] leading-none"
-	>
+	<div class="absolute bottom-[0.0in] left-[0.01in] line-clamp-2 w-[1.22in] text-left text-[8pt]">
 		{$vehicle?.vin || ''}
 	</div>
 </div>
@@ -82,13 +98,12 @@
 		height: 3in;
 		color: #000000 !important;
 		background-color: #ffffff !important;
-		background-image: url('{versaTagStandard}') !important;
 		background-size: cover !important;
 		background-position: center !important;
 		background-repeat: no-repeat !important;
 		overflow: hidden;
 		text-transform: uppercase;
-		text-align: center;
+		text-align: left;
 		/* Debug outline */
 		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
@@ -102,7 +117,6 @@
 			print-color-adjust: exact;
 			width: 1.5in !important;
 			height: 3in !important;
-			background-image: url('{versaTagStandard}') !important;
 		}
 
 		/* Ensure icons and boxes print correctly */

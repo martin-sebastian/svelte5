@@ -61,7 +61,7 @@
 	}
 </script>
 
-<Card class="p-4">
+<Card class="fixed right-5 top-5 h-60 w-96 p-5">
 	<div class="space-y-4">
 		<h3 class="text-lg font-medium">Key Tag Template</h3>
 

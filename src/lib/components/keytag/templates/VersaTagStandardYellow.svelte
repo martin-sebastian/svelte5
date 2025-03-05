@@ -17,52 +17,52 @@
 
 <div class="versa-tag-standard-yellow" style={backgroundStyle}>
 	<!-- NEW checkbox -->
-	<div class="absolute left-[0.09in] top-[0.26in]">
+	<div class="absolute left-[0.0in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="absolute left-[0.973in] top-[0.26in]">
+	<div class="relative left-[0in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- Stock Number -->
-	<div class="absolute left-[0.11in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none">
+	<div class="relative left-[0in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none">
 		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.01in] top-[0.994in] text-[10pt] font-bold">
+	<div class="relative left-[0.0in] top-[0.994in] text-[10pt] font-bold">
 		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute right-[0.01in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="relative left-[0.0in] top-[1.292in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.4in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="relative left-[0.0in] top-[1.1in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="absolute left-[0.39in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="relative left-[0.0in] top-[1.788in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
-	<div class="absolute right-[0.01in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div class="relative right-[0.01in] top-[2.035in] line-clamp-2 text-[8pt] font-bold">
 		{$vehicle?.color || ''}
 	</div>
 
 	<!-- Metrics -->
 	<div
-		class="absolute left-[0.01in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
+		class="relative left-[0.01in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
 	>
 		<CircleGauge class="h-[0.15in] w-[0.15in]" />
 		{$vehicle?.metricValue?.toString() || ''}
@@ -81,8 +81,10 @@
 	/* Template-specific styles */
 	:global(.versa-tag-standard-yellow) {
 		position: relative;
-		width: 1.22in;
+		text-align: left;
+		width: 3in;
 		height: 3in;
+		margin: 0;
 		color: #000000 !important;
 		background-color: #ffeb3b !important;
 		background-size: cover !important;
@@ -90,7 +92,6 @@
 		background-repeat: no-repeat !important;
 		overflow: hidden;
 		text-transform: uppercase;
-		text-align: center;
 		/* Debug outline */
 		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
@@ -99,6 +100,9 @@
 	@media print {
 		:global(.versa-tag-standard-yellow) {
 			/* Ensure black text in print */
+			position: relative;
+			left: 0;
+			top: 0;
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
