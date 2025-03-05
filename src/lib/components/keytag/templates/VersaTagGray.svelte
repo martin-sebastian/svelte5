@@ -1,18 +1,36 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
 	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
-	import { vehicle } from '$lib/stores/keyTagState.svelte';
+	import { vehicle as vehicleStore } from '$lib/stores/keyTagState.svelte';
 	import { versaTagGray } from '../assets';
+
+	// Use type assertion to avoid TypeScript errors
+	const vehicle = vehicleStore as unknown as import('svelte/store').Readable<{
+		usage?: string;
+		stockNumber?: string;
+		year?: number | string;
+		manufacturer?: string;
+		modelName?: string;
+		modelType?: string;
+		color?: string;
+		metricValue?: number | string;
+		metricType?: string;
+		vin?: string;
+		[key: string]: any;
+	}>;
+
+	// Create background style variables
+	const backgroundImageStyle = `background-image: url('${versaTagGray}') !important;`;
 
 	// Add metadata for the template selector
 	export const name = 'Versa Tag Gray';
-	export const width = '1.22in';
+	export const width = '3in';
 	export const height = '3in';
 	export const orientation = 'Portrait';
 	export const description = 'Gray Versa Tag for a professional look';
 </script>
 
-<div class="versa-tag-gray">
+<div class="versa-tag-gray" style={backgroundImageStyle}>
 	<!-- NEW checkbox -->
 	<div class="absolute left-[0.09in] top-[0.26in] flex">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
@@ -76,17 +94,17 @@
 	/* Template-specific styles */
 	:global(.versa-tag-gray) {
 		position: relative;
-		width: 1.22in;
+		width: 3in;
 		height: 3in;
+		font-weight: 900;
 		color: #000000 !important;
 		background-color: #e0e0e0 !important;
-		background-image: url('{versaTagGray}') !important;
 		background-size: cover !important;
-		background-position: center !important;
+		background-position: left !important;
 		background-repeat: no-repeat !important;
 		overflow: hidden;
 		text-transform: uppercase;
-		text-align: center;
+		text-align: left;
 		/* Debug outline */
 		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
@@ -98,9 +116,8 @@
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 1.5in !important;
+			width: 3in !important;
 			height: 3in !important;
-			background-image: url('{versaTagGray}') !important;
 		}
 
 		/* Ensure icons and boxes print correctly */

@@ -32,6 +32,11 @@
 	// Menu items.
 	const footerItems = [
 		{
+			title: 'A.I.',
+			url: '/admin/ai',
+			icon: Calendar
+		},
+		{
 			title: 'Sync',
 			url: '/admin/sync',
 			icon: DatabaseZap

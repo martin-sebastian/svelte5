@@ -5,7 +5,7 @@
 
 	// Add metadata for the template selector
 	export const name = 'Standard Label';
-	export const width = '1.25in';
+	export const width = '1.22in';
 	export const height = '3in';
 	export const orientation = 'Portrait';
 	export const description = 'Standard key tag label with basic vehicle information';
@@ -90,7 +90,7 @@
 <style>
 	/* Template-specific styles */
 	:global(.standard-label) {
-		width: 1.25in;
+		width: 1.22in;
 		height: 2.75in;
 		color: #000000 !important;
 		background-color: #ffffff !important;
@@ -109,7 +109,7 @@
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 1.5in !important;
+			width: 1.22in !important;
 			height: 3in !important;
 			border: 1px solid #000000 !important;
 		}

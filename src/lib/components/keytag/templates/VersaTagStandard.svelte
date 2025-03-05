@@ -24,7 +24,7 @@
 
 	// Add metadata for the template selector
 	export const name = 'Versa Tag Standard';
-	export const width = '1.22in';
+	export const width = '3in';
 	export const height = '3in';
 	export const orientation = 'Portrait';
 	export const description = 'Standard Versa Tag with white background';
@@ -32,52 +32,52 @@
 
 <div class="versa-tag-standard" style={backgroundImageStyle}>
 	<!-- NEW checkbox -->
-	<div class="absolute left-[0.09in] top-[0.26in]">
+	<div class="relative left-[0.0in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="absolute left-[0.973in] top-[0.26in]">
+	<div class="relative left-[0.0in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- Stock Number -->
-	<div class="absolute left-[0.11in] top-[0.61in] text-[11pt] font-bold">
+	<div class="relative left-[0.0in] top-[0.61in] text-[11pt] font-bold">
 		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
-	<div class="absolute right-[0.0in] top-[0.994in] text-[10pt]">
+	<div class="relative right-[0.0in] top-[0.994in] text-[10pt]">
 		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="absolute right-[0.01in] top-[1.292in] text-[8pt] font-bold">
+	<div class="relative right-[0.00in] top-[1.292in] text-[8pt] font-bold">
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="absolute left-[0.4in] top-[1.539in] text-[8pt] font-bold">
+	<div class="relative left-[0.0in] top-[1.539in] text-[8pt] font-bold">
 		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="absolute left-[0.39in] top-[1.788in] text-[8pt] font-bold">
+	<div class="relative left-[0.00in] top-[1.788in] text-[8pt] font-bold">
 		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
-	<div class="absolute right-[0.0in] top-[2.035in] text-[8pt] font-bold">
+	<div class="relative right-[0.0in] top-[2.035in] text-[8pt] font-bold">
 		{$vehicle?.color || ''}
 	</div>
 
 	<!-- Metrics -->
 	<div
-		class="absolute left-[0.01in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
+		class="relative left-[0.00in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
 	>
 		<CircleGauge class="h-[0.15in] w-[0.15in]" />
 		{$vehicle?.metricValue?.toString() || ''}
@@ -85,7 +85,7 @@
 	</div>
 
 	<!-- VIN -->
-	<div class="absolute bottom-[0.0in] left-[0.01in] w-[1.22in] text-left text-[8pt]">
+	<div class="relative bottom-[0.0in] left-[0.01in] w-[1.22in] text-left text-[8pt]">
 		{$vehicle?.vin || ''}
 	</div>
 </div>
@@ -94,7 +94,7 @@
 	/* Template-specific styles */
 	:global(.versa-tag-standard) {
 		position: relative;
-		width: 1.22in;
+		width: 3in;
 		height: 3in;
 		color: #000000 !important;
 		background-color: #ffffff !important;

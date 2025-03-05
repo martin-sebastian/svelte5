@@ -19,6 +19,22 @@
 		console.log('KeyTag Component - vehicleId:', vehicleId);
 		console.log('KeyTag Component - vehicle data:', $vehicle);
 		console.log('KeyTag Component - selected template:', $selectedTemplateId);
+
+		// Add detailed logging of specific fields
+		if ($vehicle) {
+			console.log('Vehicle fields available:', {
+				stockNumber: $vehicle.stockNumber,
+				year: $vehicle.year,
+				manufacturer: $vehicle.manufacturer,
+				modelName: $vehicle.modelName,
+				modelType: $vehicle.modelType,
+				color: $vehicle.color,
+				usage: $vehicle.usage,
+				metricValue: $vehicle.metricValue,
+				metricType: $vehicle.metricType,
+				vin: $vehicle.vin
+			});
+		}
 	}
 
 	// Set default template if none selected
@@ -54,7 +70,7 @@
 
 <!-- Template Selector -->
 <TemplateSelector />
-<div class="dots h-screen w-full">
+<div class="dots w-full">
 	<div class="bg-yellow">
 		<!-- Key Tag Preview -->
 		<div
