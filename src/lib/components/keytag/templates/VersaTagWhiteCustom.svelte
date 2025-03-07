@@ -32,52 +32,62 @@
 
 <div class="versa-tag-white-custom" style={backgroundImageStyle}>
 	<!-- NEW checkbox -->
-	<div class="relative left-[0.00in] top-[0.26in]">
+	<div class="new relative left-[0.00in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="relative left-[0.0in] top-[0.26in]">
+	<div class="used relative left-[0.0in] top-[0.26in]">
 		{#if $vehicle?.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- Stock Number -->
-	<div class="relative left-[0.00in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none">
+	<div
+		class="stock-number relative left-[0.00in] top-[0.61in] line-clamp-2 text-[11pt] font-bold leading-none"
+	>
 		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
-	<div class="relative right-[0.00in] top-[0.994in] text-[10pt] font-bold">
+	<div class="year relative right-[0.00in] top-[0.994in] text-[10pt] font-bold">
 		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="relative right-[0.0in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div
+		class="manufacturer relative right-[0.0in] top-[1.292in] line-clamp-2 text-[8pt] font-bold leading-none"
+	>
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="relative left-[0.0in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div
+		class="model relative left-[0.0in] top-[1.539in] line-clamp-2 text-[8pt] font-bold leading-none"
+	>
 		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="relative left-[0.00in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div
+		class="model-type relative left-[0.00in] top-[1.788in] line-clamp-2 text-[8pt] font-bold leading-none"
+	>
 		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
-	<div class="relative right-[0.0in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none">
+	<div
+		class="color relative right-[0.0in] top-[2.035in] line-clamp-2 text-[8pt] font-bold leading-none"
+	>
 		{$vehicle?.color || ''}
 	</div>
 
 	<!-- Metrics -->
 	<div
-		class="relative left-[0.01in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
+		class="usage relative left-[0.01in] top-[2.25in] flex w-[1.22in] flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
 	>
 		<CircleGauge class="h-[0.15in] w-[0.15in]" />
 		{$vehicle?.metricValue?.toString() || ''}
@@ -108,6 +118,120 @@
 		text-align: left;
 		/* Debug outline */
 		outline: 1px solid rgba(255, 0, 0, 0.2);
+	}
+	.new {
+		position: absolute;
+		top: 0.26in;
+		left: 0.09in;
+	}
+	.used {
+		position: absolute;
+		top: 0.26in;
+		left: 0.19in;
+	}
+
+	.stock-number {
+		position: relative;
+		font-size: 14pt;
+		width: 1.22in;
+		top: 0.58in;
+		left: 0.05in;
+		font-weight: 900;
+		letter-spacing: -1px;
+		line-clamp: 2;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		padding: 5px 1px;
+		background-color: #fafafa;
+	}
+	.year {
+		position: relative;
+		font-size: 16pt;
+		width: 1.22in;
+		top: 0.5in;
+		left: 0.05in;
+		font-weight: 900;
+		padding: 5px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.manufacturer {
+		position: relative;
+		font-size: 12pt;
+		width: 1.22in;
+		top: 0.4in;
+		left: 0.05in;
+		font-weight: 900;
+		padding: 6px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.model {
+		position: relative;
+		font-size: 12pt;
+		width: 1.22in;
+		top: 0.3in;
+		left: 0.05in;
+		font-weight: 900;
+		padding: 5px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.model-type {
+		position: relative;
+		font-size: 12pt;
+		width: 1.22in;
+		top: 0.2in;
+		left: 0.05in;
+		font-weight: 900;
+		padding: 5px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.color {
+		position: relative;
+		width: 1.22in;
+		top: 0.1in;
+		left: 0.05in;
+		font-weight: 900;
+		padding: 5px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.vin {
+		position: relative;
+		font-size: 8pt;
+		width: 1.22in;
+		top: 0.02in;
+		left: 0.05in;
+		font-weight: 400;
+		padding: 5px 0px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.usage-value {
+		text-align: center;
+		font-size: 8pt;
+		width: 1.22in;
+		top: 0.01in;
+		left: 0.01in;
+		letter-spacing: -1px;
+		font-weight: 900;
+		padding: 5px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
+	}
+	.usage-type {
+		text-align: center;
+		font-size: 8pt;
+		width: 1.22in;
+		top: -0.18in;
+		left: 0.001in;
+		letter-spacing: -1px;
+		font-weight: 900;
+		padding: 5px 1px;
+		letter-spacing: -1px;
+		background-color: #fafafa;
 	}
 
 	/* Print-specific styles */

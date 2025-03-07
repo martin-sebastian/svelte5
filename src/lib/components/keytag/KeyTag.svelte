@@ -70,12 +70,12 @@
 
 <!-- Template Selector -->
 <TemplateSelector />
-<div class="dots w-full">
-	<div class="bg-yellow">
+<div class="dots flex h-[calc(100vh-150px)] w-full items-center justify-center overflow-auto p-4">
+	<div class="flex items-center justify-center">
 		<!-- Key Tag Preview -->
 		<div
 			class="relative overflow-hidden rounded border"
-			style="transform: scale({$zoom}); transform-origin: top left;"
+			style="transform: scale({$zoom}); transform-origin: center;"
 		>
 			{#if $vehicle && $selectedTemplateId}
 				{#if $selectedTemplateId && currentTemplate}
