@@ -1,91 +1,56 @@
 <script lang="ts">
 	import { selectedTemplateId, setTemplate } from '$lib/stores/keyTagState.svelte';
-	import { Card } from '$lib/components/ui/card';
 	import { templates } from './index';
+	import { templateMetadata } from './templateMeta';
 	import type { TemplateId } from './types';
 
-	// Define template metadata directly
-	const templateMetadata = {
-		standard: {
-			name: 'Standard Label',
-			width: '1.25in',
-			height: '3in',
-			orientation: 'Portrait',
-			description: 'Standard key tag label with basic vehicle information'
-		},
-		gray: {
-			name: 'Versa Tag Gray',
-			width: '1.22in',
-			height: '3in',
-			orientation: 'Portrait',
-			description: 'Gray Versa Tag for a professional look'
-		},
-		standard_white: {
-			name: 'Versa Tag Standard',
-			width: '1.22in',
-			height: '3in',
-			orientation: 'Portrait',
-			description: 'Standard Versa Tag with white background'
-		},
-		standard_yellow: {
-			name: 'Versa Tag Yellow',
-			width: '1.22in',
-			height: '3in',
-			orientation: 'Portrait',
-			description: 'Yellow Versa Tag for high visibility'
-		},
-		white: {
-			name: 'Versa Tag White',
-			width: '1.22in',
-			height: '3in',
-			orientation: 'Portrait',
-			description: 'White Versa Tag with clean design'
-		},
-		white_custom: {
-			name: 'Versa Tag White Custom',
-			width: '1.22in',
-			height: '3in',
-			orientation: 'Portrait',
-			description: 'Customized white Versa Tag with additional fields'
-		}
-	};
+	// Get all available templates with their metadata
+	const availableTemplates = Object.entries(templateMetadata).map(([id, meta]) => ({
+		id: id as TemplateId,
+		...meta
+	}));
 
-	// Get the current template metadata based on the selected template ID
-	$: currentTemplateMetadata = $selectedTemplateId
-		? templateMetadata[$selectedTemplateId as keyof typeof templateMetadata]
-		: null;
-
-	function handleChange(event: Event) {
-		const target = event.target as HTMLSelectElement;
-		setTemplate(target.value as TemplateId);
+	// Handle template selection
+	function selectTemplate(id: TemplateId) {
+		setTemplate(id);
 	}
 </script>
 
-<Card class="fixed right-5 top-5 h-60 w-96 p-5">
-	<div class="space-y-4">
-		<h3 class="text-lg font-medium">Key Tag Template</h3>
-
-		<select
-			class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-			value={$selectedTemplateId}
-			onchange={handleChange}
-		>
-			{#each Object.entries(templates) as [id, template]}
-				<option value={id}>
-					{templateMetadata[id as keyof typeof templateMetadata]?.name || id}
-				</option>
-			{/each}
-		</select>
-
-		{#if currentTemplateMetadata}
-			<div class="text-sm text-gray-500">
-				<p>
-					Size: {currentTemplateMetadata.width || 'Standard'} × {currentTemplateMetadata.height ||
-						'Standard'}
-				</p>
-				<p>Orientation: {currentTemplateMetadata.orientation || 'Portrait'}</p>
-				<p class="text-xs">{currentTemplateMetadata.description || 'No description available'}</p>
-			</div>
-		{/if}
+<div class="template-selector flex flex-row items-center justify-center">
+	<div class="grid grid-cols-2 gap-5 md:grid-cols-2 lg:grid-cols-5">
+		{#each availableTemplates as template}
+			<button
+				class="template-option spece-between my-10 flex flex-col items-center rounded-lg border p-2 transition-all hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 {$selectedTemplateId ===
+				template.id
+					? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+					: 'border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800'}"
+				onclick={() => selectTemplate(template.id)}
+				aria-label="Select {template.name}"
+			>
+				<div class="template-preview m-2 h-24 w-full overflow-hidden rounded border bg-gray-400">
+					<!-- Template preview -->
+					<div class="origin-top-left scale-[0.35] text-center">
+						<svelte:component this={templates[template.id]} />
+					</div>
+				</div>
+				<div class="text-center">
+					<div class="text-sm font-medium">{template.name}</div>
+					<div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+						{template.width} × {template.height}
+					</div>
+				</div>
+			</button>
+		{/each}
 	</div>
-</Card>
+</div>
+
+<style>
+	.template-preview {
+		position: relative;
+		text-align: center;
+		margin: 5px auto;
+		padding: 5px;
+		width: 120px;
+		height: 120px;
+	}
+</style>

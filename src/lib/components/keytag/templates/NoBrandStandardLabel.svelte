@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Check } from 'lucide-svelte';
+	import { Check } from 'lucide-svelte';
 	import { vehicle } from '$lib/stores/keyTagState.svelte';
 
 	// Add metadata for the template selector
@@ -74,7 +73,6 @@
 	<div
 		class="my-1 flex flex-row items-center justify-center border-b text-center text-[10pt] font-black leading-none"
 	>
-		<CircleGauge class="mr-1 h-[0.15in] w-[0.15in]" />
 		{$vehicle?.metricValue?.toString() || ''}
 		{$vehicle?.metricType || ''}
 	</div>

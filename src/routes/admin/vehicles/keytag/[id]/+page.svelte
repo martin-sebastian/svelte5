@@ -2,7 +2,6 @@
 	import type { PageData } from './$types';
 	import { KeyTag } from '$lib/components/keytag';
 	import { setVehicleData } from '$lib/stores/keyTagState.svelte';
-	import type { Vehicle } from '$lib/types/vehicle';
 
 	export let data: PageData;
 

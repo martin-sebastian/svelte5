@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
+	import { Check } from 'lucide-svelte';
 	import { vehicle } from '$lib/stores/keyTagState.svelte';
 	import { versaTagStandardYellow } from '../assets';
 
@@ -17,61 +16,58 @@
 
 <div class="versa-tag-standard-yellow" style={backgroundStyle}>
 	<!-- NEW checkbox -->
-	<div class="new relative">
+	<div class="new">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="used relative">
+	<div class="used">
 		{#if $vehicle?.usage?.toLowerCase() === 'used'}
 			<Check class="h-5 w-5" />
 		{/if}
 	</div>
 
 	<!-- Stock Number -->
-	<div class="stock-number relative line-clamp-2 leading-none">
+	<div class="stock-number line-clamp-2 leading-none">
 		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
-	<div class="year relative">
+	<div class="year">
 		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="manufacturer relative">
+	<div class="manufacturer">
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="model relative line-clamp-1">
+	<div class="model">
 		{$vehicle?.modelName || ''}
 	</div>
 
-	<!-- Model Type/BODY -->
-	<div class="model-type relative line-clamp-1">
-		{$vehicle?.modelType || ''}
-	</div>
-
 	<!-- Color -->
-	<div class="color relative">
+	<div class="color">
 		{$vehicle?.color || ''}
 	</div>
 
 	<!-- VIN -->
-	<div class="vin relative">
+	<div class="vin">
 		{$vehicle?.vin || ''}
 	</div>
 
 	<!-- Metrics -->
-	<div class="usage-value relative">
-		{$vehicle?.metricValue?.toString() || ''}
-	</div>
-	<!-- Metrics -->
-	<div class="usage-type relative">
-		{$vehicle?.metricType?.toUpperCase() || ''}
+	<div class="usage">
+		<span class="usage-value">
+			{$vehicle?.metricValue || ''}
+		</span>
+		<!-- Metrics -->
+		<span class="usage-type">
+			{$vehicle?.metricType || ''}
+		</span>
 	</div>
 </div>
 
@@ -103,90 +99,102 @@
 		top: 0.26in;
 		left: 0.19in;
 	}
-
 	.stock-number {
-		font-size: 14pt;
+		position: absolute;
+		font-size: 11pt;
 		width: 1.22in;
-		top: 0.58in;
+		top: 0.59in;
 		left: 0.05in;
 		font-weight: 900;
 		letter-spacing: -1px;
-		line-clamp: 2;
-		overflow: hidden;
 		text-overflow: ellipsis;
 		padding: 5px 1px;
 		background-color: #ffe109;
 	}
 	.year {
-		font-size: 16pt;
-		width: 1.2in;
-		top: 0.5in;
+		position: absolute;
+		font-size: 12pt;
+		width: 1.22in;
+		top: 0.96in;
 		left: 0.05in;
 		font-weight: 900;
-		padding: 5px 1px;
+		padding: 0px 1px;
 		background-color: #ffe109;
 	}
 	.manufacturer {
-		font-size: 12pt;
+		position: absolute;
+		line-height: 10pt;
+		font-size: 10pt;
 		width: 1.2in;
-		top: 0.4in;
+		top: 1.2in;
 		left: 0.05in;
 		font-weight: 900;
-		padding: 6px 1px;
+		margin: 0;
+		padding: 2px 1px;
 		background-color: #ffe109;
 	}
 	.model {
-		font-size: 12pt;
+		position: absolute;
+		font-size: 10pt;
+		line-height: 10pt;
 		width: 1.2in;
-		top: 0.3in;
+		top: 1.55in;
 		left: 0.05in;
+		height: 35pt;
+		line-clamp: 2;
+		overflow: hidden;
 		font-weight: 900;
-		padding: 5px 1px;
-		background-color: #ffe109;
-	}
-	.model-type {
-		font-size: 12pt;
-		width: 1.2in;
-		top: 0.2in;
-		left: 0.05in;
-		font-weight: 900;
-		padding: 5px 1px;
+		padding: 1px 1px;
 		background-color: #ffe109;
 	}
 	.color {
+		position: absolute;
+		font-size: 12pt;
 		width: 1.2in;
-		top: 0.1in;
+		top: 2in;
 		left: 0.05in;
 		font-weight: 900;
-		padding: 5px 1px;
+		padding: 2px 1px;
 		background-color: #ffe109;
 	}
 	.vin {
-		font-size: 9pt;
+		position: absolute;
+		font-size: 10pt;
 		width: 1.2in;
-		top: 0.02in;
-		left: 0.05in;
-		font-weight: 400;
-		padding: 5px 0px;
+		top: 2.25in;
+		left: 0.07in;
+		font-weight: 800;
+		padding: 1px 0px;
 		background-color: #ffe109;
 	}
-	.usage-value {
-		text-align: center;
-		font-size: 8pt;
+	.usage {
+		position: absolute;
+
 		width: 1.2in;
-		top: 0.01in;
-		left: 0.01in;
+		display: flex;
+		flex-direction: row;
+		align-items: start;
+		justify-content: center;
+	}
+	.usage-value {
+		position: absolute;
+		text-align: left;
+		font-size: 10pt;
+		width: 1.2in;
+		top: 2.5in;
+		left: 0.06in;
 		font-weight: 900;
-		padding: 5px 1px;
+		padding: 1px 1px;
 	}
 	.usage-type {
-		text-align: center;
-		font-size: 8pt;
+		position: absolute;
+		text-align: left;
+		font-size: 10pt;
 		width: 1.2in;
-		top: -0.18in;
-		left: 0.001in;
+		top: 2.5in;
+		left: 0.2in;
 		font-weight: 900;
-		padding: 5px 1px;
+		padding: 1px 1px;
 	}
 
 	/* Print-specific styles */
@@ -199,7 +207,7 @@
 			color: #000000 !important;
 			-webkit-print-color-adjust: exact;
 			print-color-adjust: exact;
-			width: 1.5in !important;
+			width: 3in !important;
 			height: 3in !important;
 			background-image: url('{versaTagStandardYellow}') !important;
 		}

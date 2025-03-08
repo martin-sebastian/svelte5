@@ -13,6 +13,17 @@ type Template = {
 type Vehicle = {
   id: string;
   name: string;
+  stockNumber: string;
+  year: string;
+  manufacturer: string;
+  modelName: string;
+  modelType: string;
+  modelCode: string;
+  color: string;
+  vin: string;
+  usage: string;
+  metricValue: string;
+  metricType: string;
   // ... other vehicle properties
 };
 

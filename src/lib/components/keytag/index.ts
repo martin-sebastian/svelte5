@@ -1,25 +1,33 @@
-import Root from "./KeyTag.svelte";
-import TemplateSelector from "./TemplateSelector.svelte";
-import StandardLabel from "./templates/StandardLabel.svelte";
-import VersaTagGray from "./templates/VersaTagGray.svelte";
-import VersaTagStandard from "./templates/VersaTagStandard.svelte";
-import VersaTagStandardYellow from "./templates/VersaTagStandardYellow.svelte";
-import VersaTagWhite from "./templates/VersaTagWhite.svelte";
-import VersaTagWhiteCustom from "./templates/VersaTagWhiteCustom.svelte";
+import KeyTag from './KeyTag.svelte';
+import TemplateSelector from './TemplateSelector.svelte';
+import PrintInstructions from './PrintInstructions.svelte';
+import type { ComponentType } from 'svelte';
 
-// Template mapping
-export const templates = {
-  standard: StandardLabel,
-  gray: VersaTagGray,
-  standard_white: VersaTagStandard,
+// Import all templates
+import VersaTagStandardYellow from './templates/VersaTagStandardYellow.svelte';
+import VersaTagStandardGray from './templates/VersaTagStandardGray.svelte';
+import VersaTagStandard from './templates/VersaTagStandard.svelte';
+import VersaTagStandardWhite from './templates/VersaTagStandardWhite.svelte';
+import VersaTagCustomWhite from './templates/VersaTagCustomWhite.svelte';
+
+// Import metadata
+import { templateMetadata, templateMetaNames } from './templateMeta';
+import type { TemplateId } from './types';
+
+// Map template IDs to components
+export const templates: Record<TemplateId, ComponentType> = {
+  standard: VersaTagStandard,
   standard_yellow: VersaTagStandardYellow,
-  white: VersaTagWhite,
-  white_custom: VersaTagWhiteCustom
+  gray: VersaTagStandardGray,
+  white: VersaTagStandardWhite,
+  white_custom: VersaTagCustomWhite
 };
 
+// Export components
 export {
-    Root,
-    TemplateSelector,
-    Root as KeyTag,
-    TemplateSelector as KeyTagTemplateSelector,
+  KeyTag,
+  TemplateSelector,
+  PrintInstructions,
+  templateMetadata,
+  templateMetaNames
 }; 

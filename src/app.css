@@ -97,4 +97,31 @@
 		background-color: white !important;
 		background: none !important;
 	}
+
+	/* Reset all margins and padding */
+	@page {
+		size: auto;
+		margin: 0mm;
+	}
+
+	/* Hide all UI elements */
+	body > *:not(.print-container) {
+		display: none !important;
+	}
+
+	/* Force background colors and images to print */
+	* {
+		-webkit-print-color-adjust: exact !important;
+		print-color-adjust: exact !important;
+		color-adjust: exact !important;
+	}
+
+	/* Prevent page breaks inside key tags */
+	.versa-tag-standard,
+	.versa-tag-gray,
+	.versa-tag-white,
+	.versa-tag-white-custom {
+		page-break-inside: avoid;
+		break-inside: avoid;
+	}
 }

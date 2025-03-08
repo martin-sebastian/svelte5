@@ -1,1 +1,7 @@
-export type TemplateId = 'standard' | 'gray' | 'standard_white' | 'standard_yellow' | 'white' | 'white_custom'; 
+// Define the template ID type
+export type TemplateId = 
+  | 'standard'
+  | 'standard_yellow'
+  | 'gray'
+  | 'white'
+  | 'white_custom'; 

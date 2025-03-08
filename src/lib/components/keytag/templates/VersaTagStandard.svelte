@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Vehicle } from '$lib/types/vehicle';
-	import { CircleGauge, Car, Check, BadgeCheck } from 'lucide-svelte';
+	import { Check } from 'lucide-svelte';
 	import { vehicle as vehicleStore } from '$lib/stores/keyTagState.svelte';
 	import { versaTagStandard } from '../assets';
 
@@ -30,66 +30,66 @@
 	export const description = 'Standard Versa Tag with white background';
 </script>
 
-<div class="versa-tag-standard" style={backgroundImageStyle}>
+<div class="cover versa-tag-standard" style={backgroundImageStyle}>
+	<div class="versa-tag-standard-inner">
+		<!-- NEW checkbox -->
+	</div>
 	<!-- NEW checkbox -->
-	<div class="new relative">
+	<div class="new">
 		{#if $vehicle?.usage?.toLowerCase() === 'new'}
-			<Check class="h-5 w-5" />
+			NEW
 		{/if}
 	</div>
 
 	<!-- USED checkbox -->
-	<div class="used relative">
+	<div class="used">
 		{#if $vehicle?.usage?.toLowerCase() === 'used'}
-			<Check class="h-5 w-5" />
+			USED
 		{/if}
 	</div>
 
 	<!-- Stock Number -->
-	<div class="stock-number relative left-[0.0in] top-[0.61in] text-[11pt] font-bold">
+	<div class="stock-number">
 		#{$vehicle?.stockNumber || ''}
 	</div>
 
 	<!-- Year -->
-	<div class="year relative right-[0.0in] top-[0.994in] text-[10pt]">
+	<div class="year">
 		{$vehicle?.year || ''}
 	</div>
 
 	<!-- Manufacturer -->
-	<div class="manufacturer relative right-[0.00in] top-[1.292in] text-[8pt] font-bold">
+	<div class="manufacturer">
 		{$vehicle?.manufacturer || ''}
 	</div>
 
 	<!-- Model -->
-	<div class="model relative left-[0.0in] top-[1.539in] text-[8pt] font-bold">
+	<div class="model">
 		{$vehicle?.modelName || ''}
 	</div>
 
 	<!-- Model Type/BODY -->
-	<div class="model-type relative left-[0.00in] top-[1.788in] text-[8pt] font-bold">
+	<div class="model-type">
 		{$vehicle?.modelType || ''}
 	</div>
 
 	<!-- Color -->
-	<div class="color relative right-[0.0in] top-[2.035in] text-[8pt] font-bold">
+	<div class="color">
 		{$vehicle?.color || ''}
 	</div>
 
 	<!-- Metrics -->
-	<div
-		class="usage relative flex flex-row items-center justify-center gap-[0.05in] text-[8pt] font-bold"
-	>
-		<CircleGauge class="h-[0.15in] w-[0.15in]" />
-		<div class="usage-value relative">
+	<div class="usage">
+		<div class="usage-value">
 			{$vehicle?.metricValue?.toString() || ''}
 		</div>
-		<div class="usage-type relative">
+		<div class="usage-type">
 			{$vehicle?.metricType || ''}
 		</div>
 	</div>
 
 	<!-- VIN -->
-	<div class="vin relative">
+	<div class="vin">
 		{$vehicle?.vin || ''}
 	</div>
 </div>
@@ -111,9 +111,20 @@
 		/* Debug outline */
 		outline: 1px solid rgba(255, 0, 0, 0.2);
 	}
+	.versa-tag-standard-inner {
+		position: absolute;
+		width: 1.22in;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 1.22in;
+		background-color: #ffe109;
+	}
 	.new {
 		position: absolute;
-		top: 0.26in;
+		font-size: 12pt;
+		font-weight: 900;
+		top: 0.2in;
 		left: 0.09in;
 	}
 	.used {
@@ -123,9 +134,11 @@
 	}
 
 	.stock-number {
-		font-size: 14pt;
+		position: absolute;
+		font-size: 11pt;
+		line-height: 11pt;
 		width: 1.22in;
-		top: 0.58in;
+		top: 0.5in;
 		left: 0.05in;
 		font-weight: 900;
 		letter-spacing: -1px;
@@ -136,19 +149,22 @@
 		background-color: #ffe109;
 	}
 	.year {
-		font-size: 16pt;
-		width: 1.2in;
-		top: 0.5in;
+		position: absolute;
+		font-size: 14pt;
+		width: 1.22in;
+		top: 0.85in;
 		left: 0.05in;
 		font-weight: 900;
-		padding: 5px 1px;
+		padding: 1px 1px;
 		letter-spacing: -1px;
 		background-color: #ffe109;
 	}
 	.manufacturer {
-		font-size: 12pt;
+		position: absolute;
+		font-size: 11pt;
+		line-height: 11pt;
 		width: 1.2in;
-		top: 0.4in;
+		top: 1.1in;
 		left: 0.05in;
 		font-weight: 900;
 		padding: 6px 1px;
@@ -156,9 +172,11 @@
 		background-color: #ffe109;
 	}
 	.model {
-		font-size: 12pt;
+		position: absolute;
+		font-size: 11pt;
+		line-height: 11pt;
 		width: 1.2in;
-		top: 0.3in;
+		top: 1.54in;
 		left: 0.05in;
 		font-weight: 900;
 		padding: 5px 1px;
@@ -166,9 +184,11 @@
 		background-color: #ffe109;
 	}
 	.model-type {
-		font-size: 12pt;
-		width: 1.2in;
-		top: 0.2in;
+		position: absolute;
+		font-size: 10pt;
+		line-height: 10pt;
+		width: 1.25in;
+		top: 2.2in;
 		left: 0.05in;
 		font-weight: 900;
 		padding: 5px 1px;
@@ -176,40 +196,44 @@
 		background-color: #ffe109;
 	}
 	.color {
+		position: absolute;
 		width: 1.2in;
-		top: 0.1in;
+		top: 2.22in;
 		left: 0.05in;
 		font-weight: 900;
-		padding: 5px 1px;
+		padding: 1px 1px;
 		letter-spacing: -1px;
 		background-color: #ffe109;
 	}
 	.vin {
-		font-size: 8pt;
+		position: absolute;
+		font-size: 10pt;
 		width: 1.2in;
-		top: 0.02in;
+		top: 2.45in;
 		left: 0.05in;
-		font-weight: 400;
-		padding: 5px 0px;
+		font-weight: 800;
+		padding: 1px 0px;
 		letter-spacing: -1px;
 		background-color: #ffe109;
 	}
 	.usage-value {
+		position: absolute;
 		text-align: center;
-		font-size: 8pt;
+		font-size: 10pt;
 		width: 1.2in;
-		top: 0.01in;
-		left: 0.01in;
+		top: 2.6in;
+		left: -0.49in;
 		letter-spacing: -1px;
 		font-weight: 900;
 		padding: 5px 1px;
 	}
 	.usage-type {
+		position: absolute;
 		text-align: center;
-		font-size: 8pt;
+		font-size: 10pt;
 		width: 1.2in;
-		top: -0.18in;
-		left: 0.001in;
+		top: 2.6in;
+		left: -0.15in;
 		letter-spacing: -1px;
 		font-weight: 900;
 		padding: 5px 1px;
@@ -220,10 +244,12 @@
 		:global(.versa-tag-standard) {
 			/* Ensure black text in print */
 			color: #000000 !important;
-			-webkit-print-color-adjust: exact;
-			print-color-adjust: exact;
-			width: 1.5in !important;
+			-webkit-print-color-adjust: exact !important;
+			print-color-adjust: exact !important;
+			width: 3in !important;
 			height: 3in !important;
+			/* Remove debug outline in print */
+			outline: none !important;
 		}
 
 		/* Ensure icons and boxes print correctly */
@@ -231,6 +257,20 @@
 			color: #000000 !important;
 			stroke: #000000 !important;
 			fill: #000000 !important;
+		}
+
+		/* Force background colors to print */
+		:global(.stock-number),
+		:global(.year),
+		:global(.manufacturer),
+		:global(.model),
+		:global(.model-type),
+		:global(.color),
+		:global(.vin),
+		:global(.usage-value),
+		:global(.usage) .usage-type {
+			-webkit-print-color-adjust: exact !important;
+			print-color-adjust: exact !important;
 		}
 	}
 </style>

@@ -1,45 +1,73 @@
 <script lang="ts">
-	import OpenAI from 'openai';
+	import { onMount } from 'svelte';
 
-	const openai = new OpenAI({
-		apiKey: process.env.OPENAI_API_KEY
-	});
+	let result: string | null = null;
+	let isLoading = false;
+	let error: string | null = null;
 
-	const response = await openai.chat.completions.create({
-		model: 'gpt-4o',
-		messages: [
-			{
-				role: 'user',
-				content: [
-					{
-						type: 'text',
-						text: "Write a 1 paragraph SEO friendly and exciting description for 2023 Scarab Jet Boat 215 ID 460HP WAKE EDITION model code SBI215-A23, trim color charcoal.  Don't use the model code in the description, only use it to get the most accurate boat, engine or feature specs.  Use the trim color briefly when describing this boat."
-					}
-				]
-			},
-			{
-				role: 'assistant',
-				content: [
-					{
-						type: 'text',
-						text: 'Rev up the excitement on the water with the 2023 Scarab Jet Boat 215 ID 460HP Wake Edition, a sleek marvel clad in an eye-catching charcoal trim. This powerhouse redefines adventure with its robust 460 horsepower engine, ensuring thrilling rides and the ultimate wake experience. Crafted for speed enthusiasts and watersport aficionados, the Scarab 215 ID embraces cutting-edge technology and superior design, providing unparalleled control and heart-pounding performance. Perfectly marrying style and functionality, this boat boasts luxurious amenities and intuitive features, making it the quintessential choice for those looking to carve massive wakes with flair. Discover the exhilarating blend of power, precision, and sophistication that sets the Scarab 215 ID apart, and transform every outing into an unforgettable voyage.'
-					}
-				]
+	async function generateDescription() {
+		isLoading = true;
+		error = null;
+		result = null;
+
+		try {
+			const response = await fetch('/api/openai', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					prompt:
+						"Write a 1 paragraph SEO friendly and exciting description for 2023 Scarab Jet Boat 215 ID 460HP WAKE EDITION model code SBI215-A23, trim color charcoal.  Don't use the model code in the description, only use it to get the most accurate boat, engine or feature specs.  Use the trim color briefly when describing this boat."
+				})
+			});
+
+			const data = await response.json();
+
+			if (data.error) {
+				error = data.error;
+			} else {
+				result = data.result;
 			}
-		],
-		response_format: {
-			type: 'text'
-		},
-		temperature: 1,
-		max_completion_tokens: 2048,
-		top_p: 1,
-		frequency_penalty: 0,
-		presence_penalty: 0
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Unknown error';
+			console.error('API error:', e);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	// Generate on mount
+	onMount(() => {
+		generateDescription();
 	});
 </script>
 
-<div>
-	{#each response.choices as choice}
-		{choice.message.content}
-	{/each}
+<div class="container mx-auto p-4">
+	<h1 class="mb-4 text-2xl font-bold">AI Description Generator</h1>
+
+	{#if isLoading}
+		<p class="text-gray-600">Generating description...</p>
+	{:else if error}
+		<div class="mb-4 rounded bg-red-100 p-4 text-red-700">
+			<p>Error: {error}</p>
+			<button
+				class="mt-2 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+				on:click={generateDescription}
+			>
+				Try Again
+			</button>
+		</div>
+	{:else if result}
+		<div class="mb-4 rounded bg-white p-6 shadow">
+			<h2 class="mb-2 text-lg font-semibold">Generated Description:</h2>
+			<p class="text-gray-800">{result}</p>
+		</div>
+		<button
+			class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+			on:click={generateDescription}
+		>
+			Regenerate
+		</button>
+	{/if}
 </div>
