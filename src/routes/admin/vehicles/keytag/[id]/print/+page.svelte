@@ -6,16 +6,20 @@
 	import type { TemplateId } from '$lib/components/keytag/types';
 	import { onMount } from 'svelte';
 
-	export let data: PageData;
+	// Using $props instead of export let
+	const { data } = $props<{ data: PageData }>();
 
-	// Set vehicle data for template
-	$: if (data?.vehicle) {
-		setVehicleData(data.vehicle as any);
-	}
+	// Using runes for reactivity
+	const vehicle = $derived(data?.vehicle);
+	const templateId = $derived(data.templateId || 'standard');
+	const currentTemplate = $derived(templates[templateId as keyof typeof templates]);
 
-	// Get the current template component
-	$: templateId = data.templateId || 'standard';
-	$: currentTemplate = templates[templateId as keyof typeof templates];
+	// Set vehicle data whenever it changes
+	$effect(() => {
+		if (vehicle) {
+			setVehicleData(vehicle as any);
+		}
+	});
 
 	// Automatically print when component is mounted
 	onMount(() => {
@@ -32,7 +36,7 @@
 </script>
 
 <svelte:head>
-	<title>Print Key Tag - {data.vehicle?.stockNumber || 'Vehicle'}</title>
+	<title>Print Key Tag - {vehicle?.stockNumber || 'Vehicle'}</title>
 </svelte:head>
 
 <div class="print-container">
@@ -59,7 +63,7 @@
 
 	<!-- The actual printable content -->
 	<div class="print-content">
-		{#if data?.vehicle && currentTemplate}
+		{#if vehicle && currentTemplate}
 			<svelte:component this={currentTemplate} />
 		{:else}
 			<div class="flex h-full items-center justify-center">
