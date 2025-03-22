@@ -1,0 +1,26 @@
+export type Motorcycles = {
+	id: string | null;
+	title: string | null;
+	link: string | null;
+	description: string | null;
+	price: number | null;
+	price_type: string | null;
+	stock_number: string | null;
+	vin: string | null;
+	manufacturer: string | null;
+	year: number | null;
+	color: string | null;
+	model_type: string | null;
+	model_typestyle: string | null;
+	model_name: string | null;
+	trim_name: string | null;
+	trim_color: string | null;
+	condition: 'Excellent' | 'Good' | 'Fair' | 'Poor' | null;
+	usage: string | null;
+	location: string | null;
+	updated: string | null;
+	metric_type: string | null;
+	metric_value: number | null;
+	status: 'ACTIVE' | 'SOLD' | 'HIDDEN' | 'ARCHIVED';
+	last_modified: string | null;
+};

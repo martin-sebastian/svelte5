@@ -52,6 +52,35 @@ export const vehicle = pgTable('vehicle', {
 	lastModified: text('last_modified')
 });
 
+export const motorcycles = pgTable('motorcycles', {
+	id: text('id').primaryKey(),
+	title: text('title'),
+	link: text('link'),
+	description: text('description'),
+	price: numeric('price', { precision: 10, scale: 2 }),
+	price_type: text('price_type'),
+	stock_number: text('stock_number'),
+	vin: text('vin'),
+	manufacturer: text('manufacturer'),
+	year: integer('year'),
+	color: text('color'),
+	model_type: text('model_type'),
+	model_typestyle: text('model_typestyle'),
+	model_name: text('model_name'),
+	trim_name: text('trim_name'),
+	trim_color: text('trim_color'),
+	condition: text('condition'),
+	usage: text('usage'),
+	location: text('location'),
+	updated: text('updated'),
+	metric_type: text('metric_type'),
+	metric_value: integer('metric_value'),
+	status: text('status', { enum: ['ACTIVE', 'SOLD', 'HIDDEN', 'ARCHIVED'] })
+		.notNull()
+		.default('ACTIVE'),
+	last_modified: text('last_modified')
+});
+
 export const vehicleImage = pgTable('vehicle_image', {
 	id: text('id').primaryKey(),
 	vehicle_id: text('vehicle_id').references(() => vehicle.id, { onDelete: 'cascade' }),
@@ -88,3 +117,4 @@ export type Vehicle = typeof vehicle.$inferSelect;
 export type VehicleImage = typeof vehicleImage.$inferSelect;
 export type VehicleAttribute = typeof vehicleAttribute.$inferSelect;
 export type Customer = typeof customer.$inferSelect;
+export type Motorcycle = typeof motorcycles.$inferSelect;
